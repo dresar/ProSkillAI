@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
 import type { Prompt } from "@/db/schema";
+import { trackPromptAction } from "@/app/actions/track";
 
 interface VariableDef {
   name: string;
@@ -17,31 +18,61 @@ interface PromptVariableEngineProps {
   locale: string;
 }
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function PromptVariableEngine({ prompt, locale }: PromptVariableEngineProps) {
   const [selectedLang, setSelectedLang] = React.useState<"id" | "en">(
     locale === "en" ? "en" : "id"
   );
   const [copied, setCopied] = React.useState(false);
 
-  const variables: VariableDef[] = Array.isArray(prompt.variables)
-    ? (prompt.variables as unknown as VariableDef[])
-    : [];
+  const rawTemplate = selectedLang === "en" ? prompt.contentEn : prompt.contentId;
+
+  const definedVariables: VariableDef[] = React.useMemo(() => {
+    return Array.isArray(prompt.variables)
+      ? (prompt.variables as unknown as VariableDef[])
+      : [];
+  }, [prompt.variables]);
+
+  const discoveredVariables = React.useMemo(() => {
+    const vars: VariableDef[] = [...definedVariables];
+    const existingNames = new Set(vars.map((v) => v.name));
+
+    const matches = rawTemplate.matchAll(/\{\{\s*([a-zA-Z0-9_-]+)\s*\}\}/g);
+    for (const match of matches) {
+      const varName = match[1];
+      if (!existingNames.has(varName)) {
+        existingNames.add(varName);
+        vars.push({
+          name: varName,
+          labelId: varName.replace(/[_-]/g, " "),
+          labelEn: varName.replace(/[_-]/g, " "),
+          placeholder: `Masukkan ${varName}`,
+        });
+      }
+    }
+    return vars;
+  }, [definedVariables, rawTemplate]);
 
   const [formValues, setFormValues] = React.useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
-    for (const v of variables) {
-      initial[v.name] = v.defaultValue || "";
+    for (const v of definedVariables) {
+      if (v.defaultValue) {
+        initial[v.name] = v.defaultValue;
+      }
     }
     return initial;
   });
 
-  const rawTemplate = selectedLang === "en" ? prompt.contentEn : prompt.contentId;
-
   const resolvedPrompt = React.useMemo(() => {
     let result = rawTemplate;
     for (const [key, val] of Object.entries(formValues)) {
-      const regex = new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, "g");
-      result = result.replace(regex, val || `{{${key}}}`);
+      if (val.trim()) {
+        const regex = new RegExp(`\\{\\{\\s*${escapeRegex(key)}\\s*\\}\\}`, "g");
+        result = result.replace(regex, val);
+      }
     }
     return result;
   }, [rawTemplate, formValues]);
@@ -49,6 +80,9 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
   const handleCopy = async () => {
     await navigator.clipboard.writeText(resolvedPrompt);
     setCopied(true);
+    if (prompt.id) {
+      trackPromptAction(prompt.id).catch(() => {});
+    }
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -103,17 +137,17 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
         </button>
       </div>
 
-      {variables.length > 0 && (
+      {discoveredVariables.length > 0 && (
         <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 space-y-3">
           <h4 className="text-xs font-semibold text-foreground tracking-tight">
             {locale === "en" ? "Fill Variables" : "Isi Variabel"}
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {variables.map((v) => (
+            {discoveredVariables.map((v) => (
               <div key={v.name} className="space-y-1">
                 <label
                   htmlFor={`var-${v.name}`}
-                  className="block text-xs font-medium text-neutral-600 dark:text-neutral-400"
+                  className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 capitalize"
                 >
                   {locale === "en" ? v.labelEn : v.labelId}
                   <span className="font-mono text-[11px] text-neutral-400 ml-1">
@@ -124,7 +158,7 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
                   id={`var-${v.name}`}
                   type="text"
                   value={formValues[v.name] || ""}
-                  placeholder={v.placeholder}
+                  placeholder={v.placeholder || `{{${v.name}}}`}
                   onChange={(e) =>
                     setFormValues((prev) => ({ ...prev, [v.name]: e.target.value }))
                   }

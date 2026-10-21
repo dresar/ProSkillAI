@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
-import { db } from "@/db";
-import { skills, categories } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getAdminSkillById, getAllCategories } from "@/db/queries";
 import { SkillForm } from "../../skill-form";
 
 interface PageProps {
@@ -13,13 +11,14 @@ interface PageProps {
 export default async function EditSkillPage({ params }: PageProps) {
   const { id } = await params;
 
-  const found = await db.select().from(skills).where(eq(skills.id, id)).limit(1);
-  const skill = found[0];
+  const [skill, allCategories] = await Promise.all([
+    getAdminSkillById(id),
+    getAllCategories("skills"),
+  ]);
+
   if (!skill) {
     notFound();
   }
-
-  const allCategories = await db.select().from(categories);
 
   return (
     <div className="space-y-6">

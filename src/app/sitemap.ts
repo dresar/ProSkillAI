@@ -1,23 +1,12 @@
 import type { MetadataRoute } from "next";
-import { db } from "@/db";
-import { skills, prompts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getSitemapData } from "@/db/queries";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const publishedSkills = await db
-    .select({ slug: skills.slug, updatedAt: skills.updatedAt })
-    .from(skills)
-    .where(eq(skills.status, "published"));
-
-  const publishedPrompts = await db
-    .select({ slug: prompts.slug, updatedAt: prompts.updatedAt })
-    .from(prompts)
-    .where(eq(prompts.status, "published"));
+  const { publishedSkills, publishedPrompts } = await getSitemapData();
 
   const staticRoutes = ["", "/skills", "/prompts", "/privacy", "/terms"];
-
   const entries: MetadataRoute.Sitemap = [];
 
   for (const route of staticRoutes) {

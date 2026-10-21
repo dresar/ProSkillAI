@@ -1,19 +1,15 @@
-import { requireAdmin } from "@/lib/auth";
-import { db } from "@/db";
-import { settings } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+import { getFeatureFlags } from "@/db/queries";
 import { SettingsClient } from "./settings-client";
 
 export default async function AdminSettingsPage() {
-  await requireAdmin();
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    redirect("/admin");
+  }
 
-  const found = await db
-    .select()
-    .from(settings)
-    .where(eq(settings.key, "feature_flags"))
-    .limit(1);
-
-  const initialFlags = (found[0]?.value as Record<string, boolean>) || {};
+  const initialFlags = await getFeatureFlags();
 
   return <SettingsClient initialFlags={initialFlags} />;
 }

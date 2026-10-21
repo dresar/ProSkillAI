@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { db } from "@/db";
-import { prompts, categories } from "@/db/schema";
-import { eq, and, sql, desc, asc } from "drizzle-orm";
+import { getPublishedPrompts, getAllCategories } from "@/db/queries";
 import { PromptCard } from "@/components/prompt-card";
 import { CatalogToolbar } from "@/components/catalog-toolbar";
 
@@ -58,39 +56,10 @@ export default async function PromptsCatalogPage({
   setRequestLocale(locale);
   const t = await getTranslations("prompts");
 
-  const allCategories = await db.select().from(categories);
-
-  const conditions = [eq(prompts.status, "published")];
-
-  if (category) {
-    const selectedCat = allCategories.find((c) => c.slug === category);
-    if (selectedCat) {
-      conditions.push(eq(prompts.categoryId, selectedCat.id));
-    }
-  }
-
-  if (q) {
-    conditions.push(
-      sql`(${prompts.titleId} ILIKE ${`%${q}%`} OR ${prompts.titleEn} ILIKE ${`%${q}%`} OR ${prompts.descriptionId} ILIKE ${`%${q}%`} OR ${prompts.descriptionEn} ILIKE ${`%${q}%`})`
-    );
-  }
-
-  let orderByClause = desc(prompts.createdAt);
-  if (sort === "oldest") {
-    orderByClause = asc(prompts.createdAt);
-  } else if (sort === "popular") {
-    orderByClause = desc(prompts.copyCount);
-  }
-
-  const result = await db
-    .select({
-      prompt: prompts,
-      category: categories,
-    })
-    .from(prompts)
-    .leftJoin(categories, eq(prompts.categoryId, categories.id))
-    .where(and(...conditions))
-    .orderBy(orderByClause);
+  const [allCategories, result] = await Promise.all([
+    getAllCategories("all"),
+    getPublishedPrompts({ q, categorySlug: category, sort }),
+  ]);
 
   return (
     <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 md:py-12 space-y-8">

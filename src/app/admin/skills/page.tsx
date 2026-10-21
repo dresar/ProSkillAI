@@ -1,6 +1,4 @@
-import { db } from "@/db";
-import { skills, categories } from "@/db/schema";
-import { desc, eq, and, sql } from "drizzle-orm";
+import { getAdminSkills, getAllCategories } from "@/db/queries";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { SkillsTable } from "./skills-table";
@@ -15,29 +13,16 @@ interface PageProps {
 export default async function AdminSkillsPage({ searchParams }: PageProps) {
   const { q, status } = await searchParams;
 
-  const conditions = [];
-  if (status && ["draft", "published", "archived"].includes(status)) {
-    conditions.push(eq(skills.status, status));
-  }
-  if (q) {
-    conditions.push(
-      sql`(${skills.titleId} ILIKE ${`%${q}%`} OR ${skills.titleEn} ILIKE ${`%${q}%`} OR ${skills.slug} ILIKE ${`%${q}%`})`
-    );
-  }
+  const [skillsList, categoriesList] = await Promise.all([
+    getAdminSkills({ q, status }),
+    getAllCategories("all"),
+  ]);
 
-  const allSkills = await db
-    .select({
-      skill: skills,
-      category: categories,
-    })
-    .from(skills)
-    .leftJoin(categories, eq(skills.categoryId, categories.id))
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(skills.createdAt));
+  const catMap = new Map(categoriesList.map((c) => [c.id, c]));
 
-  const formatted = allSkills.map((item) => ({
-    ...item.skill,
-    category: item.category,
+  const formatted = skillsList.map((skill) => ({
+    ...skill,
+    category: skill.categoryId ? catMap.get(skill.categoryId) || null : null,
   }));
 
   return (

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { db } from "@/db";
-import { skills, categories } from "@/db/schema";
-import { eq, and, ne } from "drizzle-orm";
+import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";
 import { CopySkillButton } from "@/components/copy-skill-button";
@@ -11,6 +9,7 @@ import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
 import { SkillCard } from "@/components/skill-card";
+import { SkillDetailTabs } from "@/components/skill-detail-tabs";
 
 interface PageProps {
   params: Promise<{
@@ -23,17 +22,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale, slug } = await params;
   const isEn = locale === "en";
 
-  const found = await db
-    .select()
-    .from(skills)
-    .where(and(eq(skills.slug, slug), eq(skills.status, "published")))
-    .limit(1);
-
-  const skill = found[0];
-  if (!skill) {
+  const item = await getPublishedSkillBySlug(slug);
+  if (!item) {
     return { title: "Skill Not Found" };
   }
 
+  const { skill } = item;
   const title = isEn ? skill.titleEn : skill.titleId;
   const description = isEn ? skill.summaryEn : skill.summaryId;
 
@@ -64,17 +58,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("skills");
 
-  const found = await db
-    .select({
-      skill: skills,
-      category: categories,
-    })
-    .from(skills)
-    .leftJoin(categories, eq(skills.categoryId, categories.id))
-    .where(and(eq(skills.slug, slug), eq(skills.status, "published")))
-    .limit(1);
-
-  const item = found[0];
+  const item = await getPublishedSkillBySlug(slug);
   if (!item) {
     notFound();
   }
@@ -87,21 +71,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
 
   const related = skill.categoryId
-    ? await db
-        .select({
-          skill: skills,
-          category: categories,
-        })
-        .from(skills)
-        .leftJoin(categories, eq(skills.categoryId, categories.id))
-        .where(
-          and(
-            eq(skills.categoryId, skill.categoryId),
-            eq(skills.status, "published"),
-            ne(skills.id, skill.id)
-          )
-        )
-        .limit(3)
+    ? await getRelatedSkills(skill.categoryId, skill.id, 3)
     : [];
 
   const breadcrumbJsonLd = {
@@ -128,6 +98,32 @@ export default async function SkillDetailPage({ params }: PageProps) {
       },
     ],
   };
+
+  const hasPreview = skill.previewType !== "none" && Boolean(skill.previewHtml || skill.previewImageUrl || skill.designTokens);
+
+  const previewNode = (
+    <section aria-labelledby="preview-heading" className="space-y-3">
+      <h2 id="preview-heading" className="sr-only">
+        {t("tabPreview")}
+      </h2>
+      <SkillPreviewViewer skill={skill} locale={locale} />
+    </section>
+  );
+
+  const contentNode = (
+    <section aria-labelledby="content-heading" className="space-y-3">
+      <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+        <h2 id="content-heading" className="text-sm font-semibold text-foreground tracking-tight">
+          {t("tabContent")}
+        </h2>
+        <span className="font-mono text-xs text-neutral-400">SKILL.md</span>
+      </div>
+
+      <div className="p-4 sm:p-6 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface">
+        <MarkdownRenderer content={content} />
+      </div>
+    </section>
+  );
 
   return (
     <article className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 md:py-14 space-y-10">
@@ -159,45 +155,36 @@ export default async function SkillDetailPage({ params }: PageProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 pt-2">
+        <div className="flex items-center flex-wrap gap-2.5 pt-2">
           <CopySkillButton
+            skillId={skill.id}
             content={content}
             label={t("copyRaw")}
             copiedLabel={t("copied")}
           />
           <DownloadSkillButton
+            skillId={skill.id}
             content={content}
             filename={`${skill.slug}.md`}
             label={t("download")}
           />
+          {(skill.copyCount > 0 || skill.downloadCount > 0) && (
+            <span className="text-xs font-mono text-neutral-500 pl-2">
+              {skill.copyCount > 0 && `${skill.copyCount} ${isEn ? "copies" : "salinan"}`}
+              {skill.copyCount > 0 && skill.downloadCount > 0 && " • "}
+              {skill.downloadCount > 0 && `${skill.downloadCount} ${isEn ? "downloads" : "unduhan"}`}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Visual Preview Section if available */}
-      {skill.previewType !== "none" && (
-        <section aria-labelledby="preview-heading" className="space-y-3">
-          <h2 id="preview-heading" className="text-sm font-semibold text-foreground tracking-tight">
-            {t("tabPreview")}
-          </h2>
-          <SkillPreviewViewer skill={skill} locale={locale} />
-        </section>
-      )}
+      <SkillDetailTabs
+        hasPreview={hasPreview}
+        previewNode={previewNode}
+        contentNode={contentNode}
+        locale={locale}
+      />
 
-      {/* Markdown Content Section */}
-      <section aria-labelledby="content-heading" className="space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 id="content-heading" className="text-sm font-semibold text-foreground tracking-tight">
-            {t("tabContent")}
-          </h2>
-          <span className="font-mono text-xs text-neutral-400">SKILL.md</span>
-        </div>
-
-        <div className="p-4 sm:p-6 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface">
-          <MarkdownRenderer content={content} />
-        </div>
-      </section>
-
-      {/* Quick Agent Installation Guide */}
       <section aria-labelledby="install-heading" className="p-4 sm:p-5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 space-y-3 text-xs">
         <h2 id="install-heading" className="font-semibold text-foreground tracking-tight">
           {t("installGuide")}
@@ -209,7 +196,6 @@ export default async function SkillDetailPage({ params }: PageProps) {
         </ol>
       </section>
 
-      {/* Source Provenance & Attribution */}
       <section aria-labelledby="provenance-heading" className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3 text-xs">
         <h2 id="provenance-heading" className="font-semibold text-foreground tracking-tight">
           {t("provenance")}
@@ -268,7 +254,6 @@ export default async function SkillDetailPage({ params }: PageProps) {
         )}
       </section>
 
-      {/* Related Skills */}
       {related.length > 0 && (
         <section aria-labelledby="related-heading" className="space-y-4 pt-6 border-t border-neutral-200 dark:border-neutral-800">
           <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">

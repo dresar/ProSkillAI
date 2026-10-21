@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code } from "lucide-react";
 import { createSkillAction, updateSkillAction } from "./actions";
 import { resyncSkillAction } from "../github-import/actions";
-import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
 import type { Skill, Category } from "@/db/schema";
 
 interface SkillFormProps {
@@ -194,7 +194,7 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 </label>
                 {previewMode ? (
                   <div className="p-4 rounded border border-neutral-200 dark:border-neutral-800 bg-surface min-h-[300px]">
-                    <MarkdownRenderer content={contentId} />
+                    <ClientMarkdownRenderer content={contentId} />
                   </div>
                 ) : (
                   <textarea
@@ -247,7 +247,7 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 </label>
                 {previewMode ? (
                   <div className="p-4 rounded border border-neutral-200 dark:border-neutral-800 bg-surface min-h-[300px]">
-                    <MarkdownRenderer content={contentEn} />
+                    <ClientMarkdownRenderer content={contentEn} />
                   </div>
                 ) : (
                   <textarea
@@ -264,7 +264,6 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
             </div>
           )}
 
-          {/* Hidden fields for inactive tab so form submission receives both */}
           {activeTab === "id" ? (
             <>
               <input type="hidden" name="titleEn" value={titleEn} />
@@ -280,7 +279,6 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
           )}
         </div>
 
-        {/* Sidebar metadata */}
         <div className="space-y-4">
           <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-4 text-xs">
             <h3 className="font-semibold text-foreground tracking-tight pb-2 border-b border-neutral-200 dark:border-neutral-800">

@@ -1,9 +1,8 @@
-import { db } from "@/db";
-import { categories } from "@/db/schema";
+import { getAllCategories } from "@/db/queries";
 import { PromptForm } from "../prompt-form";
 
 export default async function NewPromptPage() {
-  const allCategories = await db.select().from(categories);
+  const allCategories = await getAllCategories("prompts");
 
   return (
     <div className="space-y-6">

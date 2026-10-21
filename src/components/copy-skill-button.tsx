@@ -2,12 +2,15 @@
 
 import * as React from "react";
 import { Copy, Check } from "lucide-react";
+import { trackSkillAction } from "@/app/actions/track";
 
 export function CopySkillButton({
+  skillId,
   content,
   label = "Salin SKILL.md",
   copiedLabel = "Tersalin!",
 }: {
+  skillId?: string;
   content: string;
   label?: string;
   copiedLabel?: string;
@@ -17,6 +20,9 @@ export function CopySkillButton({
   const handleCopy = async () => {
     await navigator.clipboard.writeText(content);
     setCopied(true);
+    if (skillId) {
+      trackSkillAction(skillId, "copy").catch(() => {});
+    }
     setTimeout(() => setCopied(false), 2000);
   };
 

@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { db } from "@/db";
-import { prompts, categories, skills } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
@@ -19,17 +17,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale, slug } = await params;
   const isEn = locale === "en";
 
-  const found = await db
-    .select()
-    .from(prompts)
-    .where(and(eq(prompts.slug, slug), eq(prompts.status, "published")))
-    .limit(1);
-
-  const prompt = found[0];
-  if (!prompt) {
+  const item = await getPublishedPromptBySlug(slug);
+  if (!item) {
     return { title: "Prompt Not Found" };
   }
 
+  const { prompt } = item;
   const title = isEn ? prompt.titleEn : prompt.titleId;
   const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
 
@@ -60,19 +53,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("prompts");
 
-  const found = await db
-    .select({
-      prompt: prompts,
-      category: categories,
-      skill: skills,
-    })
-    .from(prompts)
-    .leftJoin(categories, eq(prompts.categoryId, categories.id))
-    .leftJoin(skills, eq(prompts.relatedSkillId, skills.id))
-    .where(and(eq(prompts.slug, slug), eq(prompts.status, "published")))
-    .limit(1);
-
-  const item = found[0];
+  const item = await getPublishedPromptBySlug(slug);
   if (!item) {
     notFound();
   }
@@ -136,6 +117,11 @@ export default async function PromptDetailPage({ params }: PageProps) {
           <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">
             {description}
           </p>
+          {prompt.copyCount > 0 && (
+            <div className="text-xs font-mono text-neutral-500 pt-1">
+              {prompt.copyCount} {isEn ? "copies recorded" : "kali disalin"}
+            </div>
+          )}
         </div>
       </div>
 
@@ -157,7 +143,6 @@ export default async function PromptDetailPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Interactive Variable Engine & Code Copy */}
       <section aria-labelledby="interactive-engine">
         <PromptVariableEngine prompt={prompt} locale={locale} />
       </section>

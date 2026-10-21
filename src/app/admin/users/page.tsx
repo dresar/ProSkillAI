@@ -1,12 +1,15 @@
-import { requireAdmin } from "@/lib/auth";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+import { getAdminUsers } from "@/db/queries";
 import { UsersClient } from "./users-client";
 
 export default async function AdminUsersPage() {
-  await requireAdmin();
-  const allUsers = await db.select().from(users).orderBy(desc(users.createdAt));
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    redirect("/admin");
+  }
+
+  const allUsers = await getAdminUsers();
 
   return <UsersClient usersList={allUsers} />;
 }

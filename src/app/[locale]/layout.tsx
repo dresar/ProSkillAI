@@ -60,6 +60,9 @@ export default async function LocaleLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
+      <script
+        dangerouslySetInnerHTML={{ __html: `document.documentElement.lang="${locale}";` }}
+      />
 
       <a
         href="#main-content"

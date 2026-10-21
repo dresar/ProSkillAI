@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import Image from "next/image";
 import type { Skill, Category } from "@/db/schema";
 
 interface SkillCardProps {
@@ -9,10 +9,11 @@ interface SkillCardProps {
 }
 
 export function SkillCard({ skill, category, locale }: SkillCardProps) {
-  const title = locale === "en" ? skill.titleEn : skill.titleId;
-  const summary = locale === "en" ? skill.summaryEn : skill.summaryId;
+  const isEn = locale === "en";
+  const title = isEn ? skill.titleEn : skill.titleId;
+  const summary = isEn ? skill.summaryEn : skill.summaryId;
   const categoryName = category
-    ? locale === "en"
+    ? isEn
       ? category.nameEn
       : category.nameId
     : null;
@@ -20,7 +21,7 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
   const sourceLabel =
     skill.sourceType === "github" && skill.repoUrl
       ? skill.repoUrl.replace("https://github.com/", "")
-      : locale === "en"
+      : isEn
       ? "Original"
       : "Orisinal";
 
@@ -46,12 +47,14 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
       )}
 
       {skill.previewType === "image" && skill.previewImageUrl && (
-        <div className="mb-3 aspect-video w-full overflow-hidden rounded bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
-          <img
+        <div className="relative mb-3 aspect-video w-full overflow-hidden rounded bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+          <Image
             src={skill.previewImageUrl}
             alt={title}
-            className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-200"
-            loading="lazy"
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-102 transition-transform duration-200"
           />
         </div>
       )}
@@ -64,10 +67,17 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
         {summary}
       </p>
 
-      <div className="mt-3 flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-        {categoryName && <span>{categoryName}</span>}
-        {categoryName && <span aria-hidden="true">&bull;</span>}
-        <span>{sourceLabel}</span>
+      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+        <div className="flex items-center gap-1.5 truncate">
+          {categoryName && <span>{categoryName}</span>}
+          {categoryName && <span aria-hidden="true">&bull;</span>}
+          <span className="truncate">{sourceLabel}</span>
+        </div>
+        {skill.copyCount > 0 && (
+          <span className="shrink-0 text-[11px] font-mono text-neutral-400">
+            {skill.copyCount} {isEn ? "copies" : "salinan"}
+          </span>
+        )}
       </div>
     </Link>
   );

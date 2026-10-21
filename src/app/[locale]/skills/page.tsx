@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { db } from "@/db";
-import { skills, categories } from "@/db/schema";
-import { eq, and, sql, desc, asc } from "drizzle-orm";
+import { getPublishedSkills, getAllCategories } from "@/db/queries";
 import { SkillCard } from "@/components/skill-card";
 import { CatalogToolbar } from "@/components/catalog-toolbar";
 
@@ -58,39 +56,10 @@ export default async function SkillsCatalogPage({
   setRequestLocale(locale);
   const t = await getTranslations("skills");
 
-  const allCategories = await db.select().from(categories);
-
-  const conditions = [eq(skills.status, "published")];
-
-  if (category) {
-    const selectedCat = allCategories.find((c) => c.slug === category);
-    if (selectedCat) {
-      conditions.push(eq(skills.categoryId, selectedCat.id));
-    }
-  }
-
-  if (q) {
-    conditions.push(
-      sql`(${skills.titleId} ILIKE ${`%${q}%`} OR ${skills.titleEn} ILIKE ${`%${q}%`} OR ${skills.summaryId} ILIKE ${`%${q}%`} OR ${skills.summaryEn} ILIKE ${`%${q}%`})`
-    );
-  }
-
-  let orderByClause = desc(skills.createdAt);
-  if (sort === "oldest") {
-    orderByClause = asc(skills.createdAt);
-  } else if (sort === "popular") {
-    orderByClause = desc(skills.copyCount);
-  }
-
-  const result = await db
-    .select({
-      skill: skills,
-      category: categories,
-    })
-    .from(skills)
-    .leftJoin(categories, eq(skills.categoryId, categories.id))
-    .where(and(...conditions))
-    .orderBy(orderByClause);
+  const [allCategories, result] = await Promise.all([
+    getAllCategories("all"),
+    getPublishedSkills({ q, categorySlug: category, sort }),
+  ]);
 
   return (
     <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 md:py-12 space-y-8">

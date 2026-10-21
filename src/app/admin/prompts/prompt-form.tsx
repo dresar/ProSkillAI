@@ -267,7 +267,6 @@ export function PromptForm({ initialPrompt, categories }: PromptFormProps) {
             </>
           )}
 
-          {/* Dynamic Variables Section */}
           <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-semibold text-foreground">
@@ -344,7 +343,6 @@ export function PromptForm({ initialPrompt, categories }: PromptFormProps) {
           </div>
         </div>
 
-        {/* Sidebar settings */}
         <div className="space-y-4">
           <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-4 text-xs">
             <h3 className="font-semibold text-foreground tracking-tight pb-2 border-b border-neutral-200 dark:border-neutral-800">

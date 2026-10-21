@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { db } from "@/db";
-import { skills, prompts, categories } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { getFeaturedSkills, getLatestPrompts } from "@/db/queries";
 import { SkillCard } from "@/components/skill-card";
 import { PromptCard } from "@/components/prompt-card";
 import { BetaSections } from "@/components/beta-sections";
@@ -54,31 +52,13 @@ export default async function HomePage({ params }: PageProps) {
 
   const t = await getTranslations("home");
 
-  const publishedSkills = await db
-    .select({
-      skill: skills,
-      category: categories,
-    })
-    .from(skills)
-    .leftJoin(categories, eq(skills.categoryId, categories.id))
-    .where(eq(skills.status, "published"))
-    .orderBy(desc(skills.createdAt))
-    .limit(6);
-
-  const publishedPrompts = await db
-    .select({
-      prompt: prompts,
-      category: categories,
-    })
-    .from(prompts)
-    .leftJoin(categories, eq(prompts.categoryId, categories.id))
-    .where(eq(prompts.status, "published"))
-    .orderBy(desc(prompts.createdAt))
-    .limit(4);
+  const [publishedSkills, publishedPrompts] = await Promise.all([
+    getFeaturedSkills(6),
+    getLatestPrompts(4),
+  ]);
 
   return (
     <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-12 md:py-16 space-y-16">
-      {/* Hero: Descriptive, calm, people-first */}
       <section className="max-w-3xl space-y-5">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-[1.2]">
           {t("title")}
@@ -108,7 +88,6 @@ export default async function HomePage({ params }: PageProps) {
         </form>
       </section>
 
-      {/* Featured Skills Section */}
       <section className="space-y-6" aria-labelledby="skills-heading">
         <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
           <div>
@@ -143,7 +122,6 @@ export default async function HomePage({ params }: PageProps) {
         )}
       </section>
 
-      {/* Latest Prompts Section */}
       <section className="space-y-6" aria-labelledby="prompts-heading">
         <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
           <div>
@@ -178,7 +156,6 @@ export default async function HomePage({ params }: PageProps) {
         )}
       </section>
 
-      {/* Beta Sections List */}
       <BetaSections />
     </div>
   );

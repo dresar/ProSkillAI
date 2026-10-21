@@ -1,9 +1,7 @@
-import { db } from "@/db";
-import { auditLog } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { getAdminActivityLogs } from "@/db/queries";
 
 export default async function AdminActivityPage() {
-  const logs = await db.select().from(auditLog).orderBy(desc(auditLog.createdAt)).limit(50);
+  const logs = await getAdminActivityLogs(50);
 
   return (
     <div className="space-y-6">

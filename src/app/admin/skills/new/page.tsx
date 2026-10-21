@@ -1,9 +1,8 @@
-import { db } from "@/db";
-import { categories } from "@/db/schema";
+import { getAllCategories } from "@/db/queries";
 import { SkillForm } from "../skill-form";
 
 export default async function NewSkillPage() {
-  const allCategories = await db.select().from(categories);
+  const allCategories = await getAllCategories("skills");
 
   return (
     <div className="space-y-6">

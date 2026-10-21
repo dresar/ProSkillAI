@@ -8,10 +8,12 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/**/*.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx src/db/seed.ts",
-    "db:reset-password": "tsx src/db/reset-password.ts"
+    "db:reset-password": "tsx src/db/reset-password.ts",
+    "reset-password": "tsx src/db/reset-password.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",

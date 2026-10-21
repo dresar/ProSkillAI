@@ -4,7 +4,8 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { skills, importJobs, auditLog } from "@/db/schema";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { getAdminSkillById } from "@/db/queries";
 import {
   parseGitHubUrl,
   fetchRepoInfo,
@@ -16,37 +17,43 @@ import {
 import { eq } from "drizzle-orm";
 
 export async function scanGitHubRepoAction(repoInput: string) {
-  await requireAuth();
+  await requireAdmin();
 
   try {
-    const { owner, repo } = parseGitHubUrl(repoInput);
+    const { owner, repo, branch, pathFilter } = parseGitHubUrl(repoInput);
     const repoInfo = await fetchRepoInfo(owner, repo);
-    const files = await findSkillFiles(owner, repo, repoInfo.defaultBranch);
+    const targetBranch = branch || repoInfo.defaultBranch;
+    const files = await findSkillFiles(owner, repo, targetBranch);
 
-    if (files.length === 0) {
+    const filteredFiles = pathFilter
+      ? files.filter((f) => f.path.toLowerCase().includes(pathFilter.toLowerCase()))
+      : files;
+
+    if (filteredFiles.length === 0) {
       return {
         success: false as const,
-        error: `Tidak ditemukan file SKILL.md pada branch default '${repoInfo.defaultBranch}'.`,
+        error: `Tidak ditemukan file SKILL.md pada branch '${targetBranch}'${pathFilter ? ` dengan filter '${pathFilter}'` : ""}.`,
       };
     }
 
     const candidates: SkillCandidate[] = [];
-    const limit = Math.min(files.length, 10);
+    const limit = Math.min(filteredFiles.length, 10);
 
     for (let i = 0; i < limit; i++) {
-      const file = files[i];
+      const file = filteredFiles[i];
       try {
         const rawContent = await fetchFileContent(
           owner,
           repo,
           file.path,
-          repoInfo.defaultBranch
+          targetBranch
         );
         const parsed = parseSkillCandidate(
           file.path,
           file.sha,
           rawContent,
-          repoInfo.licenseSpdx
+          repoInfo.licenseSpdx,
+          repo
         );
         candidates.push(parsed);
       } catch {
@@ -56,7 +63,10 @@ export async function scanGitHubRepoAction(repoInput: string) {
 
     return {
       success: true as const,
-      repoInfo,
+      repoInfo: {
+        ...repoInfo,
+        defaultBranch: targetBranch,
+      },
       candidates,
     };
   } catch (err: unknown) {
@@ -77,7 +87,7 @@ export async function importCandidateAction(data: {
   };
   candidate: SkillCandidate;
 }) {
-  const user = await requireAuth();
+  const user = await requireAdmin();
 
   const { repoInfo, candidate } = data;
   const baseSlug = candidate.name
@@ -152,10 +162,9 @@ export async function importCandidateAction(data: {
 }
 
 export async function resyncSkillAction(skillId: string) {
-  const user = await requireAuth();
+  const user = await requireAdmin();
 
-  const found = await db.select().from(skills).where(eq(skills.id, skillId)).limit(1);
-  const skill = found[0];
+  const skill = await getAdminSkillById(skillId);
   if (!skill || skill.sourceType !== "github" || !skill.repoUrl || !skill.filePath) {
     throw new Error("Skill bukan berasal dari GitHub atau data sumber tidak lengkap.");
   }
@@ -173,7 +182,8 @@ export async function resyncSkillAction(skillId: string) {
     skill.filePath,
     skill.commitHash || "",
     rawContent,
-    repoInfo.licenseSpdx
+    repoInfo.licenseSpdx,
+    repo
   );
 
   await db

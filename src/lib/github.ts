@@ -21,6 +21,13 @@ export interface SkillCandidate {
   frontmatter: Record<string, unknown>;
 }
 
+export interface ParsedGitHubInput {
+  owner: string;
+  repo: string;
+  branch?: string;
+  pathFilter?: string;
+}
+
 const PERMISSIVE_LICENSES = new Set([
   "mit",
   "apache-2.0",
@@ -33,13 +40,29 @@ const PERMISSIVE_LICENSES = new Set([
   "0bsd",
 ]);
 
-export function parseGitHubUrl(input: string): { owner: string; repo: string } {
+export function parseGitHubUrl(input: string): ParsedGitHubInput {
   const cleaned = input.trim().replace(/^https?:\/\/github\.com\//i, "").replace(/\.git$/i, "");
   const parts = cleaned.split("/").filter(Boolean);
+
   if (parts.length < 2) {
     throw new Error("Format URL GitHub tidak valid. Harap gunakan format owner/repo atau https://github.com/owner/repo");
   }
-  return { owner: parts[0], repo: parts[1] };
+
+  const owner = parts[0];
+  const repo = parts[1];
+
+  if (parts.length === 2) {
+    return { owner, repo };
+  }
+
+  if ((parts[2] === "tree" || parts[2] === "blob") && parts.length >= 4) {
+    const branch = parts[3];
+    const pathFilter = parts.slice(4).join("/");
+    return { owner, repo, branch, pathFilter: pathFilter || undefined };
+  }
+
+  const pathFilter = parts.slice(2).join("/");
+  return { owner, repo, pathFilter };
 }
 
 function getGitHubHeaders(etag?: string): HeadersInit {
@@ -136,8 +159,9 @@ export async function fetchFileContent(
   path: string,
   ref: string
 ): Promise<string> {
+  const encodedPath = path.split("/").map(encodeURIComponent).join("/");
   const res = await fetch(
-    `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${path}`,
+    `https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(ref)}/${encodedPath}`,
     {
       headers: process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {},
       next: { revalidate: 0 },
@@ -155,18 +179,28 @@ export function parseSkillCandidate(
   path: string,
   sha: string,
   content: string,
-  licenseSpdx: string | null
+  licenseSpdx: string | null,
+  fallbackRepoName?: string
 ): SkillCandidate {
-  const isPermissive = licenseSpdx ? PERMISSIVE_LICENSES.has(licenseSpdx.toLowerCase()) : false;
   const parsed = matter(content);
 
+  const frontmatterLicense =
+    typeof parsed.data.license === "string" ? parsed.data.license.trim() : null;
+  const effectiveLicense = licenseSpdx || frontmatterLicense;
+  const isPermissive = effectiveLicense
+    ? PERMISSIVE_LICENSES.has(effectiveLicense.toLowerCase())
+    : false;
+
+  const folderName = path.replace(/(?:^|\/)SKILL\.md$/i, "").split("/").filter(Boolean).pop();
   const name =
     (typeof parsed.data.name === "string" && parsed.data.name.trim()) ||
-    path.replace(/\/SKILL\.md$/i, "").split("/").pop() ||
-    "Unnamed Skill";
+    folderName ||
+    fallbackRepoName ||
+    "Skill";
 
   const description =
     (typeof parsed.data.description === "string" && parsed.data.description.trim()) ||
+    (typeof parsed.data.summary === "string" && parsed.data.summary.trim()) ||
     "Instruksi skill AI agent yang diimpor dari GitHub.";
 
   return {
@@ -176,7 +210,7 @@ export function parseSkillCandidate(
     description,
     rawContent: content,
     isPermissive,
-    licenseSpdx,
+    licenseSpdx: effectiveLicense,
     frontmatter: parsed.data,
   };
 }

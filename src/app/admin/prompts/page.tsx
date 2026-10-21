@@ -1,6 +1,4 @@
-import { db } from "@/db";
-import { prompts, categories } from "@/db/schema";
-import { desc, eq, and, sql } from "drizzle-orm";
+import { getAdminPrompts, getAllCategories } from "@/db/queries";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PromptsTable } from "./prompts-table";
@@ -15,29 +13,16 @@ interface PageProps {
 export default async function AdminPromptsPage({ searchParams }: PageProps) {
   const { q, status } = await searchParams;
 
-  const conditions = [];
-  if (status && ["draft", "published", "archived"].includes(status)) {
-    conditions.push(eq(prompts.status, status));
-  }
-  if (q) {
-    conditions.push(
-      sql`(${prompts.titleId} ILIKE ${`%${q}%`} OR ${prompts.titleEn} ILIKE ${`%${q}%`} OR ${prompts.slug} ILIKE ${`%${q}%`})`
-    );
-  }
+  const [promptsList, categoriesList] = await Promise.all([
+    getAdminPrompts({ q, status }),
+    getAllCategories("all"),
+  ]);
 
-  const allPrompts = await db
-    .select({
-      prompt: prompts,
-      category: categories,
-    })
-    .from(prompts)
-    .leftJoin(categories, eq(prompts.categoryId, categories.id))
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(prompts.createdAt));
+  const catMap = new Map(categoriesList.map((c) => [c.id, c]));
 
-  const formatted = allPrompts.map((item) => ({
-    ...item.prompt,
-    category: item.category,
+  const formatted = promptsList.map((prompt) => ({
+    ...prompt,
+    category: prompt.categoryId ? catMap.get(prompt.categoryId) || null : null,
   }));
 
   return (

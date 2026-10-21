@@ -30,13 +30,17 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
   const links = [
     { href: "/admin", label: "Ringkasan", icon: LayoutDashboard },
     { href: "/admin/skills", label: "Skills", icon: Layers },
-    { href: "/admin/github-import", label: "Impor GitHub", icon: DownloadCloud },
+    ...(userRole === "admin"
+      ? [{ href: "/admin/github-import", label: "Impor GitHub", icon: DownloadCloud }]
+      : []),
     { href: "/admin/prompts", label: "Prompts", icon: FileCode },
     { href: "/admin/categories", label: "Kategori", icon: Tag },
     ...(userRole === "admin"
-      ? [{ href: "/admin/users", label: "Pengguna", icon: Users }]
+      ? [
+          { href: "/admin/users", label: "Pengguna", icon: Users },
+          { href: "/admin/settings", label: "Pengaturan", icon: Settings },
+        ]
       : []),
-    { href: "/admin/settings", label: "Pengaturan", icon: Settings },
     { href: "/admin/activity", label: "Log Aktivitas", icon: History },
   ];
 

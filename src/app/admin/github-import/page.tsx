@@ -1,6 +1,13 @@
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 import { GitHubImportClient } from "./import-client";
 
-export default function GitHubImportPage() {
+export default async function GitHubImportPage() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    redirect("/admin");
+  }
+
   return (
     <div className="space-y-6">
       <div>

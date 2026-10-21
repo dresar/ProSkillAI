@@ -2,12 +2,15 @@
 
 import * as React from "react";
 import { Download } from "lucide-react";
+import { trackSkillAction } from "@/app/actions/track";
 
 export function DownloadSkillButton({
+  skillId,
   content,
   filename = "SKILL.md",
   label = "Unduh .md",
 }: {
+  skillId?: string;
   content: string;
   filename?: string;
   label?: string;
@@ -22,6 +25,9 @@ export function DownloadSkillButton({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    if (skillId) {
+      trackSkillAction(skillId, "download").catch(() => {});
+    }
   };
 
   return (

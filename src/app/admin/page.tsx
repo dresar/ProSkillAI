@@ -1,69 +1,41 @@
-import { db } from "@/db";
-import { skills, prompts, categories, users, auditLog } from "@/db/schema";
-import { sql, desc } from "drizzle-orm";
+import { getAdminStats, getAdminActivityLogs } from "@/db/queries";
 import Link from "next/link";
 import { Layers, FileCode, Tag, Users as UsersIcon, Plus, DownloadCloud } from "lucide-react";
 
 export default async function AdminOverviewPage() {
-  const [skillStats] = await db
-    .select({
-      total: sql<number>`count(*)`,
-      published: sql<number>`count(*) filter (where ${skills.status} = 'published')`,
-      draft: sql<number>`count(*) filter (where ${skills.status} = 'draft')`,
-    })
-    .from(skills);
+  const [stats, recentLogs] = await Promise.all([
+    getAdminStats(),
+    getAdminActivityLogs(5),
+  ]);
 
-  const [promptStats] = await db
-    .select({
-      total: sql<number>`count(*)`,
-      published: sql<number>`count(*) filter (where ${prompts.status} = 'published')`,
-      draft: sql<number>`count(*) filter (where ${prompts.status} = 'draft')`,
-    })
-    .from(prompts);
-
-  const [catStats] = await db
-    .select({
-      total: sql<number>`count(*)`,
-    })
-    .from(categories);
-
-  const [userStats] = await db
-    .select({
-      total: sql<number>`count(*)`,
-    })
-    .from(users);
-
-  const recentLogs = await db
-    .select()
-    .from(auditLog)
-    .orderBy(desc(auditLog.createdAt))
-    .limit(5);
+  const totalSkills = stats.skills.draft + stats.skills.published + stats.skills.archived;
+  const totalPrompts = stats.prompts.draft + stats.prompts.published + stats.prompts.archived;
 
   const statCards = [
     {
       label: "Total Skills",
-      value: Number(skillStats?.total || 0),
-      detail: `${Number(skillStats?.published || 0)} terbit, ${Number(skillStats?.draft || 0)} draft`,
+      value: totalSkills,
+      detail: `${stats.skills.published} terbit, ${stats.skills.draft} draft`,
       href: "/admin/skills",
       icon: Layers,
     },
     {
       label: "Total Prompts",
-      value: Number(promptStats?.total || 0),
-      detail: `${Number(promptStats?.published || 0)} terbit, ${Number(promptStats?.draft || 0)} draft`,
+      value: totalPrompts,
+      detail: `${stats.prompts.published} terbit, ${stats.prompts.draft} draft`,
       href: "/admin/prompts",
       icon: FileCode,
     },
     {
       label: "Kategori",
-      value: Number(catStats?.total || 0),
+      value: stats.totalCategories,
       detail: "Kategori terdaftar",
       href: "/admin/categories",
       icon: Tag,
     },
     {
       label: "Pengguna",
-      value: Number(userStats?.total || 0),
+      value: stats.totalUsers,
       detail: "Staf & editor terdaftar",
       href: "/admin/users",
       icon: UsersIcon,
@@ -100,7 +72,7 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((c) => {
           const Icon = c.icon;
           return (
@@ -109,43 +81,54 @@ export default async function AdminOverviewPage() {
               href={c.href}
               className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors block"
             >
-              <div className="flex items-center justify-between text-neutral-500 mb-2">
-                <span className="text-xs font-medium">{c.label}</span>
-                <Icon className="w-4 h-4 text-foreground" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-neutral-500 font-medium">{c.label}</span>
+                <Icon className="w-4 h-4 text-neutral-400" />
               </div>
-              <div className="text-2xl font-bold text-foreground tracking-tight">
+              <div className="mt-2 text-2xl font-bold tracking-tight text-foreground font-mono">
                 {c.value}
               </div>
-              <div className="mt-1 text-[11px] text-neutral-500">
-                {c.detail}
-              </div>
+              <div className="mt-1 text-[11px] text-neutral-500">{c.detail}</div>
             </Link>
           );
         })}
       </div>
 
-      <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface">
-        <h3 className="text-xs font-semibold text-foreground mb-3 tracking-tight">
-          Aktivitas Terbaru
-        </h3>
+      <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+          <h3 className="text-xs font-semibold text-foreground tracking-tight">
+            Log Aktivitas Terbaru
+          </h3>
+          <Link
+            href="/admin/activity"
+            className="text-xs text-neutral-500 hover:text-foreground transition-colors"
+          >
+            Lihat semua
+          </Link>
+        </div>
+
         {recentLogs.length === 0 ? (
-          <div className="py-6 text-center text-xs text-neutral-400">
-            Belum ada aktivitas tercatat di log audit.
+          <div className="p-6 text-center text-xs text-neutral-500">
+            Belum ada aktivitas tercatat di audit log.
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="divide-y divide-neutral-100 dark:divide-neutral-900 text-xs">
             {recentLogs.map((log) => (
-              <div
-                key={log.id}
-                className="flex items-center justify-between text-xs py-2 border-b border-neutral-100 dark:border-neutral-800/60 last:border-0"
-              >
-                <div>
-                  <span className="font-medium text-foreground">{log.action}</span>
-                  <span className="text-neutral-500 ml-1.5">
-                    ({log.entityType}: {log.entityId || "N/A"})
+              <div key={log.id} className="py-2.5 flex items-center justify-between flex-wrap gap-2">
+                <div className="space-x-2">
+                  <span className="font-mono text-[11px] font-semibold text-foreground">
+                    {log.action}
                   </span>
+                  <span className="text-neutral-500">
+                    oleh {log.userEmail || "Sistem"}
+                  </span>
+                  {log.entityType && (
+                    <span className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-[10px] text-neutral-600 dark:text-neutral-400 font-mono">
+                      {log.entityType}
+                    </span>
+                  )}
                 </div>
-                <div className="text-neutral-400 text-[11px] font-mono">
+                <div className="text-[11px] font-mono text-neutral-400">
                   {new Date(log.createdAt).toLocaleString("id-ID")}
                 </div>
               </div>

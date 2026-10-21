@@ -34,7 +34,6 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
 
   return (
     <div className="space-y-3">
-      {/* Desktop Table */}
       <div className="hidden md:block rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
           <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500">
@@ -128,7 +127,6 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
         </table>
       </div>
 
-      {/* Mobile Card List */}
       <div className="md:hidden space-y-2.5">
         {skillsList.map((skill) => (
           <div

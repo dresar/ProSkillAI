@@ -1,6 +1,17 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import { highlightCode } from "@/lib/shiki";
+
+async function ShikiCodeBlock({ code, className }: { code: string; className?: string }) {
+  const html = await highlightCode(code, className);
+  return (
+    <div
+      className="my-3 overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-xs p-3 font-mono [&_pre]:bg-transparent! [&_pre]:m-0! [&_pre]:p-0!"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
 
 export function MarkdownRenderer({ content }: { content: string }) {
   return (
@@ -42,20 +53,17 @@ export function MarkdownRenderer({ content }: { content: string }) {
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
           code: ({ className, children }) => {
             const isInline = !className;
+            const textContent = String(children).replace(/\n$/, "");
             if (isInline) {
               return (
                 <code className="px-1.5 py-0.5 rounded text-[12px] font-mono bg-neutral-100 dark:bg-neutral-800 text-foreground border border-neutral-200 dark:border-neutral-700">
-                  {children}
+                  {textContent}
                 </code>
               );
             }
-            return (
-              <code className="block p-3 rounded text-xs font-mono bg-neutral-100 dark:bg-neutral-900 text-foreground overflow-x-auto border border-neutral-200 dark:border-neutral-800">
-                {children}
-              </code>
-            );
+            return <ShikiCodeBlock code={textContent} className={className} />;
           },
-          pre: ({ children }) => <div className="my-3 overflow-hidden rounded">{children}</div>,
+          pre: ({ children }) => <>{children}</>,
           blockquote: ({ children }) => (
             <blockquote className="border-l-2 border-neutral-400 dark:border-neutral-600 pl-4 py-1 italic text-neutral-600 dark:text-neutral-400 my-3">
               {children}
