@@ -12,7 +12,7 @@ export function AdminHeader({ userEmail, title }: { userEmail: string; title?: s
   }
 
   return (
-    <header className="h-14 border-b border-neutral-200 dark:border-neutral-800 bg-surface px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="h-14 border-b border-border bg-surface px-4 sm:px-6 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <h1 className="text-sm font-semibold text-foreground tracking-tight">
           {title || "Panel Admin"}
@@ -23,7 +23,7 @@ export function AdminHeader({ userEmail, title }: { userEmail: string; title?: s
         <Link
           href="/id"
           target="_blank"
-          className="hidden sm:inline-flex items-center gap-1.5 text-neutral-500 hover:text-foreground transition-colors"
+          className="hidden sm:inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
         >
           <span>Situs Publik</span>
           <ExternalLink className="w-3.5 h-3.5" />
@@ -31,16 +31,16 @@ export function AdminHeader({ userEmail, title }: { userEmail: string; title?: s
 
         <ThemeToggle label="Tema Admin" />
 
-        <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800" />
+        <div className="h-4 w-px bg-border" />
 
-        <span className="hidden sm:inline text-neutral-600 dark:text-neutral-400 font-mono text-[11px]">
+        <span className="hidden sm:inline text-muted-foreground font-mono text-[11px]">
           {userEmail}
         </span>
 
         <form action={handleLogout}>
           <button
             type="submit"
-            className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground cursor-pointer transition-transform active:scale-95"
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded border border-border bg-surface hover:bg-muted text-foreground cursor-pointer transition-transform active:scale-95"
             title="Keluar"
           >
             <LogOut className="w-3.5 h-3.5" />

@@ -56,7 +56,7 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             placeholder={locale === "en" ? "Search..." : "Cari..."}
-            className="w-full h-9 pl-9 pr-8 text-sm rounded border border-neutral-300 dark:border-neutral-800 bg-surface text-foreground focus:outline-2 focus:outline-foreground"
+            className="w-full h-9 pl-9 pr-8 text-sm rounded border border-border bg-surface text-foreground focus:outline-2 focus:outline-foreground"
           />
           {searchValue && (
             <button
@@ -65,7 +65,7 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
                 setSearchValue("");
                 updateParams({ q: null });
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-foreground"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               aria-label={locale === "en" ? "Clear search" : "Hapus pencarian"}
             >
               <X className="w-3.5 h-3.5" />
@@ -79,9 +79,9 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
             onClick={() => setFilterOpen(!filterOpen)}
             className={`inline-flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded border ${
               currentCategory
-                ? "border-foreground bg-neutral-100 dark:bg-neutral-800 font-semibold"
-                : "border-neutral-300 dark:border-neutral-800 bg-surface"
-            } hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-foreground`}
+                ? "border-foreground bg-foreground text-background font-semibold"
+                : "border-border bg-surface text-foreground hover:bg-muted"
+            } transition-colors cursor-pointer`}
             aria-expanded={filterOpen}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -91,7 +91,7 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
           <select
             value={currentSort}
             onChange={(e) => updateParams({ sort: e.target.value })}
-            className="h-9 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-800 bg-surface text-foreground cursor-pointer focus:outline-2 focus:outline-foreground"
+            className="h-9 px-2 text-xs rounded border border-border bg-surface text-foreground cursor-pointer focus:outline-2 focus:outline-foreground"
             aria-label={locale === "en" ? "Sort items" : "Urutkan item"}
           >
             <option value="newest">{locale === "en" ? "Newest" : "Terbaru"}</option>
@@ -102,14 +102,14 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
       </div>
 
       {filterOpen && (
-        <div className="p-3 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 flex flex-wrap gap-2 animate-in fade-in">
+        <div className="p-3 rounded border border-border bg-muted/40 flex flex-wrap gap-2 animate-in fade-in">
           <button
             type="button"
             onClick={() => updateParams({ category: null })}
-            className={`text-xs px-2.5 py-1 rounded border ${
+            className={`text-xs px-2.5 py-1 rounded border transition-colors cursor-pointer ${
               !currentCategory
                 ? "border-foreground bg-foreground text-background"
-                : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                : "border-border bg-surface text-foreground hover:bg-muted"
             }`}
           >
             {locale === "en" ? "All Categories" : "Semua Kategori"}
@@ -121,10 +121,10 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
                 key={cat.id}
                 type="button"
                 onClick={() => updateParams({ category: cat.slug })}
-                className={`text-xs px-2.5 py-1 rounded border ${
+                className={`text-xs px-2.5 py-1 rounded border transition-colors cursor-pointer ${
                   isSelected
                     ? "border-foreground bg-foreground text-background"
-                    : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                    : "border-border bg-surface text-foreground hover:bg-muted"
                 }`}
               >
                 {locale === "en" ? cat.nameEn : cat.nameId}

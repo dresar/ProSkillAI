@@ -41,7 +41,7 @@ export default async function LoginPage() {
           <h1 className="text-lg font-semibold text-foreground tracking-tight">
             Masuk ke Panel Admin
           </h1>
-          <p className="mt-1 text-xs text-neutral-500 leading-relaxed">
+          <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
             Hanya untuk staf dan editor ProSkillAI yang terdaftar.
           </p>
         </div>
@@ -49,7 +49,7 @@ export default async function LoginPage() {
         <LoginForm />
       </div>
 
-      <div className="text-center text-[11px] text-neutral-400 py-2">
+      <div className="text-center text-[11px] text-muted-foreground py-2">
         <span>&copy; {new Date().getFullYear()} ProSkillAI. Akses terbatas.</span>
       </div>
     </div>

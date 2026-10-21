@@ -124,33 +124,33 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
         </form>
       )}
 
-      <div className="rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface overflow-hidden">
+      <div className="rounded-md border border-border bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500">
+          <thead className="border-b border-border bg-muted/60 text-muted-foreground">
             <tr>
-              <th className="p-3 font-semibold text-foreground">Nama (ID / EN)</th>
-              <th className="p-3 font-semibold text-foreground">Slug</th>
-              <th className="p-3 font-semibold text-foreground">Tipe</th>
-              <th className="p-3 font-semibold text-foreground text-right">Aksi</th>
+              <th className="p-3 font-medium text-foreground">Nama (ID / EN)</th>
+              <th className="p-3 font-medium text-foreground">Slug</th>
+              <th className="p-3 font-medium text-foreground">Tipe</th>
+              <th className="p-3 font-medium text-foreground text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <tbody className="divide-y divide-border">
             {categoriesList.map((cat) => (
-              <tr key={cat.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
+              <tr key={cat.id} className="hover:bg-muted/40 transition-colors">
                 <td className="p-3">
                   <span className="font-medium text-foreground">{cat.nameId}</span>
-                  <span className="text-neutral-400 ml-1.5 font-normal">/ {cat.nameEn}</span>
+                  <span className="text-muted-foreground ml-1.5 font-normal">/ {cat.nameEn}</span>
                 </td>
-                <td className="p-3 font-mono text-neutral-500">{cat.slug}</td>
+                <td className="p-3 font-mono text-muted-foreground">{cat.slug}</td>
                 <td className="p-3">
-                  <span className="px-1.5 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 text-[11px]">
+                  <span className="px-2 py-0.5 rounded border border-border bg-muted text-foreground text-[11px] font-mono">
                     {cat.type}
                   </span>
                 </td>
                 <td className="p-3 text-right">
                   {confirmId === cat.id ? (
                     <div className="inline-flex items-center gap-1.5">
-                      <span className="text-neutral-500">Hapus?</span>
+                      <span className="text-muted-foreground">Hapus?</span>
                       <button
                         type="button"
                         onClick={async () => {
@@ -164,7 +164,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                       <button
                         type="button"
                         onClick={() => setConfirmId(null)}
-                        className="px-2 py-0.5 rounded border border-neutral-300 dark:border-neutral-700"
+                        className="px-2 py-0.5 rounded border border-border text-foreground hover:bg-muted"
                       >
                         Batal
                       </button>
@@ -173,7 +173,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                     <button
                       type="button"
                       onClick={() => setConfirmId(cat.id)}
-                      className="p-1 rounded text-neutral-400 hover:text-foreground"
+                      className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                       title="Hapus Kategori"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

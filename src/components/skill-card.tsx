@@ -28,17 +28,17 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
   return (
     <Link
       href={`/${locale}/skills/${skill.slug}`}
-      className="group block rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="group block rounded-md border border-border bg-surface p-4 hover:border-foreground/30 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       {skill.previewType === "tokens" && Boolean(skill.designTokens) && (
-        <div className="mb-3 flex items-center gap-1.5 p-2 rounded bg-neutral-100 dark:bg-neutral-900 overflow-hidden">
+        <div className="mb-3 flex items-center gap-1.5 p-2 rounded bg-muted overflow-hidden">
           {Array.isArray((skill.designTokens as { colors?: Array<{ hex: string }> })?.colors) &&
             (skill.designTokens as { colors: Array<{ hex: string }> }).colors
               .slice(0, 5)
               .map((c, i) => (
                 <span
                   key={i}
-                  className="w-4 h-4 rounded-xs border border-neutral-300 dark:border-neutral-700"
+                  className="w-4 h-4 rounded-xs border border-border"
                   style={{ backgroundColor: c.hex }}
                   aria-hidden="true"
                 />
@@ -47,7 +47,7 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
       )}
 
       {skill.previewType === "image" && skill.previewImageUrl && (
-        <div className="relative mb-3 aspect-video w-full overflow-hidden rounded bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+        <div className="relative mb-3 aspect-video w-full overflow-hidden rounded bg-muted border border-border">
           <Image
             src={skill.previewImageUrl}
             alt={title}
@@ -63,18 +63,18 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
         {title}
       </h3>
 
-      <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+      <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
         {summary}
       </p>
 
-      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5 truncate">
           {categoryName && <span>{categoryName}</span>}
           {categoryName && <span aria-hidden="true">&bull;</span>}
           <span className="truncate">{sourceLabel}</span>
         </div>
         {skill.copyCount > 0 && (
-          <span className="shrink-0 text-[11px] font-mono text-neutral-400">
+          <span className="shrink-0 text-[11px] font-mono text-muted-foreground">
             {skill.copyCount} {isEn ? "copies" : "salinan"}
           </span>
         )}

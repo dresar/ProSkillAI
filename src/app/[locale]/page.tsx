@@ -63,7 +63,7 @@ export default async function HomePage({ params }: PageProps) {
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground leading-[1.2]">
           {t("title")}
         </h1>
-        <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl">
           {t("subtitle")}
         </p>
 
@@ -71,13 +71,13 @@ export default async function HomePage({ params }: PageProps) {
           <label htmlFor="home-search" className="sr-only">
             {t("searchPlaceholder")}
           </label>
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" aria-hidden="true" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
           <input
             id="home-search"
             name="q"
             type="search"
             placeholder={t("searchPlaceholder")}
-            className="w-full h-11 pl-10 pr-24 text-sm rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground focus:outline-2 focus:outline-foreground shadow-xs"
+            className="w-full h-11 pl-10 pr-24 text-sm rounded border border-border bg-surface text-foreground focus:outline-2 focus:outline-foreground shadow-xs"
           />
           <button
             type="submit"
@@ -89,7 +89,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       <section className="space-y-6" aria-labelledby="skills-heading">
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="flex items-center justify-between pb-2 border-b border-border">
           <div>
             <h2 id="skills-heading" className="text-base font-semibold text-foreground tracking-tight">
               {t("featuredSkills")}
@@ -97,7 +97,7 @@ export default async function HomePage({ params }: PageProps) {
           </div>
           <Link
             href={`/${locale}/skills`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <span>{t("viewAllSkills")}</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -105,7 +105,7 @@ export default async function HomePage({ params }: PageProps) {
         </div>
 
         {publishedSkills.length === 0 ? (
-          <div className="p-8 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-md text-xs text-neutral-500">
+          <div className="p-8 text-center border border-dashed border-border rounded-md text-xs text-muted-foreground">
             {t("emptySkills")}
           </div>
         ) : (
@@ -123,7 +123,7 @@ export default async function HomePage({ params }: PageProps) {
       </section>
 
       <section className="space-y-6" aria-labelledby="prompts-heading">
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="flex items-center justify-between pb-2 border-b border-border">
           <div>
             <h2 id="prompts-heading" className="text-base font-semibold text-foreground tracking-tight">
               {t("latestPrompts")}
@@ -131,7 +131,7 @@ export default async function HomePage({ params }: PageProps) {
           </div>
           <Link
             href={`/${locale}/prompts`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-foreground transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <span>{t("viewAllPrompts")}</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -139,7 +139,7 @@ export default async function HomePage({ params }: PageProps) {
         </div>
 
         {publishedPrompts.length === 0 ? (
-          <div className="p-8 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-md text-xs text-neutral-500">
+          <div className="p-8 text-center border border-dashed border-border rounded-md text-xs text-muted-foreground">
             {t("emptyPrompts")}
           </div>
         ) : (

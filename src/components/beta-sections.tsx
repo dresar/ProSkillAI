@@ -21,12 +21,12 @@ export async function BetaSections() {
   const homeT = await getTranslations("home");
 
   return (
-    <section className="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800" aria-labelledby="beta-heading">
+    <section className="mt-16 pt-12 border-t border-border" aria-labelledby="beta-heading">
       <div className="mb-6">
         <h2 id="beta-heading" className="text-base font-semibold text-foreground tracking-tight">
           {homeT("betaTitle")}
         </h2>
-        <p className="mt-1 text-xs text-neutral-500 leading-relaxed max-w-xl">
+        <p className="mt-1 text-xs text-muted-foreground leading-relaxed max-w-xl">
           {homeT("betaSubtitle")}
         </p>
       </div>
@@ -35,16 +35,16 @@ export async function BetaSections() {
         {BETA_LIST.map(({ key, descKey }) => (
           <div
             key={key}
-            className="p-3.5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30 text-neutral-600 dark:text-neutral-400 select-none"
+            className="p-3.5 rounded-md border border-border bg-muted/30 text-muted-foreground select-none"
             aria-disabled="true"
           >
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-xs font-semibold text-foreground">{t(key)}</h3>
-              <span className="text-[10px] px-1.5 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-neutral-500">
+              <span className="text-[10px] px-1.5 py-0.5 rounded border border-border bg-surface text-muted-foreground">
                 {t("status")}
               </span>
             </div>
-            <p className="mt-1.5 text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-500">
+            <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
               {t(descKey)}
             </p>
           </div>

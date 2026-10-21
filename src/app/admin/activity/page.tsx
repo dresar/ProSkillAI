@@ -14,35 +14,35 @@ export default async function AdminActivityPage() {
         </p>
       </div>
 
-      <div className="rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface overflow-hidden">
+      <div className="rounded-md border border-border bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500">
+          <thead className="border-b border-border bg-muted/60 text-muted-foreground">
             <tr>
-              <th className="p-3 font-semibold text-foreground">Aksi</th>
-              <th className="p-3 font-semibold text-foreground">Pengguna</th>
-              <th className="p-3 font-semibold text-foreground">Tipe Entitas</th>
-              <th className="p-3 font-semibold text-foreground">Waktu</th>
-              <th className="p-3 font-semibold text-foreground">Detail</th>
+              <th className="p-3 font-medium text-foreground">Aksi</th>
+              <th className="p-3 font-medium text-foreground">Pengguna</th>
+              <th className="p-3 font-medium text-foreground">Tipe Entitas</th>
+              <th className="p-3 font-medium text-foreground">Waktu</th>
+              <th className="p-3 font-medium text-foreground">Detail</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <tbody className="divide-y divide-border">
             {logs.map((log) => (
-              <tr key={log.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
+              <tr key={log.id} className="hover:bg-muted/40 transition-colors">
                 <td className="p-3 font-mono font-medium text-foreground">
                   {log.action}
                 </td>
-                <td className="p-3 text-neutral-600 dark:text-neutral-400">
+                <td className="p-3 text-muted-foreground">
                   {log.userEmail || "System"}
                 </td>
                 <td className="p-3">
-                  <span className="px-1.5 py-0.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 text-[11px]">
+                  <span className="px-2 py-0.5 rounded border border-border bg-muted text-foreground text-[11px] font-mono">
                     {log.entityType} {log.entityId ? `(#${log.entityId.slice(0, 8)})` : ""}
                   </span>
                 </td>
-                <td className="p-3 font-mono text-neutral-400 text-[11px]">
+                <td className="p-3 font-mono text-muted-foreground text-[11px]">
                   {new Date(log.createdAt).toLocaleString("id-ID")}
                 </td>
-                <td className="p-3 text-[11px] font-mono text-neutral-500 max-w-xs truncate">
+                <td className="p-3 text-[11px] font-mono text-muted-foreground max-w-xs truncate">
                   {log.details ? JSON.stringify(log.details) : "-"}
                 </td>
               </tr>

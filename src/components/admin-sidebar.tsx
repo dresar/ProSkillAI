@@ -48,7 +48,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
 
   return (
     <>
-      <div className="lg:hidden p-3 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-surface">
+      <div className="lg:hidden p-3 border-b border-border flex items-center justify-between bg-surface">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-foreground shrink-0" width="20" height="20" viewBox="0 0 32 32" fill="none">
             <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
@@ -56,12 +56,12 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
             <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
             <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
           </svg>
-          <span className="font-semibold text-sm">ProSkillAI Admin</span>
+          <span className="font-semibold text-sm text-foreground">ProSkillAI Admin</span>
         </div>
         <button
           type="button"
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-1 rounded border border-neutral-300 dark:border-neutral-700"
+          className="p-1 rounded border border-border text-foreground hover:bg-muted"
           aria-label="Buka menu admin"
         >
           {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -70,14 +70,14 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
 
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-background/80 backdrop-blur-xs flex">
-          <div className="w-64 bg-surface h-full border-r border-neutral-200 dark:border-neutral-800 p-4 space-y-4 flex flex-col justify-between">
+          <div className="w-64 bg-surface h-full border-r border-border p-4 space-y-4 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-800">
-                <span className="font-semibold text-sm">Menu Admin</span>
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <span className="font-semibold text-sm text-foreground">Menu Admin</span>
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
-                  className="p-1 text-neutral-500"
+                  className="p-1 text-muted-foreground hover:text-foreground"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -93,8 +93,8 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
                       onClick={() => setMobileOpen(false)}
                       className={`flex items-center gap-2.5 px-3 py-2 rounded text-xs font-medium transition-colors ${
                         isActive
-                          ? "bg-foreground text-background"
-                          : "text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          ? "bg-foreground text-background font-semibold"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -110,12 +110,12 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       )}
 
       <aside
-        className={`hidden lg:flex flex-col justify-between border-r border-neutral-200 dark:border-neutral-800 bg-surface transition-all duration-200 ${
+        className={`hidden lg:flex flex-col justify-between border-r border-border bg-surface transition-all duration-200 ${
           collapsed ? "w-16" : "w-56"
         } min-h-screen`}
       >
         <div>
-          <div className="h-14 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between px-3.5">
+          <div className="h-14 border-b border-border flex items-center justify-between px-3.5">
             <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
               <svg className="w-6 h-6 shrink-0 text-foreground" width="24" height="24" viewBox="0 0 32 32" fill="none">
                 <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
@@ -124,7 +124,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
                 <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
               </svg>
               {!collapsed && (
-                <span className="font-semibold text-xs tracking-tight truncate">
+                <span className="font-semibold text-xs tracking-tight truncate text-foreground">
                   ProSkillAI
                 </span>
               )}
@@ -133,7 +133,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
             <button
               type="button"
               onClick={toggleCollapse}
-              className="p-1 rounded text-neutral-500 hover:text-foreground cursor-pointer"
+              className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
               aria-label={collapsed ? "Buka sidebar" : "Ciutkan sidebar"}
             >
               {collapsed ? (
@@ -155,8 +155,8 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
                   title={collapsed ? link.label : undefined}
                   className={`flex items-center gap-2.5 px-2.5 py-2 rounded text-xs font-medium transition-colors ${
                     isActive
-                      ? "bg-foreground text-background"
-                      : "text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      ? "bg-foreground text-background font-semibold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   } ${collapsed ? "justify-center" : ""}`}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -167,7 +167,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
           </nav>
         </div>
 
-        <div className="p-3 border-t border-neutral-200 dark:border-neutral-800 text-[11px] text-neutral-500">
+        <div className="p-3 border-t border-border text-[11px] text-muted-foreground">
           {!collapsed && (
             <div className="truncate">
               Role: <span className="font-semibold text-foreground">{userRole}</span>

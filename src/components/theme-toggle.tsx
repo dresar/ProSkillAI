@@ -56,7 +56,7 @@ export function ThemeToggle({ label = "Ganti tema" }: { label?: string }) {
 
   if (!mounted) {
     return (
-      <div className="w-8 h-8 rounded border border-neutral-300 dark:border-neutral-800" />
+      <div className="w-8 h-8 rounded border border-border bg-surface" />
     );
   }
 
@@ -68,7 +68,7 @@ export function ThemeToggle({ label = "Ganti tema" }: { label?: string }) {
       onClick={toggleTheme}
       aria-label={`${label} (${isDark ? "Gelap" : "Terang"})`}
       title={`${label} (${isDark ? "Gelap" : "Terang"})`}
-      className="inline-flex items-center justify-center w-8 h-8 rounded border border-neutral-300 dark:border-neutral-800 bg-surface hover:bg-surface-hover text-foreground transition-transform active:scale-95 cursor-pointer"
+      className="inline-flex items-center justify-center w-8 h-8 rounded border border-border bg-surface hover:bg-muted text-foreground transition-transform active:scale-95 cursor-pointer"
     >
       {isDark ? (
         <Sun className="w-4 h-4 text-foreground" aria-hidden="true" />

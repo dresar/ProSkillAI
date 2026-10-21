@@ -34,31 +34,31 @@ export function PromptsTable({ promptsList }: PromptsTableProps) {
 
   return (
     <div className="space-y-3">
-      <div className="hidden md:block rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface overflow-hidden">
+      <div className="hidden md:block rounded-md border border-border bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500">
+          <thead className="border-b border-border bg-muted/60 text-muted-foreground">
             <tr>
-              <th className="p-3 font-semibold text-foreground">Judul & Slug</th>
-              <th className="p-3 font-semibold text-foreground">Kategori</th>
-              <th className="p-3 font-semibold text-foreground">Variabel</th>
-              <th className="p-3 font-semibold text-foreground">Status</th>
-              <th className="p-3 font-semibold text-foreground text-right">Aksi</th>
+              <th className="p-3 font-medium text-foreground">Judul & Slug</th>
+              <th className="p-3 font-medium text-foreground">Kategori</th>
+              <th className="p-3 font-medium text-foreground">Variabel</th>
+              <th className="p-3 font-medium text-foreground">Status</th>
+              <th className="p-3 font-medium text-foreground text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <tbody className="divide-y divide-border">
             {promptsList.map((prompt) => {
               const vars = Array.isArray(prompt.variables) ? prompt.variables : [];
               return (
-                <tr key={prompt.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
+                <tr key={prompt.id} className="hover:bg-muted/40 transition-colors">
                   <td className="p-3">
                     <div className="font-medium text-foreground">{prompt.titleId}</div>
-                    <div className="text-[11px] font-mono text-neutral-400">/{prompt.slug}</div>
+                    <div className="text-[11px] font-mono text-muted-foreground">/{prompt.slug}</div>
                   </td>
-                  <td className="p-3 text-neutral-600 dark:text-neutral-400">
+                  <td className="p-3 text-muted-foreground">
                     {prompt.category?.nameId || "-"}
                   </td>
                   <td className="p-3">
-                    <span className="text-[11px] font-mono text-neutral-500">
+                    <span className="text-[11px] font-mono text-muted-foreground">
                       {vars.length} variabel
                     </span>
                   </td>
@@ -66,10 +66,10 @@ export function PromptsTable({ promptsList }: PromptsTableProps) {
                     <span
                       className={`text-[11px] px-2 py-0.5 rounded border font-medium ${
                         prompt.status === "published"
-                          ? "border-neutral-400 bg-neutral-100 dark:bg-neutral-800 text-foreground"
+                          ? "border-border bg-foreground text-background font-medium"
                           : prompt.status === "draft"
-                          ? "border-neutral-200 dark:border-neutral-800 text-neutral-500"
-                          : "border-neutral-200 dark:border-neutral-800 line-through text-neutral-400"
+                          ? "border-border border-dashed text-muted-foreground"
+                          : "border-border text-muted-foreground line-through"
                       }`}
                     >
                       {prompt.status}

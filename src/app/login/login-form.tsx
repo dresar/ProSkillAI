@@ -22,7 +22,7 @@ export function LoginForm() {
       {state?.error && (
         <div
           role="alert"
-          className="p-3 rounded border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-foreground text-xs flex items-start gap-2"
+          className="p-3 rounded border border-border bg-muted text-foreground text-xs flex items-start gap-2"
         >
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-foreground" />
           <span>{state.error}</span>
@@ -32,7 +32,7 @@ export function LoginForm() {
       <div className="space-y-1.5">
         <label
           htmlFor="email"
-          className="block text-xs font-medium text-neutral-700 dark:text-neutral-300"
+          className="block text-xs font-medium text-foreground"
         >
           Email
         </label>
@@ -44,14 +44,14 @@ export function LoginForm() {
           autoComplete="email"
           placeholder="admin@proskillai.dev"
           disabled={isPending}
-          className="w-full h-9 px-3 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground focus:outline-2 focus:outline-foreground disabled:opacity-50"
+          className="w-full h-9 px-3 text-xs rounded border border-border bg-surface text-foreground focus:outline-2 focus:outline-foreground disabled:opacity-50"
         />
       </div>
 
       <div className="space-y-1.5">
         <label
           htmlFor="password"
-          className="block text-xs font-medium text-neutral-700 dark:text-neutral-300"
+          className="block text-xs font-medium text-foreground"
         >
           Password
         </label>
@@ -62,7 +62,7 @@ export function LoginForm() {
           required
           autoComplete="current-password"
           disabled={isPending}
-          className="w-full h-9 px-3 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground focus:outline-2 focus:outline-foreground disabled:opacity-50"
+          className="w-full h-9 px-3 text-xs rounded border border-border bg-surface text-foreground focus:outline-2 focus:outline-foreground disabled:opacity-50"
         />
       </div>
 

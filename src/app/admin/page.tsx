@@ -57,7 +57,7 @@ export default async function AdminOverviewPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/admin/github-import"
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-neutral-300 dark:border-neutral-700 bg-surface hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground transition-transform active:scale-95"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-border bg-surface hover:bg-muted text-foreground transition-transform active:scale-95"
           >
             <DownloadCloud className="w-3.5 h-3.5" />
             <span>Impor GitHub</span>
@@ -79,56 +79,56 @@ export default async function AdminOverviewPage() {
             <Link
               key={c.label}
               href={c.href}
-              className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors block"
+              className="p-4 rounded-md border border-border bg-surface hover:border-foreground/30 transition-colors block"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-neutral-500 font-medium">{c.label}</span>
-                <Icon className="w-4 h-4 text-neutral-400" />
+                <span className="text-xs text-muted-foreground font-medium">{c.label}</span>
+                <Icon className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="mt-2 text-2xl font-bold tracking-tight text-foreground font-mono">
                 {c.value}
               </div>
-              <div className="mt-1 text-[11px] text-neutral-500">{c.detail}</div>
+              <div className="mt-1 text-[11px] text-muted-foreground">{c.detail}</div>
             </Link>
           );
         })}
       </div>
 
-      <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="p-4 rounded-md border border-border bg-surface space-y-3">
+        <div className="flex items-center justify-between pb-2 border-b border-border">
           <h3 className="text-xs font-semibold text-foreground tracking-tight">
             Log Aktivitas Terbaru
           </h3>
           <Link
             href="/admin/activity"
-            className="text-xs text-neutral-500 hover:text-foreground transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Lihat semua
           </Link>
         </div>
 
         {recentLogs.length === 0 ? (
-          <div className="p-6 text-center text-xs text-neutral-500">
+          <div className="p-6 text-center text-xs text-muted-foreground">
             Belum ada aktivitas tercatat di audit log.
           </div>
         ) : (
-          <div className="divide-y divide-neutral-100 dark:divide-neutral-900 text-xs">
+          <div className="divide-y divide-border text-xs">
             {recentLogs.map((log) => (
               <div key={log.id} className="py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="space-x-2">
                   <span className="font-mono text-[11px] font-semibold text-foreground">
                     {log.action}
                   </span>
-                  <span className="text-neutral-500">
+                  <span className="text-muted-foreground">
                     oleh {log.userEmail || "Sistem"}
                   </span>
                   {log.entityType && (
-                    <span className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-[10px] text-neutral-600 dark:text-neutral-400 font-mono">
+                    <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-foreground font-mono border border-border">
                       {log.entityType}
                     </span>
                   )}
                 </div>
-                <div className="text-[11px] font-mono text-neutral-400">
+                <div className="text-[11px] font-mono text-muted-foreground">
                   {new Date(log.createdAt).toLocaleString("id-ID")}
                 </div>
               </div>

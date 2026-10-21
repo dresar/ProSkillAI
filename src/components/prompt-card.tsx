@@ -28,24 +28,24 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
   return (
     <Link
       href={`/${locale}/prompts/${prompt.slug}`}
-      className="group block rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface p-4 hover:border-neutral-400 dark:hover:border-neutral-600 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="group block rounded-md border border-border bg-surface p-4 hover:border-foreground/30 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       <h3 className="text-sm font-semibold text-foreground tracking-tight group-hover:underline">
         {title}
       </h3>
 
-      <p className="mt-1 text-xs text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+      <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
         {description}
       </p>
 
-      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <div className="flex items-center gap-2 truncate">
           {categoryName && <span>{categoryName}</span>}
           {categoryName && varCountText && <span aria-hidden="true">&bull;</span>}
           {varCountText && <span>{varCountText}</span>}
         </div>
         {prompt.copyCount > 0 && (
-          <span className="shrink-0 text-[11px] font-mono text-neutral-400">
+          <span className="shrink-0 text-[11px] font-mono text-muted-foreground">
             {prompt.copyCount} {isEn ? "copies" : "salinan"}
           </span>
         )}

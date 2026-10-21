@@ -119,16 +119,16 @@ export function GitHubImportClient() {
 
       {scanResult && (
         <div className="space-y-4">
-          <div className="p-3.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 text-xs space-y-1">
+          <div className="p-3.5 rounded border border-border bg-muted/40 text-xs space-y-1">
             <div className="font-semibold text-foreground">
               {scanResult.repoInfo.owner} / {scanResult.repoInfo.repo}
             </div>
-            <div className="text-neutral-500 flex flex-wrap gap-3 text-[11px]">
-              <span>Branch: <span className="font-mono">{scanResult.repoInfo.defaultBranch}</span></span>
+            <div className="text-muted-foreground flex flex-wrap gap-3 text-[11px]">
+              <span>Branch: <span className="font-mono text-foreground">{scanResult.repoInfo.defaultBranch}</span></span>
               <span>&bull;</span>
               <span>
                 Lisensi:{" "}
-                <span className="font-semibold">
+                <span className="font-semibold text-foreground">
                   {scanResult.repoInfo.licenseSpdx || "Tidak Terdeteksi"}
                 </span>
               </span>
@@ -149,17 +149,17 @@ export function GitHubImportClient() {
               return (
                 <div
                   key={cand.path}
-                  className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                  className="p-4 rounded-md border border-border bg-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
                 >
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-neutral-500 shrink-0" />
+                      <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span className="font-semibold text-foreground">{cand.name}</span>
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded border ${
+                        className={`text-[10px] px-2 py-0.5 rounded font-mono border ${
                           cand.isPermissive
-                            ? "border-neutral-300 dark:border-neutral-700 text-foreground"
-                            : "border-neutral-300 dark:border-neutral-800 text-neutral-500"
+                            ? "border-border bg-muted text-foreground"
+                            : "border-border border-dashed text-muted-foreground"
                         }`}
                       >
                         {cand.isPermissive
@@ -168,11 +168,11 @@ export function GitHubImportClient() {
                       </span>
                     </div>
 
-                    <div className="text-neutral-500 text-[11px] font-mono truncate">
+                    <div className="text-muted-foreground text-[11px] font-mono truncate">
                       {cand.path}
                     </div>
 
-                    <p className="text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                    <p className="text-muted-foreground line-clamp-2 leading-relaxed">
                       {cand.description}
                     </p>
                   </div>
@@ -181,7 +181,7 @@ export function GitHubImportClient() {
                     {alreadyImportedId ? (
                       <Link
                         href={`/admin/skills/${alreadyImportedId}/edit`}
-                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-neutral-300 dark:border-neutral-700 bg-surface hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground"
+                        className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-border bg-surface hover:bg-muted text-foreground transition-colors"
                       >
                         <Check className="w-3.5 h-3.5" />
                         <span>Edit Draft</span>

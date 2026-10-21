@@ -5,8 +5,8 @@ export async function PublicFooter({ locale }: { locale: string }) {
   const t = await getTranslations("footer");
 
   return (
-    <footer className="w-full border-t border-neutral-200 dark:border-neutral-800 bg-background mt-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-400">
+    <footer className="w-full border-t border-border bg-background mt-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-2">
           <span>&copy; {new Date().getFullYear()} ProSkillAI.</span>
           <span>{t("rights")}</span>
@@ -27,7 +27,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
           </Link>
           <Link
             href="/login"
-            className="hover:text-foreground transition-colors opacity-75"
+            className="hover:text-foreground transition-colors opacity-80"
           >
             Admin
           </Link>

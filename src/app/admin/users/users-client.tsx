@@ -122,36 +122,36 @@ export function UsersClient({ usersList }: { usersList: UserType[] }) {
         </form>
       )}
 
-      <div className="rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface overflow-hidden">
+      <div className="rounded-md border border-border bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 text-neutral-500">
+          <thead className="border-b border-border bg-muted/60 text-muted-foreground">
             <tr>
-              <th className="p-3 font-semibold text-foreground">Nama & Email</th>
-              <th className="p-3 font-semibold text-foreground">Peran</th>
-              <th className="p-3 font-semibold text-foreground">Terdaftar</th>
-              <th className="p-3 font-semibold text-foreground text-right">Ganti Peran</th>
+              <th className="p-3 font-medium text-foreground">Nama & Email</th>
+              <th className="p-3 font-medium text-foreground">Peran</th>
+              <th className="p-3 font-medium text-foreground">Terdaftar</th>
+              <th className="p-3 font-medium text-foreground text-right">Ganti Peran</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <tbody className="divide-y divide-border">
             {usersList.map((u) => (
-              <tr key={u.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30">
+              <tr key={u.id} className="hover:bg-muted/40 transition-colors">
                 <td className="p-3">
                   <div className="font-medium text-foreground flex items-center gap-1.5">
                     {u.role === "admin" ? (
                       <Shield className="w-3.5 h-3.5 text-foreground shrink-0" />
                     ) : (
-                      <User className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                      <User className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                     )}
                     <span>{u.name}</span>
                   </div>
-                  <div className="font-mono text-[11px] text-neutral-500">{u.email}</div>
+                  <div className="font-mono text-[11px] text-muted-foreground">{u.email}</div>
                 </td>
                 <td className="p-3">
-                  <span className="px-2 py-0.5 rounded border border-neutral-300 dark:border-neutral-700 font-medium">
+                  <span className="px-2 py-0.5 rounded border border-border bg-muted text-foreground font-mono text-[11px]">
                     {u.role}
                   </span>
                 </td>
-                <td className="p-3 text-neutral-500 text-[11px] font-mono">
+                <td className="p-3 text-muted-foreground text-[11px] font-mono">
                   {new Date(u.createdAt).toLocaleDateString("id-ID")}
                 </td>
                 <td className="p-3 text-right">
@@ -160,7 +160,7 @@ export function UsersClient({ usersList }: { usersList: UserType[] }) {
                     onChange={(e) =>
                       updateUserRoleAction(u.id, e.target.value as "admin" | "editor")
                     }
-                    className="h-7 px-2 text-[11px] rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                    className="h-7 px-2 text-[11px] rounded border border-border bg-surface text-foreground cursor-pointer focus:outline-2 focus:outline-foreground"
                   >
                     <option value="editor">Editor</option>
                     <option value="admin">Admin</option>

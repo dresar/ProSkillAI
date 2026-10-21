@@ -27,14 +27,14 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-        <div className="flex items-center gap-1.5 border border-neutral-200 dark:border-neutral-800 rounded p-0.5 bg-neutral-50 dark:bg-neutral-900">
+        <div className="flex items-center gap-1.5 border border-border rounded p-0.5 bg-muted">
           <button
             type="button"
             onClick={() => setViewport("desktop")}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
               viewport === "desktop"
                 ? "bg-foreground text-background font-medium"
-                : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface"
             }`}
             aria-label="Desktop preview"
           >
@@ -44,10 +44,10 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
           <button
             type="button"
             onClick={() => setViewport("mobile")}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
               viewport === "mobile"
                 ? "bg-foreground text-background font-medium"
-                : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface"
             }`}
             aria-label="Mobile preview"
           >
@@ -57,14 +57,14 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
         </div>
 
         {skill.previewType === "html" && (
-          <div className="flex items-center gap-1.5 border border-neutral-200 dark:border-neutral-800 rounded p-0.5 bg-neutral-50 dark:bg-neutral-900">
+          <div className="flex items-center gap-1.5 border border-border rounded p-0.5 bg-muted">
             <button
               type="button"
               onClick={() => setPreviewTheme("light")}
-              className={`px-2 py-1 rounded text-xs ${
+              className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
                 previewTheme === "light"
                   ? "bg-foreground text-background font-medium"
-                  : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface"
               }`}
             >
               {locale === "en" ? "Light" : "Terang"}
@@ -72,10 +72,10 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
             <button
               type="button"
               onClick={() => setPreviewTheme("dark")}
-              className={`px-2 py-1 rounded text-xs ${
+              className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
                 previewTheme === "dark"
                   ? "bg-foreground text-background font-medium"
-                  : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface"
               }`}
             >
               {locale === "en" ? "Dark" : "Gelap"}

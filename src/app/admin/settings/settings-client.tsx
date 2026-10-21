@@ -58,8 +58,8 @@ export function SettingsClient({ initialFlags }: SettingsClientProps) {
         </button>
       </div>
 
-      <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-4">
-        <h3 className="text-xs font-semibold text-foreground tracking-tight pb-2 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="p-4 rounded-md border border-border bg-surface space-y-4">
+        <h3 className="text-xs font-semibold text-foreground tracking-tight pb-2 border-b border-border">
           Status Modul Rilis Mendatang
         </h3>
 
@@ -69,11 +69,11 @@ export function SettingsClient({ initialFlags }: SettingsClientProps) {
             return (
               <div
                 key={item.key}
-                className="flex items-center justify-between p-3 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/40 text-xs"
+                className="flex items-center justify-between p-3 rounded border border-border bg-muted/40 text-xs"
               >
                 <div>
                   <div className="font-semibold text-foreground">{item.label}</div>
-                  <div className="text-[11px] text-neutral-500">{item.desc}</div>
+                  <div className="text-[11px] text-muted-foreground">{item.desc}</div>
                 </div>
 
                 <button
@@ -82,7 +82,7 @@ export function SettingsClient({ initialFlags }: SettingsClientProps) {
                   className={`h-6 px-3 rounded text-[11px] font-medium border transition-colors cursor-pointer ${
                     isEnabled
                       ? "border-foreground bg-foreground text-background"
-                      : "border-neutral-300 dark:border-neutral-700 bg-surface text-neutral-500"
+                      : "border-border bg-surface text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {isEnabled ? "Aktif" : "Nonaktif (Beta)"}
