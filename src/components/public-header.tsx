@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
@@ -9,7 +10,11 @@ import { Menu, X } from "lucide-react";
 
 export function PublicHeader({ locale }: { locale: string }) {
   const t = useTranslations("nav");
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const isSkills = pathname.startsWith(`/${locale}/skills`);
+  const isPrompts = pathname.startsWith(`/${locale}/prompts`);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,13 +53,21 @@ export function PublicHeader({ locale }: { locale: string }) {
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium" aria-label="Main navigation">
           <Link
             href={`/${locale}/skills`}
-            className="text-neutral-600 dark:text-neutral-400 hover:text-foreground transition-colors"
+            className={`transition-colors ${
+              isSkills
+                ? "text-foreground font-semibold"
+                : "text-neutral-500 hover:text-foreground"
+            }`}
           >
             {t("skills")}
           </Link>
           <Link
             href={`/${locale}/prompts`}
-            className="text-neutral-600 dark:text-neutral-400 hover:text-foreground transition-colors"
+            className={`transition-colors ${
+              isPrompts
+                ? "text-foreground font-semibold"
+                : "text-neutral-500 hover:text-foreground"
+            }`}
           >
             {t("prompts")}
           </Link>
@@ -78,18 +91,26 @@ export function PublicHeader({ locale }: { locale: string }) {
 
       {mobileOpen && (
         <div className="md:hidden border-b border-neutral-200 dark:border-neutral-800 bg-background px-4 py-4 space-y-3 animate-in fade-in slide-in-from-top-2">
-          <nav className="flex flex-col space-y-2 text-sm font-medium" aria-label="Mobile navigation">
+          <nav className="flex flex-col space-y-1 text-sm font-medium" aria-label="Mobile navigation">
             <Link
               href={`/${locale}/skills`}
               onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-900 text-foreground"
+              className={`px-3 py-2 rounded text-xs transition-colors ${
+                isSkills
+                  ? "bg-neutral-100 dark:bg-neutral-900 text-foreground font-semibold"
+                  : "text-neutral-500 hover:text-foreground"
+              }`}
             >
               {t("skills")}
             </Link>
             <Link
               href={`/${locale}/prompts`}
               onClick={() => setMobileOpen(false)}
-              className="px-3 py-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-900 text-foreground"
+              className={`px-3 py-2 rounded text-xs transition-colors ${
+                isPrompts
+                  ? "bg-neutral-100 dark:bg-neutral-900 text-foreground font-semibold"
+                  : "text-neutral-500 hover:text-foreground"
+              }`}
             >
               {t("prompts")}
             </Link>

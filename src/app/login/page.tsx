@@ -25,7 +25,7 @@ export default async function LoginPage() {
     <div className="min-h-screen flex flex-col justify-between p-4 sm:p-6 bg-background">
       <div className="flex justify-between items-center max-w-sm w-full mx-auto">
         <Link href="/id" className="flex items-center gap-2 text-foreground">
-          <svg className="w-5 h-5 text-foreground" viewBox="0 0 32 32" fill="none">
+          <svg className="w-5 h-5 text-foreground shrink-0" width="20" height="20" viewBox="0 0 32 32" fill="none">
             <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
             <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
             <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
