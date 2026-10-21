@@ -50,7 +50,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
     <>
       <div className="lg:hidden p-3 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between bg-surface">
         <div className="flex items-center gap-2">
-          <svg className="w-5 h-5 text-foreground" viewBox="0 0 32 32" fill="none">
+          <svg className="w-5 h-5 text-foreground shrink-0" width="20" height="20" viewBox="0 0 32 32" fill="none">
             <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
             <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
             <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
@@ -117,7 +117,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
         <div>
           <div className="h-14 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between px-3.5">
             <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
-              <svg className="w-6 h-6 shrink-0 text-foreground" viewBox="0 0 32 32" fill="none">
+              <svg className="w-6 h-6 shrink-0 text-foreground" width="24" height="24" viewBox="0 0 32 32" fill="none">
                 <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
                 <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
                 <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
