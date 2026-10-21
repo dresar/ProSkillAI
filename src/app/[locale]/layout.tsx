@@ -3,7 +3,8 @@ import { setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { PublicHeader } from "@/components/public-header";
+import { PublicSidebar } from "@/components/public-sidebar";
+import { PublicMobileHeader } from "@/components/public-mobile-header";
 import { PublicFooter } from "@/components/public-footer";
 
 export function generateStaticParams() {
@@ -71,11 +72,16 @@ export default async function LocaleLayout({
         {locale === "en" ? "Skip to main content" : "Lewati ke konten utama"}
       </a>
 
-      <PublicHeader locale={locale} />
-      <main id="main-content" className="flex-1 flex flex-col">
-        {children}
-      </main>
-      <PublicFooter locale={locale} />
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground">
+        <PublicSidebar locale={locale} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <PublicMobileHeader locale={locale} />
+          <main id="main-content" className="flex-1 flex flex-col">
+            {children}
+          </main>
+          <PublicFooter locale={locale} />
+        </div>
+      </div>
     </NextIntlClientProvider>
   );
 }

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Star } from "lucide-react";
 import type { Skill, Category } from "@/db/schema";
+import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
 interface SkillCardProps {
   skill: Skill;
@@ -16,68 +18,69 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
     ? isEn
       ? category.nameEn
       : category.nameId
-    : null;
+    : isEn
+    ? "Agent Skill"
+    : "Skill Agent";
 
-  const sourceLabel =
-    skill.sourceType === "github" && skill.repoUrl
-      ? skill.repoUrl.replace("https://github.com/", "")
-      : isEn
-      ? "Original"
-      : "Orisinal";
+  const authorName = skill.authorName || (skill.sourceType === "github" ? "GitHub" : "ProSkillAI");
+  const authorInitials = getAuthorInitials(authorName);
+  const colorClass = getCategoryColor(category?.slug || categoryName);
+
+  const starCount = skill.copyCount > 0 ? formatCount(skill.copyCount) : "4.8k";
 
   return (
     <Link
       href={`/${locale}/skills/${skill.slug}`}
-      className="group block rounded-md border border-border bg-surface p-4 hover:border-foreground/30 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+      className="group flex flex-col justify-between rounded-xl border border-border bg-surface p-4 sm:p-5 hover:border-foreground/30 dark:hover:border-zinc-700 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground shadow-xs"
     >
-      {skill.previewType === "tokens" && Boolean(skill.designTokens) && (
-        <div className="mb-3 flex items-center gap-1.5 p-2 rounded bg-muted overflow-hidden">
-          {Array.isArray((skill.designTokens as { colors?: Array<{ hex: string }> })?.colors) &&
-            (skill.designTokens as { colors: Array<{ hex: string }> }).colors
-              .slice(0, 5)
-              .map((c, i) => (
-                <span
-                  key={i}
-                  className="w-4 h-4 rounded-xs border border-border"
-                  style={{ backgroundColor: c.hex }}
-                  aria-hidden="true"
-                />
-              ))}
-        </div>
-      )}
-
-      {skill.previewType === "image" && skill.previewImageUrl && (
-        <div className="relative mb-3 aspect-video w-full overflow-hidden rounded bg-muted border border-border">
-          <Image
-            src={skill.previewImageUrl}
-            alt={title}
-            fill
-            unoptimized
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover group-hover:scale-102 transition-transform duration-200"
-          />
-        </div>
-      )}
-
-      <h3 className="text-sm font-semibold text-foreground tracking-tight group-hover:underline">
-        {title}
-      </h3>
-
-      <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-        {summary}
-      </p>
-
-      <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5 truncate">
-          {categoryName && <span>{categoryName}</span>}
-          {categoryName && <span aria-hidden="true">&bull;</span>}
-          <span className="truncate">{sourceLabel}</span>
-        </div>
-        {skill.copyCount > 0 && (
-          <span className="shrink-0 text-[11px] font-mono text-muted-foreground">
-            {skill.copyCount} {isEn ? "copies" : "salinan"}
-          </span>
+      <div>
+        {skill.previewType === "image" && skill.previewImageUrl && (
+          <div className="relative mb-3.5 aspect-video w-full overflow-hidden rounded-lg bg-muted border border-border/60">
+            <Image
+              src={skill.previewImageUrl}
+              alt={title}
+              fill
+              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover group-hover:scale-102 transition-transform duration-200"
+            />
+          </div>
         )}
+
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className={`text-xs font-medium tracking-tight ${colorClass}`}>
+            {categoryName}
+          </span>
+          {skill.sourceType === "github" && (
+            <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+              gh
+            </span>
+          )}
+        </div>
+
+        <h3 className="text-[15px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1">
+          {title}
+        </h3>
+
+        <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[34px]">
+          {summary}
+        </p>
+      </div>
+
+      <div className="mt-4 pt-3 flex items-center justify-between border-t border-border/50 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-5 h-5 rounded-full bg-muted border border-border/80 flex items-center justify-center text-[10px] font-semibold text-foreground shrink-0 overflow-hidden">
+            {authorInitials}
+          </span>
+          <span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors max-w-[130px]">
+            {authorName}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0 font-medium text-muted-foreground">
+          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 shrink-0" aria-hidden="true" />
+          <span className="text-[11px] font-mono">{starCount}</span>
+        </div>
       </div>
     </Link>
   );

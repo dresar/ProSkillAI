@@ -16,7 +16,7 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
 
   if (skill.previewType === "none" || (!skill.previewHtml && !skill.previewImageUrl && !skill.designTokens)) {
     return (
-      <div className="p-8 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-md text-neutral-500 text-xs">
+      <div className="p-8 text-center border border-dashed border-border rounded-xl text-muted-foreground text-xs">
         {locale === "en"
           ? "This skill contains textual guidelines and does not require a visual interface preview."
           : "Skill ini memuat panduan teks murni dan tidak memerlukan pratinjau antarmuka visual."}
@@ -27,11 +27,11 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
-        <div className="flex items-center gap-1.5 border border-border rounded p-0.5 bg-muted">
+        <div className="flex items-center gap-1.5 border border-border rounded-lg p-0.5 bg-muted">
           <button
             type="button"
             onClick={() => setViewport("desktop")}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
               viewport === "desktop"
                 ? "bg-foreground text-background font-medium"
                 : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -44,7 +44,7 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
           <button
             type="button"
             onClick={() => setViewport("mobile")}
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs transition-colors cursor-pointer ${
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
               viewport === "mobile"
                 ? "bg-foreground text-background font-medium"
                 : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -57,11 +57,11 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
         </div>
 
         {skill.previewType === "html" && (
-          <div className="flex items-center gap-1.5 border border-border rounded p-0.5 bg-muted">
+          <div className="flex items-center gap-1.5 border border-border rounded-lg p-0.5 bg-muted">
             <button
               type="button"
               onClick={() => setPreviewTheme("light")}
-              className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                 previewTheme === "light"
                   ? "bg-foreground text-background font-medium"
                   : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -72,7 +72,7 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
             <button
               type="button"
               onClick={() => setPreviewTheme("dark")}
-              className={`px-2 py-1 rounded text-xs transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md text-xs transition-colors cursor-pointer ${
                 previewTheme === "dark"
                   ? "bg-foreground text-background font-medium"
                   : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -84,14 +84,14 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
         )}
       </div>
 
-      <div className="w-full flex justify-center bg-neutral-100 dark:bg-neutral-950 p-4 rounded-md border border-neutral-200 dark:border-neutral-800 overflow-x-auto min-h-[360px]">
+      <div className="w-full flex justify-center bg-muted/30 p-4 rounded-xl border border-border overflow-x-auto min-h-[360px]">
         <div
           className={`transition-all duration-300 w-full ${
             viewport === "mobile" ? "max-w-[390px]" : "max-w-full"
           }`}
         >
           {skill.previewType === "html" && skill.previewHtml && (
-            <div className="w-full h-[480px] rounded border border-neutral-300 dark:border-neutral-800 bg-white overflow-hidden shadow-xs">
+            <div className="w-full h-[480px] rounded-lg border border-border bg-white overflow-hidden shadow-xs">
               <iframe
                 title="Skill Preview"
                 sandbox=""
@@ -106,7 +106,7 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
           )}
 
           {skill.previewType === "image" && skill.previewImageUrl && (
-            <div className="w-full rounded border border-neutral-200 dark:border-neutral-800 overflow-hidden bg-surface">
+            <div className="w-full rounded-lg border border-border overflow-hidden bg-surface">
               <Image
                 src={skill.previewImageUrl}
                 alt={locale === "en" ? skill.titleEn : skill.titleId}
@@ -119,22 +119,22 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
           )}
 
           {skill.previewType === "tokens" && Boolean(skill.designTokens) && (
-            <div className="w-full p-6 rounded border border-neutral-200 dark:border-neutral-800 bg-surface text-foreground space-y-6">
+            <div className="w-full p-6 rounded-lg border border-border bg-surface text-foreground space-y-6">
               {Array.isArray((skill.designTokens as { colors?: Array<{ name: string; hex: string; darkHex?: string }> })?.colors) && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                     {locale === "en" ? "Color Tokens" : "Token Warna"}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {(skill.designTokens as { colors: Array<{ name: string; hex: string; darkHex?: string }> }).colors.map(
                       (c, i) => (
-                        <div key={i} className="p-2.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 text-xs">
+                        <div key={i} className="p-2.5 rounded-lg border border-border bg-muted/40 text-xs">
                           <div
-                            className="w-full h-8 rounded-xs border border-neutral-300 dark:border-neutral-700 mb-2"
+                            className="w-full h-8 rounded-md border border-border mb-2"
                             style={{ backgroundColor: c.hex }}
                           />
                           <div className="font-medium text-foreground">{c.name}</div>
-                          <div className="font-mono text-neutral-500 text-[11px]">{c.hex}</div>
+                          <div className="font-mono text-muted-foreground text-[11px]">{c.hex}</div>
                         </div>
                       )
                     )}
@@ -144,14 +144,14 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
 
               {Array.isArray((skill.designTokens as { typography?: Array<{ label: string; value: string }> })?.typography) && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                     {locale === "en" ? "Typography" : "Tipografi"}
                   </h4>
                   <div className="space-y-2 text-xs">
                     {(skill.designTokens as { typography: Array<{ label: string; value: string }> }).typography.map(
                       (t, i) => (
-                        <div key={i} className="p-2.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 flex justify-between items-center">
-                          <span className="text-neutral-500">{t.label}</span>
+                        <div key={i} className="p-2.5 rounded-lg border border-border bg-muted/40 flex justify-between items-center">
+                          <span className="text-muted-foreground">{t.label}</span>
                           <span className="font-mono text-foreground">{t.value}</span>
                         </div>
                       )
@@ -162,12 +162,12 @@ export function SkillPreviewViewer({ skill, locale }: SkillPreviewViewerProps) {
 
               {Array.isArray((skill.designTokens as { radius?: string[] })?.radius) && (
                 <div>
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                     {locale === "en" ? "Radius Scale" : "Skala Radius"}
                   </h4>
                   <div className="flex gap-2 flex-wrap text-xs">
                     {(skill.designTokens as { radius: string[] }).radius.map((r, i) => (
-                      <span key={i} className="px-3 py-1.5 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 font-mono">
+                      <span key={i} className="px-3 py-1.5 rounded-md border border-border bg-muted/40 font-mono">
                         {r}
                       </span>
                     ))}

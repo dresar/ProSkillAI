@@ -21,9 +21,9 @@ export async function BetaSections() {
   const homeT = await getTranslations("home");
 
   return (
-    <section className="mt-16 pt-12 border-t border-border" aria-labelledby="beta-heading">
-      <div className="mb-6">
-        <h2 id="beta-heading" className="text-base font-semibold text-foreground tracking-tight">
+    <section className="mt-14 pt-8 border-t border-border" aria-labelledby="beta-heading">
+      <div className="mb-5">
+        <h2 id="beta-heading" className="text-base sm:text-lg font-semibold text-foreground tracking-tight">
           {homeT("betaTitle")}
         </h2>
         <p className="mt-1 text-xs text-muted-foreground leading-relaxed max-w-xl">
@@ -35,12 +35,12 @@ export async function BetaSections() {
         {BETA_LIST.map(({ key, descKey }) => (
           <div
             key={key}
-            className="p-3.5 rounded-md border border-border bg-muted/30 text-muted-foreground select-none"
+            className="p-4 rounded-xl border border-border bg-muted/20 text-muted-foreground select-none"
             aria-disabled="true"
           >
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-xs font-semibold text-foreground">{t(key)}</h3>
-              <span className="text-[10px] px-1.5 py-0.5 rounded border border-border bg-surface text-muted-foreground">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/60">
                 {t("status")}
               </span>
             </div>

@@ -90,7 +90,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 md:py-14 space-y-8">
+    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -99,7 +99,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
       <div className="space-y-4">
         <Link
           href={`/${locale}/prompts`}
-          className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{isEn ? "Back to Prompts" : "Kembali ke Katalog Prompts"}</span>
@@ -107,18 +107,18 @@ export default async function PromptDetailPage({ params }: PageProps) {
 
         <div className="space-y-2">
           {categoryName && (
-            <div className="text-xs font-medium text-neutral-500">
+            <div className="text-xs font-medium text-muted-foreground">
               {categoryName}
             </div>
           )}
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {title}
           </h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
             {description}
           </p>
           {prompt.copyCount > 0 && (
-            <div className="text-xs font-mono text-neutral-500 pt-1">
+            <div className="text-xs font-mono text-muted-foreground pt-1">
               {prompt.copyCount} {isEn ? "copies recorded" : "kali disalin"}
             </div>
           )}
@@ -126,9 +126,9 @@ export default async function PromptDetailPage({ params }: PageProps) {
       </div>
 
       {skill && (
-        <div className="p-3.5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 flex items-center justify-between text-xs">
+        <div className="p-3.5 rounded-xl border border-border bg-muted/30 flex items-center justify-between text-xs">
           <div>
-            <span className="text-neutral-500 mr-2">{t("relatedSkill")}:</span>
+            <span className="text-muted-foreground mr-2">{t("relatedSkill")}:</span>
             <span className="font-semibold text-foreground">
               {isEn ? skill.titleEn : skill.titleId}
             </span>

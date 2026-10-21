@@ -88,19 +88,19 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-muted-foreground">
             {locale === "en" ? "Version:" : "Versi:"}
           </span>
-          <div className="inline-flex rounded border border-neutral-200 dark:border-neutral-800 p-0.5 bg-neutral-50 dark:bg-neutral-900">
+          <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted">
             <button
               type="button"
               onClick={() => setSelectedLang("id")}
-              className={`px-2.5 py-1 text-xs rounded transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-md transition-colors cursor-pointer ${
                 selectedLang === "id"
                   ? "bg-foreground text-background font-medium"
-                  : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "text-foreground hover:bg-surface-hover"
               }`}
             >
               Indonesia
@@ -108,10 +108,10 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
             <button
               type="button"
               onClick={() => setSelectedLang("en")}
-              className={`px-2.5 py-1 text-xs rounded transition-colors ${
+              className={`px-2.5 py-1 text-xs rounded-md transition-colors cursor-pointer ${
                 selectedLang === "en"
                   ? "bg-foreground text-background font-medium"
-                  : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  : "text-foreground hover:bg-surface-hover"
               }`}
             >
               English
@@ -122,7 +122,7 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
         <button
           type="button"
           onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 cursor-pointer"
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 cursor-pointer"
         >
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           <span>
@@ -138,7 +138,7 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
       </div>
 
       {discoveredVariables.length > 0 && (
-        <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 space-y-3">
+        <div className="p-4 rounded-xl border border-border bg-muted/30 space-y-3">
           <h4 className="text-xs font-semibold text-foreground tracking-tight">
             {locale === "en" ? "Fill Variables" : "Isi Variabel"}
           </h4>
@@ -147,10 +147,10 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
               <div key={v.name} className="space-y-1">
                 <label
                   htmlFor={`var-${v.name}`}
-                  className="block text-xs font-medium text-neutral-600 dark:text-neutral-400 capitalize"
+                  className="block text-xs font-medium text-muted-foreground capitalize"
                 >
                   {locale === "en" ? v.labelEn : v.labelId}
-                  <span className="font-mono text-[11px] text-neutral-400 ml-1">
+                  <span className="font-mono text-[11px] text-muted-foreground ml-1">
                     ({`{{${v.name}}}`})
                   </span>
                 </label>
@@ -162,7 +162,7 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
                   onChange={(e) =>
                     setFormValues((prev) => ({ ...prev, [v.name]: e.target.value }))
                   }
-                  className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground focus:outline-2 focus:outline-foreground"
+                  className="w-full h-8 px-2.5 text-xs rounded-lg border border-border bg-surface text-foreground focus:outline-2 focus:outline-foreground"
                 />
               </div>
             ))}
@@ -172,11 +172,11 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
 
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-neutral-500">
+          <span className="text-xs font-medium text-muted-foreground">
             {locale === "en" ? "Rendered Prompt Preview" : "Pratinjau Prompt Hasil"}
           </span>
         </div>
-        <pre className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-950 text-foreground font-mono text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px]">
+        <pre className="p-4 rounded-xl border border-border bg-muted/40 text-foreground font-mono text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px]">
           {resolvedPrompt}
         </pre>
       </div>

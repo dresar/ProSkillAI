@@ -38,7 +38,7 @@ export function SkillDetailTabs({
         role="tablist"
         aria-label={isEn ? "Skill view options" : "Pilihan tampilan skill"}
         onKeyDown={handleKeyDown}
-        className="flex items-center gap-1.5 p-1 rounded-md border border-border bg-muted w-fit"
+        className="flex items-center gap-1.5 p-1 rounded-lg border border-border bg-muted w-fit"
       >
         <button
           type="button"
@@ -48,7 +48,7 @@ export function SkillDetailTabs({
           aria-controls="panel-preview"
           tabIndex={activeTab === "preview" ? 0 : -1}
           onClick={() => setActiveTab("preview")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all cursor-pointer ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
             activeTab === "preview"
               ? "bg-foreground text-background shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground hover:bg-surface"
@@ -66,7 +66,7 @@ export function SkillDetailTabs({
           aria-controls="panel-content"
           tabIndex={activeTab === "content" ? 0 : -1}
           onClick={() => setActiveTab("content")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all cursor-pointer ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
             activeTab === "content"
               ? "bg-foreground text-background shadow-xs font-semibold"
               : "text-muted-foreground hover:text-foreground hover:bg-surface"

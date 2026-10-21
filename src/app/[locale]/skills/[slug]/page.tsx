@@ -112,21 +112,21 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   const contentNode = (
     <section aria-labelledby="content-heading" className="space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="flex items-center justify-between pb-2 border-b border-border">
         <h2 id="content-heading" className="text-sm font-semibold text-foreground tracking-tight">
           {t("tabContent")}
         </h2>
-        <span className="font-mono text-xs text-neutral-400">SKILL.md</span>
+        <span className="font-mono text-xs text-muted-foreground">SKILL.md</span>
       </div>
 
-      <div className="p-4 sm:p-6 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface">
+      <div className="p-4 sm:p-6 rounded-xl border border-border bg-surface">
         <MarkdownRenderer content={content} />
       </div>
     </section>
   );
 
   return (
-    <article className="max-w-4xl w-full mx-auto px-4 sm:px-6 py-10 md:py-14 space-y-10">
+    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -135,7 +135,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
       <div className="space-y-4">
         <Link
           href={`/${locale}/skills`}
-          className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>{isEn ? "Back to Skills" : "Kembali ke Katalog Skills"}</span>
@@ -143,14 +143,14 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
         <div className="space-y-2">
           {categoryName && (
-            <div className="text-xs font-medium text-neutral-500">
+            <div className="text-xs font-medium text-muted-foreground">
               {categoryName}
             </div>
           )}
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {title}
           </h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
             {summary}
           </p>
         </div>
@@ -169,7 +169,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             label={t("download")}
           />
           {(skill.copyCount > 0 || skill.downloadCount > 0) && (
-            <span className="text-xs font-mono text-neutral-500 pl-2">
+            <span className="text-xs font-mono text-muted-foreground pl-2">
               {skill.copyCount > 0 && `${skill.copyCount} ${isEn ? "copies" : "salinan"}`}
               {skill.copyCount > 0 && skill.downloadCount > 0 && " • "}
               {skill.downloadCount > 0 && `${skill.downloadCount} ${isEn ? "downloads" : "unduhan"}`}
@@ -185,26 +185,26 @@ export default async function SkillDetailPage({ params }: PageProps) {
         locale={locale}
       />
 
-      <section aria-labelledby="install-heading" className="p-4 sm:p-5 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/40 space-y-3 text-xs">
+      <section aria-labelledby="install-heading" className="p-4 sm:p-5 rounded-xl border border-border bg-muted/30 space-y-3 text-xs">
         <h2 id="install-heading" className="font-semibold text-foreground tracking-tight">
           {t("installGuide")}
         </h2>
-        <ol className="list-decimal pl-4 space-y-1.5 text-neutral-600 dark:text-neutral-400 leading-relaxed">
+        <ol className="list-decimal pl-4 space-y-1.5 text-muted-foreground leading-relaxed">
           <li>{t("installStep1")}</li>
           <li>{t("installStep2")}</li>
           <li>{t("installStep3")}</li>
         </ol>
       </section>
 
-      <section aria-labelledby="provenance-heading" className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3 text-xs">
+      <section aria-labelledby="provenance-heading" className="p-4 rounded-xl border border-border bg-surface space-y-3 text-xs">
         <h2 id="provenance-heading" className="font-semibold text-foreground tracking-tight">
           {t("provenance")}
         </h2>
 
         {skill.sourceType === "github" ? (
-          <div className="space-y-1.5 text-neutral-600 dark:text-neutral-400">
+          <div className="space-y-1.5 text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="text-neutral-500">{t("sourceRepo")}:</span>
+              <span>{t("sourceRepo")}:</span>
               {skill.repoUrl ? (
                 <a
                   href={skill.repoUrl}
@@ -222,32 +222,32 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
             {skill.filePath && (
               <div className="flex items-center gap-2">
-                <span className="text-neutral-500">{t("filePath")}:</span>
+                <span>{t("filePath")}:</span>
                 <span className="font-mono">{skill.filePath}</span>
               </div>
             )}
 
             {skill.commitHash && (
               <div className="flex items-center gap-2">
-                <span className="text-neutral-500">{t("commit")}:</span>
+                <span>{t("commit")}:</span>
                 <span className="font-mono">{skill.commitHash.slice(0, 7)}</span>
               </div>
             )}
 
             {skill.license && (
               <div className="flex items-center gap-2">
-                <span className="text-neutral-500">{t("license")}:</span>
+                <span>{t("license")}:</span>
                 <span className="font-semibold text-foreground">{skill.license}</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="space-y-1 text-neutral-600 dark:text-neutral-400">
+          <div className="space-y-1 text-muted-foreground">
             <div className="flex items-center gap-1.5 text-foreground font-medium">
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               <span>{t("originalWork")}</span>
             </div>
-            <p className="text-[11px] text-neutral-500">
+            <p className="text-[11px] text-muted-foreground">
               {t("originalDesc")}
             </p>
           </div>
@@ -255,11 +255,11 @@ export default async function SkillDetailPage({ params }: PageProps) {
       </section>
 
       {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="space-y-4 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+        <section aria-labelledby="related-heading" className="space-y-4 pt-6 border-t border-border">
           <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
             {t("relatedSkills")}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
             {related.map(({ skill: rSkill, category: rCategory }) => (
               <SkillCard
                 key={rSkill.id}

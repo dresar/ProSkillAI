@@ -62,12 +62,12 @@ export default async function PromptsCatalogPage({
   ]);
 
   return (
-    <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 md:py-12 space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {t("title")}
         </h1>
-        <p className="mt-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
           {t("subtitle")}
         </p>
       </div>
@@ -79,11 +79,11 @@ export default async function PromptsCatalogPage({
       />
 
       {result.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-neutral-200 dark:border-neutral-800 rounded-md text-xs text-neutral-500">
+        <div className="p-12 text-center border border-dashed border-border rounded-xl text-xs text-muted-foreground">
           {t("emptyState")}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
           {result.map(({ prompt, category }) => (
             <PromptCard
               key={prompt.id}
