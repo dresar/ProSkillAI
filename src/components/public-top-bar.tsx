@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, Plus } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { PublicUserNav, type PublicUser } from "./public-user-nav";
@@ -37,6 +37,13 @@ export function PublicTopBar({
       </div>
 
       <div className="flex items-center gap-2.5">
+        <Link
+          href={`/${locale}/skills/submit`}
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border/80 bg-surface/80 hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 shadow-2xs"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>{isEn ? "Submit Skill" : "Kirim Skill"}</span>
+        </Link>
         <LanguageSwitcher currentLocale={locale} />
         <ThemeToggle label="Toggle theme" locale={locale} />
         <div className="h-4 w-px bg-border/80" />

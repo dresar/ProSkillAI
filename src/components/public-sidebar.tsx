@@ -4,7 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MessageSquare, Sparkles, ExternalLink, Shield, PanelLeftClose, LogIn, LogOut } from "lucide-react";
+import { Sparkles, Shield, PanelLeftClose, LogIn, LogOut, Plus } from "lucide-react";
+import { FeedbackModal } from "./feedback-modal";
 import { ThemeSidebarToggle } from "./theme-sidebar-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { type PublicUser } from "./public-user-nav";
@@ -128,6 +129,23 @@ export function PublicSidebar({
               </span>
             </Link>
 
+            <Link
+              href={`/${locale}/skills/submit`}
+              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                pathname.startsWith(`/${locale}/skills/submit`)
+                  ? "bg-foreground text-background font-semibold shadow-xs"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5" />
+                <span>{locale === "en" ? "Submit Skill" : "Kirim Skill"}</span>
+              </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted text-muted-foreground">
+                Community
+              </span>
+            </Link>
+
             <div className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground/80 hover:text-foreground cursor-not-allowed select-none">
               <span>Agent Kits</span>
               <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
@@ -167,18 +185,7 @@ export function PublicSidebar({
           </div>
         </div>
 
-        <a
-          href="https://github.com/dresar/ProSkillAI/issues"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-lg transition-colors"
-        >
-          <span className="flex items-center gap-2">
-            <MessageSquare className="w-3.5 h-3.5" />
-            <span>{locale === "en" ? "Feedback" : "Umpan Balik"}</span>
-          </span>
-          <ExternalLink className="w-3 h-3 opacity-60" />
-        </a>
+        <FeedbackModal locale={locale} user={user} />
 
         <div className="space-y-1.5 pt-2 border-t border-border/80">
           <ThemeSidebarToggle locale={locale} />

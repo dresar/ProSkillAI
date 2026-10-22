@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import type { Skill, Category } from "@/db/schema";
+import { getCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
 interface SkillCardProps {
@@ -29,6 +30,7 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
   const colorClass = getCategoryColor(category?.slug || categoryName);
 
   const starCount = skill.copyCount > 0 ? formatCount(skill.copyCount) : "4.8k";
+  const cover = getCoverImage(skill.images, skill.previewImageUrl);
 
   return (
     <Link
@@ -37,10 +39,10 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
     >
       <div className="flex flex-col justify-between h-full rounded-xl border border-border/80 bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-all duration-200 shadow-xs min-h-[44px]">
         <div>
-          {skill.previewType === "image" && skill.previewImageUrl && (
+          {cover && (
             <div className="relative mb-3.5 aspect-video w-full overflow-hidden rounded-lg bg-muted border border-border/60">
               <Image
-                src={skill.previewImageUrl}
+                src={cover}
                 alt={title}
                 fill
                 unoptimized

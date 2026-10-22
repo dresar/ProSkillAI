@@ -5,6 +5,8 @@ import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
+import { ImageGallery } from "@/components/admin/image-gallery";
+import { getCoverImage, getImageList } from "@/lib/images";
 
 interface PageProps {
   params: Promise<{
@@ -27,6 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { prompt } = item;
   const title = isEn ? prompt.titleEn : prompt.titleId;
   const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
+  const cover = getCoverImage(prompt.images);
 
   return {
     title,
@@ -46,6 +49,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "ProSkillAI",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
+      images: cover ? [cover] : undefined,
     },
   };
 }
@@ -148,6 +152,10 @@ export default async function PromptDetailPage({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {getImageList(prompt.images).length > 0 && (
+        <ImageGallery images={getImageList(prompt.images)} alt={title} />
+      )}
 
       {skill && (
         <div className="p-3.5 rounded-xl border border-border bg-muted/30 flex items-center justify-between text-xs">

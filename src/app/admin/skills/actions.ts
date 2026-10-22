@@ -7,7 +7,28 @@ import { z } from "zod";
 import { db } from "@/db";
 import { skills, auditLog } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
+
+const imageUrlSchema = z.string().refine((value) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}, "URL gambar tidak valid");
+
+function parseStringArray(value: FormDataEntryValue | null): string[] {
+  if (typeof value !== "string" || !value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 const skillFormSchema = z.object({
   slug: z.string().min(2, "Slug minimal 2 karakter"),
@@ -21,10 +42,13 @@ const skillFormSchema = z.object({
   sourceType: z.enum(["original", "github"]).default("original"),
   repoUrl: z.string().nullable().optional(),
   filePath: z.string().nullable().optional(),
+  branch: z.string().nullable().optional(),
   license: z.string().nullable().optional(),
   authorName: z.string().nullable().optional(),
   authorUrl: z.string().nullable().optional(),
   attribution: z.string().nullable().optional(),
+  tags: z.array(z.string()).optional(),
+  images: z.array(imageUrlSchema).max(5, "Maksimal 5 gambar").optional(),
   previewType: z.enum(["none", "html", "image", "video", "markdown", "tokens"]).default("none"),
   previewHtml: z.string().nullable().optional(),
   previewImageUrl: z.string().nullable().optional(),
@@ -34,6 +58,9 @@ const skillFormSchema = z.object({
 
 export async function createSkillAction(prevState: unknown, formData: FormData) {
   const user = await requireAuth();
+
+  const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
+  const tags = parseStringArray(formData.get("tagsJson"));
 
   const raw = {
     slug: formData.get("slug") as string,
@@ -47,10 +74,13 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
     sourceType: (formData.get("sourceType") as "original" | "github") || "original",
     repoUrl: (formData.get("repoUrl") as string) || null,
     filePath: (formData.get("filePath") as string) || null,
+    branch: (formData.get("branch") as string) || null,
     license: (formData.get("license") as string) || null,
     authorName: (formData.get("authorName") as string) || null,
     authorUrl: (formData.get("authorUrl") as string) || null,
     attribution: (formData.get("attribution") as string) || null,
+    tags,
+    images,
     previewType: (formData.get("previewType") as "none" | "html" | "image" | "video" | "markdown" | "tokens") || "none",
     previewHtml: (formData.get("previewHtml") as string) || null,
     previewImageUrl: (formData.get("previewImageUrl") as string) || null,
@@ -73,6 +103,9 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
   await db.insert(skills).values({
     id: newId,
     ...val.data,
+    images: val.data.images ?? [],
+    tags: val.data.tags ?? [],
+    previewImageUrl: val.data.images?.[0] ?? val.data.previewImageUrl ?? null,
     createdBy: user.id,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -98,6 +131,9 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
 export async function updateSkillAction(id: string, prevState: unknown, formData: FormData) {
   const user = await requireAuth();
 
+  const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
+  const tags = parseStringArray(formData.get("tagsJson"));
+
   const raw = {
     slug: formData.get("slug") as string,
     titleId: formData.get("titleId") as string,
@@ -110,10 +146,13 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
     sourceType: (formData.get("sourceType") as "original" | "github") || "original",
     repoUrl: (formData.get("repoUrl") as string) || null,
     filePath: (formData.get("filePath") as string) || null,
+    branch: (formData.get("branch") as string) || null,
     license: (formData.get("license") as string) || null,
     authorName: (formData.get("authorName") as string) || null,
     authorUrl: (formData.get("authorUrl") as string) || null,
     attribution: (formData.get("attribution") as string) || null,
+    tags,
+    images,
     previewType: (formData.get("previewType") as "none" | "html" | "image" | "video" | "markdown" | "tokens") || "none",
     previewHtml: (formData.get("previewHtml") as string) || null,
     previewImageUrl: (formData.get("previewImageUrl") as string) || null,
@@ -126,10 +165,22 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
     return { error: val.error.issues[0]?.message || "Validasi gagal" };
   }
 
+  const duplicate = await db
+    .select({ id: skills.id })
+    .from(skills)
+    .where(and(eq(skills.slug, val.data.slug), ne(skills.id, id)))
+    .limit(1);
+  if (duplicate.length > 0) {
+    return { error: "Slug sudah digunakan, harap gunakan slug lain." };
+  }
+
   await db
     .update(skills)
     .set({
       ...val.data,
+      images: val.data.images ?? [],
+      tags: val.data.tags ?? [],
+      previewImageUrl: val.data.images?.[0] ?? val.data.previewImageUrl ?? null,
       updatedAt: new Date(),
     })
     .where(eq(skills.id, id));
@@ -171,4 +222,28 @@ export async function deleteSkillAction(id: string) {
   revalidatePath("/admin/skills");
   revalidatePath("/id/skills");
   revalidatePath("/en/skills");
+}
+
+export async function approveSkillAction(id: string) {
+  const user = await requireAuth();
+
+  await db
+    .update(skills)
+    .set({ status: "published", updatedAt: new Date() })
+    .where(eq(skills.id, id));
+
+  await db.insert(auditLog).values({
+    id: randomBytes(16).toString("hex"),
+    userId: user.id,
+    userEmail: user.email,
+    action: "APPROVE_SKILL",
+    entityType: "skill",
+    entityId: id,
+    createdAt: new Date(),
+  });
+
+  revalidatePath("/admin/skills");
+  revalidatePath("/id/skills");
+  revalidatePath("/en/skills");
+  return { success: true };
 }

@@ -219,7 +219,9 @@ export async function getAdminSkills(params?: {
   q?: string;
   status?: string;
   sort?: string;
-}): Promise<Skill[]> {
+  page?: number;
+  pageSize?: number;
+}): Promise<{ rows: Skill[]; total: number }> {
   const conditions = [];
 
   if (params?.status && params.status !== "all") {
@@ -235,8 +237,21 @@ export async function getAdminSkills(params?: {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
   const orderByClause = params?.sort === "oldest" ? asc(skills.createdAt) : desc(skills.createdAt);
+  const pageSize = [12, 24, 48].includes(Number(params?.pageSize)) ? Number(params?.pageSize) : 12;
+  const page = Math.max(1, Number(params?.page) || 1);
 
-  return await db.select().from(skills).where(whereClause).orderBy(orderByClause);
+  const [rows, countResult] = await Promise.all([
+    db
+      .select()
+      .from(skills)
+      .where(whereClause)
+      .orderBy(orderByClause)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db.select({ count: sql<number>`count(*)` }).from(skills).where(whereClause),
+  ]);
+
+  return { rows, total: Number(countResult[0]?.count ?? 0) };
 }
 
 export async function getAdminSkillById(id: string): Promise<Skill | null> {
@@ -248,7 +263,9 @@ export async function getAdminPrompts(params?: {
   q?: string;
   status?: string;
   sort?: string;
-}): Promise<Prompt[]> {
+  page?: number;
+  pageSize?: number;
+}): Promise<{ rows: Prompt[]; total: number }> {
   const conditions = [];
 
   if (params?.status && params.status !== "all") {
@@ -264,8 +281,30 @@ export async function getAdminPrompts(params?: {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
   const orderByClause = params?.sort === "oldest" ? asc(prompts.createdAt) : desc(prompts.createdAt);
+  const pageSize = [12, 24, 48].includes(Number(params?.pageSize)) ? Number(params?.pageSize) : 12;
+  const page = Math.max(1, Number(params?.page) || 1);
 
-  return await db.select().from(prompts).where(whereClause).orderBy(orderByClause);
+  const [rows, countResult] = await Promise.all([
+    db
+      .select()
+      .from(prompts)
+      .where(whereClause)
+      .orderBy(orderByClause)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
+    db.select({ count: sql<number>`count(*)` }).from(prompts).where(whereClause),
+  ]);
+
+  return { rows, total: Number(countResult[0]?.count ?? 0) };
+}
+
+export async function getSkillOptions(): Promise<
+  Array<{ id: string; titleId: string; titleEn: string; slug: string }>
+> {
+  return await db
+    .select({ id: skills.id, titleId: skills.titleId, titleEn: skills.titleEn, slug: skills.slug })
+    .from(skills)
+    .orderBy(asc(skills.titleId));
 }
 
 export async function getAdminPromptById(id: string): Promise<Prompt | null> {

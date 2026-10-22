@@ -7,7 +7,28 @@ import { z } from "zod";
 import { db } from "@/db";
 import { prompts, auditLog } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
+
+const imageUrlSchema = z.string().refine((value) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}, "URL gambar tidak valid");
+
+function parseStringArray(value: FormDataEntryValue | null): string[] {
+  if (typeof value !== "string" || !value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 const promptFormSchema = z.object({
   slug: z.string().min(2, "Slug minimal 2 karakter"),
@@ -19,6 +40,9 @@ const promptFormSchema = z.object({
   contentEn: z.string().min(10, "Isi prompt Inggris minimal 10 karakter"),
   categoryId: z.string().nullable().optional(),
   variables: z.any().optional(),
+  images: z.array(imageUrlSchema).max(5, "Maksimal 5 gambar").optional(),
+  tags: z.array(z.string()).optional(),
+  relatedSkillId: z.string().nullable().optional(),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
 });
 
@@ -35,6 +59,9 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
     }
   }
 
+  const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
+  const tags = parseStringArray(formData.get("tagsJson"));
+
   const raw = {
     slug: formData.get("slug") as string,
     titleId: formData.get("titleId") as string,
@@ -45,6 +72,9 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
     contentEn: formData.get("contentEn") as string,
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
+    images,
+    tags,
+    relatedSkillId: (formData.get("relatedSkillId") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
   };
 
@@ -63,6 +93,8 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
   await db.insert(prompts).values({
     id: newId,
     ...val.data,
+    images: val.data.images ?? [],
+    tags: val.data.tags ?? [],
     createdBy: user.id,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -98,6 +130,9 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
     }
   }
 
+  const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
+  const tags = parseStringArray(formData.get("tagsJson"));
+
   const raw = {
     slug: formData.get("slug") as string,
     titleId: formData.get("titleId") as string,
@@ -108,6 +143,9 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
     contentEn: formData.get("contentEn") as string,
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
+    images,
+    tags,
+    relatedSkillId: (formData.get("relatedSkillId") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
   };
 
@@ -116,10 +154,21 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
     return { error: val.error.issues[0]?.message || "Validasi gagal" };
   }
 
+  const duplicate = await db
+    .select({ id: prompts.id })
+    .from(prompts)
+    .where(and(eq(prompts.slug, val.data.slug), ne(prompts.id, id)))
+    .limit(1);
+  if (duplicate.length > 0) {
+    return { error: "Slug sudah digunakan." };
+  }
+
   await db
     .update(prompts)
     .set({
       ...val.data,
+      images: val.data.images ?? [],
+      tags: val.data.tags ?? [],
       updatedAt: new Date(),
     })
     .where(eq(prompts.id, id));

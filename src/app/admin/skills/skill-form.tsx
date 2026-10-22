@@ -3,10 +3,14 @@
 import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code } from "lucide-react";
 import { createSkillAction, updateSkillAction } from "./actions";
 import { resyncSkillAction } from "../github-import/actions";
 import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
+import { ImageUploader } from "@/components/admin/image-uploader";
+import { GitHubImportPanel } from "@/components/admin/github-import-panel";
+import type { GitHubFormCandidate, GitHubFormRepo } from "./github-actions";
 import type { Skill, Category } from "@/db/schema";
 
 interface SkillFormProps {
@@ -38,6 +42,58 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
   const [previewHtml, setPreviewHtml] = React.useState(initialSkill?.previewHtml || "");
   const [previewImageUrl, setPreviewImageUrl] = React.useState(initialSkill?.previewImageUrl || "");
   const [previewVideoUrl, setPreviewVideoUrl] = React.useState(initialSkill?.previewVideoUrl || "");
+  const [images, setImages] = React.useState<string[]>(() => {
+    const gallery = Array.isArray(initialSkill?.images) ? (initialSkill.images as string[]) : [];
+    if (gallery.length > 0) return gallery;
+    return initialSkill?.previewImageUrl ? [initialSkill.previewImageUrl] : [];
+  });
+  const [status, setStatus] = React.useState(initialSkill?.status || "draft");
+  const [categoryId, setCategoryId] = React.useState(initialSkill?.categoryId || "");
+  const [sourceType, setSourceType] = React.useState(initialSkill?.sourceType || "original");
+  const [repoUrl, setRepoUrl] = React.useState(initialSkill?.repoUrl || "");
+  const [filePath, setFilePath] = React.useState(initialSkill?.filePath || "");
+  const [branch, setBranch] = React.useState(initialSkill?.branch || "");
+  const [license, setLicense] = React.useState(initialSkill?.license || "MIT");
+  const [authorName, setAuthorName] = React.useState(initialSkill?.authorName || "");
+  const [authorUrl, setAuthorUrl] = React.useState(initialSkill?.authorUrl || "");
+  const [attribution, setAttribution] = React.useState(initialSkill?.attribution || "");
+  const [tagsInput, setTagsInput] = React.useState(() => {
+    const tags = Array.isArray(initialSkill?.tags) ? (initialSkill.tags as string[]) : [];
+    return tags.join(", ");
+  });
+
+  const handleImagesChange = (urls: string[]) => {
+    setImages(urls);
+    if (urls[0]) setPreviewImageUrl(urls[0]);
+    if (urls.length > 0 && previewType === "none") setPreviewType("image");
+  };
+
+  const handleGitHubSelect = (candidate: GitHubFormCandidate, repo: GitHubFormRepo) => {
+    setTitleId(candidate.name);
+    setTitleEn(candidate.name);
+    setSummaryId(candidate.description);
+    setSummaryEn(candidate.description);
+    setContentId(candidate.content);
+    setContentEn(candidate.content);
+    setSlug(
+      candidate.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "")
+    );
+    setSourceType("github");
+    setRepoUrl(repo.htmlUrl);
+    setFilePath(candidate.path);
+    setBranch(repo.defaultBranch);
+    setLicense(candidate.licenseSpdx || "MIT");
+    setAuthorName(repo.owner);
+    setAuthorUrl(`https://github.com/${repo.owner}`);
+  };
+
+  const tags = tagsInput
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
   const handleTitleChange = (val: string, lang: "id" | "en") => {
     if (lang === "id") {
@@ -98,7 +154,7 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
             className="inline-flex items-center gap-1.5 h-8 px-4 rounded text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{isPending ? "Menyimpan..." : isEditing ? "Simpan Perubahan" : "Terbitkan Skill"}</span>
+            <span>{isPending ? "Menyimpan..." : isEditing ? "Simpan Perubahan" : "Simpan Skill"}</span>
           </button>
         </div>
       </div>
@@ -118,6 +174,13 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
           Perubahan berhasil disimpan.
         </div>
       )}
+
+      <GitHubImportPanel onSelect={handleGitHubSelect} />
+
+      <input type="hidden" name="tagsJson" value={JSON.stringify(tags)} />
+      <input type="hidden" name="previewHtml" value={previewHtml} />
+      <input type="hidden" name="previewImageUrl" value={images[0] || previewImageUrl} />
+      <input type="hidden" name="previewVideoUrl" value={previewVideoUrl} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
@@ -281,6 +344,46 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
         </div>
 
         <div className="space-y-4">
+          <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3 text-xs">
+            <h3 className="font-semibold text-foreground tracking-tight pb-2 border-b border-neutral-200 dark:border-neutral-800">
+              Galeri Gambar (maks 5)
+            </h3>
+            <ImageUploader
+              value={images}
+              onChange={handleImagesChange}
+              folder="skills"
+              slug={slug}
+              max={5}
+            />
+            {(images[0] || previewImageUrl) && (
+              <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Pratinjau Kartu
+                </span>
+                <div className="rounded-lg border border-border overflow-hidden bg-surface">
+                  <div className="relative aspect-video bg-muted">
+                    <Image
+                      src={images[0] || previewImageUrl}
+                      alt={titleId || "Pratinjau skill"}
+                      fill
+                      unoptimized
+                      sizes="300px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-2.5">
+                    <div className="text-xs font-semibold text-foreground truncate">
+                      {titleId || "Judul skill"}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                      {summaryId || "Ringkasan skill akan tampil di sini."}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-4 text-xs">
             <h3 className="font-semibold text-foreground tracking-tight pb-2 border-b border-neutral-200 dark:border-neutral-800">
               Pengaturan Publikasi
@@ -308,7 +411,8 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
               <select
                 id="status"
                 name="status"
-                defaultValue={initialSkill?.status || "draft"}
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
                 className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground cursor-pointer"
               >
                 <option value="draft">Draft (Disembunyikan)</option>
@@ -324,7 +428,8 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
               <select
                 id="categoryId"
                 name="categoryId"
-                defaultValue={initialSkill?.categoryId || ""}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
                 className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground cursor-pointer"
               >
                 <option value="">Tanpa Kategori</option>
@@ -363,7 +468,6 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 </label>
                 <textarea
                   id="previewHtml"
-                  name="previewHtml"
                   rows={4}
                   value={previewHtml}
                   onChange={(e) => setPreviewHtml(e.target.value)}
@@ -380,7 +484,6 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 </label>
                 <input
                   id="previewImageUrl"
-                  name="previewImageUrl"
                   type="url"
                   value={previewImageUrl}
                   onChange={(e) => setPreviewImageUrl(e.target.value)}
@@ -401,7 +504,6 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 </label>
                 <input
                   id="previewVideoUrl"
-                  name="previewVideoUrl"
                   type="url"
                   value={previewVideoUrl}
                   onChange={(e) => setPreviewVideoUrl(e.target.value)}
@@ -427,7 +529,8 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
               <select
                 id="sourceType"
                 name="sourceType"
-                defaultValue={initialSkill?.sourceType || "original"}
+                value={sourceType}
+                onChange={(e) => setSourceType(e.target.value)}
                 className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
               >
                 <option value="original">Orisinal ProSkillAI</option>
@@ -443,7 +546,23 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 id="authorName"
                 name="authorName"
                 type="text"
-                defaultValue={initialSkill?.authorName || ""}
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="authorUrl" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                URL Profil Pembuat
+              </label>
+              <input
+                id="authorUrl"
+                name="authorUrl"
+                type="url"
+                value={authorUrl}
+                onChange={(e) => setAuthorUrl(e.target.value)}
+                placeholder="https://github.com/username"
                 className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
               />
             </div>
@@ -456,9 +575,42 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 id="repoUrl"
                 name="repoUrl"
                 type="url"
-                defaultValue={initialSkill?.repoUrl || ""}
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
                 className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
               />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label htmlFor="filePath" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                  Path File SKILL.md
+                </label>
+                <input
+                  id="filePath"
+                  name="filePath"
+                  type="text"
+                  value={filePath}
+                  onChange={(e) => setFilePath(e.target.value)}
+                  placeholder="skills/my-skill/SKILL.md"
+                  className="w-full h-8 px-2.5 font-mono text-[11px] rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label htmlFor="branch" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                  Branch
+                </label>
+                <input
+                  id="branch"
+                  name="branch"
+                  type="text"
+                  value={branch}
+                  onChange={(e) => setBranch(e.target.value)}
+                  placeholder="main"
+                  className="w-full h-8 px-2.5 font-mono text-[11px] rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                />
+              </div>
             </div>
 
             <div className="space-y-1">
@@ -469,7 +621,37 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 id="license"
                 name="license"
                 type="text"
-                defaultValue={initialSkill?.license || "MIT"}
+                value={license}
+                onChange={(e) => setLicense(e.target.value)}
+                className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="attribution" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                Atribusi
+              </label>
+              <textarea
+                id="attribution"
+                name="attribution"
+                rows={2}
+                value={attribution}
+                onChange={(e) => setAttribution(e.target.value)}
+                placeholder="Kredit atau catatan atribusi sumber."
+                className="w-full p-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="tags" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                Tag (pisahkan dengan koma)
+              </label>
+              <input
+                id="tags"
+                type="text"
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                placeholder="design, frontend, accessibility"
                 className="w-full h-8 px-2.5 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
               />
             </div>

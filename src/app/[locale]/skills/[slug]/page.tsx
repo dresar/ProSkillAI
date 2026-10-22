@@ -4,7 +4,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
 import Link from "next/link";
 import { ChevronRight, CheckCircle2 } from "lucide-react";
-import { CopySkillButton } from "@/components/copy-skill-button";
+import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
 import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
@@ -13,6 +13,8 @@ import { SkillDetailTabs } from "@/components/skill-detail-tabs";
 import { SkillStatsCard } from "@/components/skill-stats-card";
 import { CliInstallBox } from "@/components/cli-install-box";
 import { ProviderBadge, type ProviderId } from "@/components/provider-logos";
+import { ImageGallery } from "@/components/admin/image-gallery";
+import { getCoverImage, getImageList } from "@/lib/images";
 
 interface PageProps {
   params: Promise<{
@@ -35,6 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { skill } = item;
   const title = isEn ? skill.titleEn : skill.titleId;
   const description = isEn ? skill.summaryEn : skill.summaryId;
+  const cover = getCoverImage(skill.images, skill.previewImageUrl);
 
   return {
     title,
@@ -54,6 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "ProSkillAI",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
+      images: cover ? [cover] : undefined,
     },
   };
 }
@@ -224,22 +228,21 @@ export default async function SkillDetailPage({ params }: PageProps) {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{summary}</p>
 
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 mr-1">
-                  {isEn ? "Works with" : "Kompatibel dengan"}
-                </span>
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
                 {compatibleProviders.map((p) => (
-                  <ProviderBadge key={p} provider={p} />
+                  <ProviderBadge key={p} provider={p} showLabel={false} />
                 ))}
               </div>
             </header>
 
             <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
-              <CopySkillButton
+              <CopySkillDropdown
                 skillId={skill.id}
+                slug={skill.slug}
+                title={title}
+                summary={summary}
                 content={content}
-                label={t("copyRaw")}
-                copiedLabel={t("copied")}
+                locale={locale}
               />
               <DownloadSkillButton
                 skillId={skill.id}
@@ -257,6 +260,21 @@ export default async function SkillDetailPage({ params }: PageProps) {
             </div>
 
             <CliInstallBox slug={skill.slug} locale={locale} />
+
+            {getImageList(skill.images, skill.previewImageUrl).length > 0 && (
+              <section aria-labelledby="gallery-heading" className="space-y-3">
+                <h2
+                  id="gallery-heading"
+                  className="text-sm font-semibold text-foreground tracking-tight"
+                >
+                  {isEn ? "Gallery" : "Galeri"}
+                </h2>
+                <ImageGallery
+                  images={getImageList(skill.images, skill.previewImageUrl)}
+                  alt={title}
+                />
+              </section>
+            )}
 
             <SkillDetailTabs
               hasPreview={hasPreview}

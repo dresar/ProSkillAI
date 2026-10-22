@@ -63,6 +63,7 @@ export const skills = pgTable("skills", {
   previewHtml: text("preview_html"),
   previewImageUrl: text("preview_image_url"),
   previewVideoUrl: text("preview_video_url"),
+  images: jsonb("images").$type<string[]>().default([]),
   designTokens: jsonb("design_tokens"),
   status: text("status").notNull().default("draft"),
   copyCount: integer("copy_count").notNull().default(0),
@@ -87,6 +88,7 @@ export const prompts = pgTable("prompts", {
   contentId: text("content_id").notNull(),
   contentEn: text("content_en").notNull(),
   variables: jsonb("variables").default([]),
+  images: jsonb("images").$type<string[]>().default([]),
   categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
   tags: jsonb("tags").default([]),
   relatedSkillId: text("related_skill_id").references(() => skills.id, { onDelete: "set null" }),
@@ -150,6 +152,21 @@ export const loginAttempts = pgTable("login_attempts", {
   index("login_attempts_time_idx").on(table.attemptedAt),
 ]);
 
+export const feedbacks = pgTable("feedbacks", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+  userEmail: text("user_email"),
+  userName: text("user_name"),
+  category: text("category").notNull().default("general"),
+  message: text("message").notNull(),
+  url: text("url"),
+  status: text("status").notNull().default("unread"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("feedbacks_status_idx").on(table.status),
+  index("feedbacks_created_at_idx").on(table.createdAt),
+]);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -161,3 +178,5 @@ export type NewPrompt = typeof prompts.$inferInsert;
 export type ImportJob = typeof importJobs.$inferSelect;
 export type Setting = typeof settings.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
+export type Feedback = typeof feedbacks.$inferSelect;
+export type NewFeedback = typeof feedbacks.$inferInsert;

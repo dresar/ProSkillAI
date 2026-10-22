@@ -109,16 +109,24 @@ export const PROVIDER_LABELS: Record<ProviderId, string> = {
 interface ProviderBadgeProps {
   provider: ProviderId;
   className?: string;
+  showLabel?: boolean;
 }
 
-export function ProviderBadge({ provider, className }: ProviderBadgeProps) {
+export function ProviderBadge({
+  provider,
+  className,
+  showLabel = false,
+}: ProviderBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2 py-1 text-[11px] font-medium text-muted-foreground ${className ?? ""}`}
+      className={`inline-flex items-center justify-center rounded-[6px] border border-border/80 bg-surface hover:bg-muted/70 text-foreground transition-all duration-150 ${
+        showLabel ? "gap-1.5 px-2 py-1 text-[11px] font-medium" : "w-7 h-7 sm:w-8 sm:h-8"
+      } ${className ?? ""}`}
       title={PROVIDER_LABELS[provider]}
+      aria-label={PROVIDER_LABELS[provider]}
     >
-      <ProviderLogo provider={provider} className="w-3.5 h-3.5 text-foreground" />
-      <span>{PROVIDER_LABELS[provider]}</span>
+      <ProviderLogo provider={provider} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-foreground shrink-0" />
+      {showLabel && <span>{PROVIDER_LABELS[provider]}</span>}
     </span>
   );
 }

@@ -4,7 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Menu, X, MessageSquare, Shield, LogOut } from "lucide-react";
+import { Menu, X, Shield, LogOut } from "lucide-react";
+import { FeedbackModal } from "./feedback-modal";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { PublicUserNav, type PublicUser } from "./public-user-nav";
@@ -155,37 +156,31 @@ export function PublicMobileHeader({
             </div>
           </div>
 
-          <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
-            <Link
-              href="/admin"
-              onClick={() => setIsOpen(false)}
-              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>{tNav("admin")}</span>
-            </Link>
-
-            {user ? (
-              <form action={logoutAction}>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>{locale === "en" ? "Sign Out" : "Keluar"}</span>
-                </button>
-              </form>
-            ) : (
-              <a
-                href="https://github.com/dresar/ProSkillAI/issues"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+          <div className="pt-3 border-t border-border space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <Link
+                href="/admin"
+                onClick={() => setIsOpen(false)}
+                className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium"
               >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>{locale === "en" ? "Feedback" : "Umpan Balik"}</span>
-              </a>
-            )}
+                <Shield className="w-3.5 h-3.5" />
+                <span>{tNav("admin")}</span>
+              </Link>
+
+              {user && (
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>{locale === "en" ? "Sign Out" : "Keluar"}</span>
+                  </button>
+                </form>
+              )}
+            </div>
+
+            <FeedbackModal locale={locale} user={user} />
           </div>
         </div>
       )}

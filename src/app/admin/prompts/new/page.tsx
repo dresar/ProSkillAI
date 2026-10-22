@@ -1,8 +1,11 @@
-import { getAllCategories } from "@/db/queries";
+import { getAllCategories, getSkillOptions } from "@/db/queries";
 import { PromptForm } from "../prompt-form";
 
 export default async function NewPromptPage() {
-  const allCategories = await getAllCategories("prompts");
+  const [allCategories, skillOptions] = await Promise.all([
+    getAllCategories("prompts"),
+    getSkillOptions(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -15,7 +18,7 @@ export default async function NewPromptPage() {
         </p>
       </div>
 
-      <PromptForm categories={allCategories} />
+      <PromptForm categories={allCategories} skillOptions={skillOptions} />
     </div>
   );
 }

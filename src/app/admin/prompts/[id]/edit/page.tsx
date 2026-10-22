@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getAdminPromptById, getAllCategories } from "@/db/queries";
+import { getAdminPromptById, getAllCategories, getSkillOptions } from "@/db/queries";
 import { PromptForm } from "../../prompt-form";
 
 interface PageProps {
@@ -11,9 +11,10 @@ interface PageProps {
 export default async function EditPromptPage({ params }: PageProps) {
   const { id } = await params;
 
-  const [prompt, allCategories] = await Promise.all([
+  const [prompt, allCategories, skillOptions] = await Promise.all([
     getAdminPromptById(id),
     getAllCategories("prompts"),
+    getSkillOptions(),
   ]);
 
   if (!prompt) {
@@ -31,7 +32,7 @@ export default async function EditPromptPage({ params }: PageProps) {
         </p>
       </div>
 
-      <PromptForm initialPrompt={prompt} categories={allCategories} />
+      <PromptForm initialPrompt={prompt} categories={allCategories} skillOptions={skillOptions} />
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   Users,
   Settings,
   History,
+  MessageSquare,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -42,6 +43,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
         ]
       : []),
     { href: "/admin/activity", label: "Log Aktivitas", icon: History },
+    { href: "/admin/feedback", label: "Umpan Balik", icon: MessageSquare },
   ];
 
   const toggleCollapse = () => setCollapsed((prev) => !prev);

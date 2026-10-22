@@ -1,29 +1,64 @@
 import { getAdminPrompts, getAllCategories } from "@/db/queries";
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import { AdminListToolbar } from "@/components/admin/list-toolbar";
+import { AdminPagination } from "@/components/admin/pagination";
 import { PromptsTable } from "./prompts-table";
+
+const BASE_PATH = "/admin/prompts";
+const COLUMN_KEYS = ["title", "image", "category", "variables", "status"];
 
 interface PageProps {
   searchParams: Promise<{
     q?: string;
     status?: string;
+    sort?: string;
+    page?: string;
+    pageSize?: string;
+    view?: string;
+    cols?: string;
   }>;
 }
 
-export default async function AdminPromptsPage({ searchParams }: PageProps) {
-  const { q, status } = await searchParams;
+function parsePageSize(value?: string): number {
+  const parsed = Number(value);
+  return [12, 24, 48].includes(parsed) ? parsed : 12;
+}
 
-  const [promptsList, categoriesList] = await Promise.all([
-    getAdminPrompts({ q, status }),
+function parseColumns(value?: string): string[] {
+  if (value === undefined) return COLUMN_KEYS;
+  if (value === "none") return [];
+  const requested = value.split(",").map((item) => item.trim());
+  return COLUMN_KEYS.filter((key) => requested.includes(key));
+}
+
+export default async function AdminPromptsPage({ searchParams }: PageProps) {
+  const { q, status, sort, page, pageSize, view, cols } = await searchParams;
+
+  const pageSizeNumber = parsePageSize(pageSize);
+  const pageNumber = Math.max(1, Number(page) || 1);
+  const visibleColumns = parseColumns(cols);
+
+  const [{ rows, total }, categoriesList] = await Promise.all([
+    getAdminPrompts({ q, status, sort, page: pageNumber, pageSize: pageSizeNumber }),
     getAllCategories("all"),
   ]);
 
-  const catMap = new Map(categoriesList.map((c) => [c.id, c]));
+  const catMap = new Map(categoriesList.map((category) => [category.id, category]));
 
-  const formatted = promptsList.map((prompt) => ({
+  const formatted = rows.map((prompt) => ({
     ...prompt,
     category: prompt.categoryId ? catMap.get(prompt.categoryId) || null : null,
   }));
+
+  const params = {
+    q,
+    status,
+    sort,
+    pageSize: String(pageSizeNumber),
+    view,
+    cols,
+  };
 
   return (
     <div className="space-y-6">
@@ -32,7 +67,7 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
           <h2 className="text-base font-semibold text-foreground tracking-tight">
             Manajemen Prompt Rekayasa AI
           </h2>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted-foreground">
             Daftar seluruh prompt terverifikasi dengan dukungan variabel dinamis.
           </p>
         </div>
@@ -46,50 +81,36 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
         </Link>
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
-        <Link
-          href="/admin/prompts"
-          className={`px-2.5 py-1 text-xs rounded border ${
-            !status
-              ? "border-foreground bg-foreground text-background"
-              : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
-          }`}
-        >
-          Semua
-        </Link>
-        <Link
-          href="/admin/prompts?status=published"
-          className={`px-2.5 py-1 text-xs rounded border ${
-            status === "published"
-              ? "border-foreground bg-foreground text-background"
-              : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
-          }`}
-        >
-          Terbit
-        </Link>
-        <Link
-          href="/admin/prompts?status=draft"
-          className={`px-2.5 py-1 text-xs rounded border ${
-            status === "draft"
-              ? "border-foreground bg-foreground text-background"
-              : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
-          }`}
-        >
-          Draft
-        </Link>
-        <Link
-          href="/admin/prompts?status=archived"
-          className={`px-2.5 py-1 text-xs rounded border ${
-            status === "archived"
-              ? "border-foreground bg-foreground text-background"
-              : "border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
-          }`}
-        >
-          Arsip
-        </Link>
-      </div>
+      <AdminListToolbar
+        basePath={BASE_PATH}
+        q={q}
+        status={status}
+        pageSize={pageSizeNumber}
+        params={params}
+        placeholder="Cari judul atau slug prompt..."
+        statusOptions={[
+          { label: "Semua" },
+          { label: "Terbit", value: "published" },
+          { label: "Draft", value: "draft" },
+          { label: "Arsip", value: "archived" },
+        ]}
+      />
 
-      <PromptsTable promptsList={formatted} />
+      <PromptsTable
+        promptsList={formatted}
+        view={view === "list" ? "list" : "grid"}
+        visibleColumns={visibleColumns}
+        basePath={BASE_PATH}
+        params={params}
+      />
+
+      <AdminPagination
+        page={pageNumber}
+        pageSize={pageSizeNumber}
+        total={total}
+        basePath={BASE_PATH}
+        params={params}
+      />
     </div>
   );
 }

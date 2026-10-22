@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Star, Variable } from "lucide-react";
 import type { Prompt, Category } from "@/db/schema";
+import { getCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
 interface PromptCardProps {
@@ -29,6 +31,7 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
 
   const variableList = Array.isArray(prompt.variables) ? prompt.variables : [];
   const starCount = prompt.copyCount > 0 ? formatCount(prompt.copyCount) : "3.2k";
+  const cover = getCoverImage(prompt.images);
 
   return (
     <Link
@@ -37,6 +40,19 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
     >
       <div className="flex flex-col justify-between h-full rounded-xl border border-border/80 bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-all duration-200 shadow-xs min-h-[44px]">
         <div>
+          {cover && (
+            <div className="relative mb-3.5 aspect-video w-full overflow-hidden rounded-lg bg-muted border border-border/60">
+              <Image
+                src={cover}
+                alt={title}
+                fill
+                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover group-hover:scale-102 transition-transform duration-200"
+              />
+            </div>
+          )}
+
           <div className="flex items-center justify-between gap-2 mb-2">
             <span className={`text-xs font-medium tracking-tight ${colorClass}`}>
               {categoryName}
