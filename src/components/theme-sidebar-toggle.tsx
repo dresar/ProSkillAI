@@ -160,17 +160,15 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="true"
         aria-expanded={open}
-        suppressHydrationWarning
         className="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-[6px] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2 min-w-0">
           <span
-            suppressHydrationWarning
             className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 flex items-center justify-center shadow-2xs"
             style={{ backgroundColor: activeDef.accent }}
           />
-          <span className="truncate" suppressHydrationWarning>
-            {activeDef.name} · {isDark ? (isEn ? "Dark" : "Gelap") : (isEn ? "Light" : "Terang")}
+          <span className="truncate">
+            {activeDef.name} · <span className="inline dark:hidden">{isEn ? "Light" : "Terang"}</span><span className="hidden dark:inline">{isEn ? "Dark" : "Gelap"}</span>
           </span>
         </div>
         <ChevronUp className={`w-3.5 h-3.5 text-muted-foreground/80 shrink-0 transition-transform ${open ? "" : "rotate-180"}`} />
