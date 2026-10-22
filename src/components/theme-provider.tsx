@@ -69,15 +69,16 @@ export function ThemeProvider({
   const theme = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   React.useEffect(() => {
-    const isDark =
-      theme === "dark" ||
-      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-
     const root = document.documentElement;
-    if (isDark) {
+    if (theme === "dark") {
       root.classList.add("dark");
+      root.classList.remove("light");
+    } else if (theme === "light") {
+      root.classList.add("light");
+      root.classList.remove("dark");
     } else {
       root.classList.remove("dark");
+      root.classList.remove("light");
     }
   }, [theme]);
 
