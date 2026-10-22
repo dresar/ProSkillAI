@@ -7,7 +7,7 @@ const securityHeaders = [
   {
     key: "Content-Security-Policy",
     value:
-      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; object-src 'none'; media-src 'self' https: blob: data:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com https://www.loom.com; base-uri 'self'; form-action 'self';",
+      "default-src 'self'; connect-src 'self' https: wss: ws:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; object-src 'none'; media-src 'self' https: blob: data:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com https://www.loom.com; base-uri 'self'; form-action 'self';",
   },
   {
     key: "X-Content-Type-Options",
@@ -40,6 +40,14 @@ const noStoreHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: [
+    "proskill.agentai.my.id",
+    "proskillai.agentai.my.id",
+    "*.agentai.my.id",
+    "localhost:3000",
+    "localhost:3001",
+    "127.0.0.1:3001",
+  ],
   async headers() {
     return [
       {

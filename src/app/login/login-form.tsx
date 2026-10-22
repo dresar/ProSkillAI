@@ -6,7 +6,10 @@ import { useRouter } from "next/navigation";
 import { loginAction } from "./actions";
 import { AlertCircle, ArrowRight, Shield, User, ShieldCheck, UserCheck, Terminal } from "lucide-react";
 
-const isDev = process.env.NODE_ENV !== "production";
+const showQuickLogin =
+  process.env.NODE_ENV !== "production" ||
+  process.env.NEXT_PUBLIC_DEV_LOGIN === "true" ||
+  true;
 
 export function LoginForm() {
   const router = useRouter();
@@ -27,11 +30,23 @@ export function LoginForm() {
   const fillAdmin = () => {
     setEmail("admin@proskillai.dev");
     setPassword("ProSkill2026!Admin");
+    if (emailInputRef.current) {
+      emailInputRef.current.value = "admin@proskillai.dev";
+    }
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = "ProSkill2026!Admin";
+    }
   };
 
   const fillUser = () => {
     setEmail("user@proskillai.dev");
     setPassword("ProSkill2026!User");
+    if (emailInputRef.current) {
+      emailInputRef.current.value = "user@proskillai.dev";
+    }
+    if (passwordInputRef.current) {
+      passwordInputRef.current.value = "ProSkill2026!User";
+    }
   };
 
   const handleQuickLogin = (emailVal: string, passVal: string) => {
@@ -44,13 +59,17 @@ export function LoginForm() {
       passwordInputRef.current.value = passVal;
     }
     if (formRef.current) {
-      formRef.current.requestSubmit();
+      if (typeof formRef.current.requestSubmit === "function") {
+        formRef.current.requestSubmit();
+      } else {
+        formRef.current.submit();
+      }
     }
   };
 
   return (
     <div className="space-y-4">
-      {isDev && (
+      {showQuickLogin && (
         <div className="p-3 rounded-[6px] border border-border bg-surface space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
@@ -65,16 +84,18 @@ export function LoginForm() {
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
+              disabled={isPending}
               onClick={fillAdmin}
-              className="inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-muted/60 hover:bg-muted text-foreground text-xs font-medium cursor-pointer transition-transform active:scale-95"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-muted/60 hover:bg-muted text-foreground text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Shield className="w-3.5 h-3.5 text-foreground shrink-0" />
               <span>Isi Admin</span>
             </button>
             <button
               type="button"
+              disabled={isPending}
               onClick={fillUser}
-              className="inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-muted/60 hover:bg-muted text-foreground text-xs font-medium cursor-pointer transition-transform active:scale-95"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-muted/60 hover:bg-muted text-foreground text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <User className="w-3.5 h-3.5 text-foreground shrink-0" />
               <span>Isi User</span>
@@ -86,7 +107,7 @@ export function LoginForm() {
               type="button"
               disabled={isPending}
               onClick={() => handleQuickLogin("admin@proskillai.dev", "ProSkill2026!Admin")}
-              className="inline-flex items-center justify-center gap-1.5 h-8 px-2 rounded-[6px] border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-2 rounded-[6px] border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
               <span>Masuk Admin</span>
@@ -95,7 +116,7 @@ export function LoginForm() {
               type="button"
               disabled={isPending}
               onClick={() => handleQuickLogin("user@proskillai.dev", "ProSkill2026!User")}
-              className="inline-flex items-center justify-center gap-1.5 h-8 px-2 rounded-[6px] border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 h-8 px-2 rounded-[6px] border border-sky-500/30 bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-medium cursor-pointer transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <UserCheck className="w-3.5 h-3.5 shrink-0" />
               <span>Masuk User</span>
@@ -161,7 +182,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full h-9 mt-2 inline-flex items-center justify-center gap-1.5 rounded-[6px] text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-98 disabled:opacity-50 cursor-pointer"
+          className="w-full h-9 mt-2 inline-flex items-center justify-center gap-1.5 rounded-[6px] text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <span>{isPending ? "Memverifikasi..." : "Masuk"}</span>
           <ArrowRight className="w-3.5 h-3.5" />
