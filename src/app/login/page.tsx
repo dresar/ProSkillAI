@@ -50,7 +50,7 @@ export default async function LoginPage() {
       </main>
 
       <footer className="text-center text-[11px] text-muted-foreground py-2">
-        <span>&copy; {new Date().getFullYear()} ProSkillAI. Akses terproteksi.</span>
+        <span suppressHydrationWarning>&copy; {new Date().getFullYear()} ProSkillAI. Akses terproteksi.</span>
       </footer>
     </div>
   );

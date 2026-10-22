@@ -6,8 +6,13 @@ import { Sun, Moon, Palette, Check, ChevronUp } from "lucide-react";
 
 export function ThemeSidebarToggle({ locale }: { locale: string }) {
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (!open) return;
@@ -166,11 +171,14 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
       >
         <div className="flex items-center gap-2 min-w-0">
           <span
+            suppressHydrationWarning
             className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 flex items-center justify-center shadow-2xs"
             style={{ backgroundColor: activeDef.accent }}
           />
-          <span className="truncate">
-            {activeDef.name} · {isDark ? (isEn ? "Dark" : "Gelap") : (isEn ? "Light" : "Terang")}
+          <span className="truncate" suppressHydrationWarning>
+            {mounted
+              ? `${activeDef.name} · ${isDark ? (isEn ? "Dark" : "Gelap") : (isEn ? "Light" : "Terang")}`
+              : activeDef.name}
           </span>
         </div>
         <ChevronUp className={`w-3.5 h-3.5 text-muted-foreground/80 shrink-0 transition-transform ${open ? "" : "rotate-180"}`} />

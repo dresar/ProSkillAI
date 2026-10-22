@@ -12,8 +12,13 @@ export function ThemeToggle({
   locale?: string;
 }) {
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     if (!open) return;
@@ -88,21 +93,26 @@ export function ThemeToggle({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        aria-label={`${label} (${activeDef.name}, ${isDark ? "Gelap" : "Terang"})`}
-        title={`${label} (${activeDef.name})`}
+        aria-label={mounted ? `${label} (${activeDef.name}, ${isDark ? "Gelap" : "Terang"})` : label}
+        title={mounted ? `${label} (${activeDef.name})` : label}
         aria-haspopup="true"
         aria-expanded={open}
         suppressHydrationWarning
         className="inline-flex items-center gap-1.5 h-8 px-2 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer text-xs font-medium shrink-0"
       >
         <span
+          suppressHydrationWarning
           className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 shadow-2xs flex items-center justify-center"
           style={{ backgroundColor: activeDef.accent }}
         />
-        {isDark ? (
-          <Moon className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
+        {mounted ? (
+          isDark ? (
+            <Moon className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
+          ) : (
+            <Sun className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
+          )
         ) : (
-          <Sun className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
+          <span className="w-3.5 h-3.5 shrink-0 inline-block" aria-hidden="true" />
         )}
         <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>
