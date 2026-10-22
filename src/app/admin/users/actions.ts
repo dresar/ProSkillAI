@@ -12,7 +12,7 @@ const userSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
   email: z.string().email("Format email tidak valid"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  role: z.enum(["admin", "editor"]).default("editor"),
+  role: z.enum(["admin", "user", "editor"]).default("user"),
 });
 
 export async function createUserAction(prevState: unknown, formData: FormData) {
@@ -22,7 +22,7 @@ export async function createUserAction(prevState: unknown, formData: FormData) {
     name: formData.get("name") as string,
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    role: (formData.get("role") as "admin" | "editor") || "editor",
+    role: (formData.get("role") as "admin" | "user" | "editor") || "user",
   };
 
   const val = userSchema.safeParse(raw);
@@ -63,7 +63,7 @@ export async function createUserAction(prevState: unknown, formData: FormData) {
   return { success: true };
 }
 
-export async function updateUserRoleAction(userId: string, newRole: "admin" | "editor") {
+export async function updateUserRoleAction(userId: string, newRole: "admin" | "user" | "editor") {
   const admin = await requireAdmin();
 
   await db

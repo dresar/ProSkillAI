@@ -4,18 +4,10 @@ import * as React from "react";
 import { useTheme, COLOR_THEMES } from "./theme-provider";
 import { Sun, Moon, Palette, Check, ChevronUp } from "lucide-react";
 
-const emptySubscribe = () => () => {};
-
 export function ThemeSidebarToggle({ locale }: { locale: string }) {
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-
-  const mounted = React.useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
 
   React.useEffect(() => {
     if (!open) return;
@@ -41,18 +33,48 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
     };
   }, [open]);
 
-  if (!mounted) {
-    return (
-      <div className="w-full h-8 rounded-lg border border-border/40 bg-muted/20" />
-    );
-  }
-
   const isDark = resolvedTheme === "dark";
   const activeDef = COLOR_THEMES.find((t) => t.id === colorTheme) || COLOR_THEMES[0];
   const isEn = locale === "en";
 
-  const toggleMode = (targetMode: "dark" | "light") => {
-    setTheme(targetMode);
+  const toggleMode = (e: React.MouseEvent<HTMLButtonElement>, targetMode?: "dark" | "light") => {
+    const nextTheme = targetMode ?? (isDark ? "light" : "dark");
+
+    if (!document.startViewTransition) {
+      setTheme(nextTheme);
+      return;
+    }
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const transition = document.startViewTransition(() => {
+      setTheme(nextTheme);
+    });
+
+    transition.ready.then(() => {
+      const clipPath = [
+        `circle(0px at ${x}px ${y}px)`,
+        `circle(${endRadius}px at ${x}px ${y}px)`,
+      ];
+      document.documentElement.animate(
+        {
+          clipPath: resolvedTheme === "dark" ? [...clipPath].reverse() : clipPath,
+        },
+        {
+          duration: 350,
+          easing: "ease-in-out",
+          pseudoElement:
+            resolvedTheme === "dark"
+              ? "::view-transition-old(root)"
+              : "::view-transition-new(root)",
+        }
+      );
+    });
   };
 
   return (
@@ -66,7 +88,7 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
           <div className="flex items-center justify-between gap-1 p-1 mb-2 rounded-lg bg-muted border border-border/60">
             <button
               type="button"
-              onClick={() => toggleMode("light")}
+              onClick={(e) => toggleMode(e, "light")}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded text-xs font-medium transition-colors cursor-pointer ${
                 !isDark
                   ? "bg-surface text-foreground shadow-2xs font-semibold"
@@ -78,7 +100,7 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
             </button>
             <button
               type="button"
-              onClick={() => toggleMode("dark")}
+              onClick={(e) => toggleMode(e, "dark")}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1 px-2 rounded text-xs font-medium transition-colors cursor-pointer ${
                 isDark
                   ? "bg-surface text-foreground shadow-2xs font-semibold"
@@ -139,7 +161,8 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
         onClick={() => setOpen((prev) => !prev)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors cursor-pointer"
+        suppressHydrationWarning
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-[6px] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2 min-w-0">
           <span

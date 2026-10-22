@@ -1,10 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTheme, COLOR_THEMES, type ColorTheme } from "./theme-provider";
+import { useTheme, COLOR_THEMES } from "./theme-provider";
 import { Sun, Moon, Palette, Check, ChevronDown } from "lucide-react";
-
-const emptySubscribe = () => () => {};
 
 export function ThemeToggle({
   label = "Ganti tema",
@@ -16,12 +14,6 @@ export function ThemeToggle({
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-
-  const mounted = React.useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
 
   React.useEffect(() => {
     if (!open) return;
@@ -46,12 +38,6 @@ export function ThemeToggle({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
-
-  if (!mounted) {
-    return (
-      <div className="w-8 h-8 rounded border border-border bg-surface" />
-    );
-  }
 
   const isDark = resolvedTheme === "dark";
   const activeDef = COLOR_THEMES.find((t) => t.id === colorTheme) || COLOR_THEMES[0];
@@ -106,7 +92,8 @@ export function ThemeToggle({
         title={`${label} (${activeDef.name})`}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 h-8 px-2 rounded border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer text-xs font-medium"
+        suppressHydrationWarning
+        className="inline-flex items-center gap-1.5 h-8 px-2 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer text-xs font-medium shrink-0"
       >
         <span
           className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 shadow-2xs flex items-center justify-center"

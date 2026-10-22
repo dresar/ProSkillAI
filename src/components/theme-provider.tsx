@@ -62,7 +62,8 @@ export function useTheme() {
   return React.useContext(ThemeContext);
 }
 
-const EVENT_NAME = "proskillai:theme-change";
+const THEME_STORAGE_KEY = "theme";
+const THEME_CHANGE_EVENT = "proskillai:theme-change";
 const COLOR_STORAGE_KEY = "proskillai:color-theme";
 const VALID_COLOR_THEMES = new Set<ColorTheme>([
   "noir",
@@ -79,20 +80,20 @@ const VALID_COLOR_THEMES = new Set<ColorTheme>([
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
-  window.addEventListener(EVENT_NAME, callback);
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   mediaQuery.addEventListener("change", callback);
 
   return () => {
     window.removeEventListener("storage", callback);
-    window.removeEventListener(EVENT_NAME, callback);
+    window.removeEventListener(THEME_CHANGE_EVENT, callback);
     mediaQuery.removeEventListener("change", callback);
   };
 }
 
 function getModeSnapshot(): Theme {
   try {
-    const val = localStorage.getItem("theme");
+    const val = localStorage.getItem(THEME_STORAGE_KEY);
     if (val === "dark" || val === "light" || val === "system") {
       return val;
     }
@@ -122,6 +123,29 @@ function getServerColorSnapshot(): ColorTheme {
   return "noir";
 }
 
+function applyThemeToDocument(theme: Theme) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  let isDark = false;
+  if (theme === "dark") {
+    isDark = true;
+  } else if (theme === "light") {
+    isDark = false;
+  } else {
+    isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  if (isDark) {
+    root.classList.add("dark");
+    root.classList.remove("light");
+    root.style.colorScheme = "dark";
+  } else {
+    root.classList.add("light");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+  }
+}
+
 interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
@@ -131,24 +155,14 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  storageKey = "theme",
+  storageKey = THEME_STORAGE_KEY,
   defaultColorTheme = "noir",
 }: ThemeProviderProps) {
   const theme = React.useSyncExternalStore(subscribe, getModeSnapshot, getServerModeSnapshot);
   const colorTheme = React.useSyncExternalStore(subscribe, getColorSnapshot, getServerColorSnapshot);
 
   React.useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else if (theme === "light") {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    } else {
-      root.classList.remove("dark");
-      root.classList.remove("light");
-    }
+    applyThemeToDocument(theme);
   }, [theme]);
 
   React.useEffect(() => {
@@ -164,7 +178,8 @@ export function ThemeProvider({
       } catch {
         void newTheme;
       }
-      window.dispatchEvent(new Event(EVENT_NAME));
+      applyThemeToDocument(newTheme);
+      window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     },
     [storageKey]
   );
@@ -179,7 +194,7 @@ export function ThemeProvider({
     }
     const root = document.documentElement;
     root.setAttribute("data-theme", newColorTheme);
-    window.dispatchEvent(new Event(EVENT_NAME));
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   }, []);
 
   const resolvedTheme: "dark" | "light" = React.useMemo(() => {

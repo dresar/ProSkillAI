@@ -19,22 +19,49 @@ const db = drizzle(sql, { schema });
 async function seed() {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@proskillai.dev";
   const adminPassword = process.env.ADMIN_PASSWORD || "ProSkill2026!Admin";
+  const userEmail = "user@proskillai.dev";
+  const userPassword = "ProSkill2026!User";
 
-  const existingUsers = await db.select().from(schema.users).where(eq(schema.users.email, adminEmail));
-  let adminId = existingUsers[0]?.id;
-
+  const adminHash = await hashPassword(adminPassword);
+  const existingAdmin = await db.select().from(schema.users).where(eq(schema.users.email, adminEmail));
+  let adminId = existingAdmin[0]?.id;
   if (!adminId) {
     adminId = randomBytes(16).toString("hex");
-    const passwordHash = await hashPassword(adminPassword);
     await db.insert(schema.users).values({
       id: adminId,
       name: "Administrator",
       email: adminEmail,
-      passwordHash,
+      passwordHash: adminHash,
       role: "admin",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+  } else {
+    await db.update(schema.users).set({
+      passwordHash: adminHash,
+      role: "admin",
+      updatedAt: new Date(),
+    }).where(eq(schema.users.email, adminEmail));
+  }
+
+  const userHash = await hashPassword(userPassword);
+  const existingUser = await db.select().from(schema.users).where(eq(schema.users.email, userEmail));
+  if (existingUser.length === 0) {
+    await db.insert(schema.users).values({
+      id: randomBytes(16).toString("hex"),
+      name: "Demo User",
+      email: userEmail,
+      passwordHash: userHash,
+      role: "user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  } else {
+    await db.update(schema.users).set({
+      passwordHash: userHash,
+      role: "user",
+      updatedAt: new Date(),
+    }).where(eq(schema.users.email, userEmail));
   }
 
   const initialCategories = [

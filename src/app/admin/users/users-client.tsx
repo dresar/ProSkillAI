@@ -94,10 +94,11 @@ export function UsersClient({ usersList }: { usersList: UserType[] }) {
               <select
                 id="user-role"
                 name="role"
-                defaultValue="editor"
+                defaultValue="user"
                 className="w-full h-8 px-2 rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
               >
-                <option value="editor">Editor (Hanya Kelola Skill & Prompt)</option>
+                <option value="user">User (Staf Standar)</option>
+                <option value="editor">Editor (Kelola Skill & Prompt)</option>
                 <option value="admin">Admin (Akses Penuh)</option>
               </select>
             </div>
@@ -158,10 +159,11 @@ export function UsersClient({ usersList }: { usersList: UserType[] }) {
                   <select
                     value={u.role}
                     onChange={(e) =>
-                      updateUserRoleAction(u.id, e.target.value as "admin" | "editor")
+                      updateUserRoleAction(u.id, e.target.value as "admin" | "user" | "editor")
                     }
                     className="h-7 px-2 text-[11px] rounded border border-border bg-surface text-foreground cursor-pointer focus:outline-2 focus:outline-foreground"
                   >
+                    <option value="user">User</option>
                     <option value="editor">Editor</option>
                     <option value="admin">Admin</option>
                   </select>
