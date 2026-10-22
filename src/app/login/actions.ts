@@ -4,8 +4,9 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { verifyPassword, createSession, checkRateLimit, recordLoginAttempt } from "@/lib/auth";
+import { verifyPassword, createSession, destroySession, checkRateLimit, recordLoginAttempt } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Format email tidak valid"),
@@ -58,4 +59,9 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
   await createSession(user.id);
   return { success: true };
+}
+
+export async function logoutAction() {
+  await destroySession();
+  redirect("/login");
 }

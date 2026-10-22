@@ -3,8 +3,10 @@ import { setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { getCurrentUser } from "@/lib/auth";
 import { PublicSidebar } from "@/components/public-sidebar";
 import { PublicMobileHeader } from "@/components/public-mobile-header";
+import { PublicTopBar } from "@/components/public-top-bar";
 import { PublicFooter } from "@/components/public-footer";
 import { HtmlLangSetter } from "@/components/html-lang-setter";
 
@@ -31,6 +33,15 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   const messages = await getMessages();
+  const user = await getCurrentUser();
+  const sessionUser = user
+    ? {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      }
+    : null;
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -77,10 +88,11 @@ export default async function LocaleLayout({
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none" />
         </div>
         <div className="relative z-20 shrink-0">
-          <PublicSidebar locale={locale} />
+          <PublicSidebar locale={locale} user={sessionUser} />
         </div>
         <div className="flex-1 flex flex-col min-w-0 relative z-10">
-          <PublicMobileHeader locale={locale} />
+          <PublicMobileHeader locale={locale} user={sessionUser} />
+          <PublicTopBar locale={locale} user={sessionUser} />
           <main id="main-content" className="flex-1 flex flex-col">
             {children}
           </main>

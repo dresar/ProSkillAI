@@ -4,11 +4,19 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Menu, X, MessageSquare, Shield } from "lucide-react";
+import { Menu, X, MessageSquare, Shield, LogOut } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
+import { PublicUserNav, type PublicUser } from "./public-user-nav";
+import { logoutAction } from "@/app/login/actions";
 
-export function PublicMobileHeader({ locale }: { locale: string }) {
+export function PublicMobileHeader({
+  locale,
+  user,
+}: {
+  locale: string;
+  user?: PublicUser | null;
+}) {
   const [isOpen, setIsOpen] = React.useState(false);
   const pathname = usePathname();
   const tNav = useTranslations("nav");
@@ -40,7 +48,7 @@ export function PublicMobileHeader({ locale }: { locale: string }) {
         <Link
           href={`/${locale}`}
           onClick={() => setIsOpen(false)}
-          className="flex items-center gap-2.5 text-foreground hover:opacity-85 transition-opacity"
+          className="flex items-center gap-2 text-foreground hover:opacity-85 transition-opacity"
           aria-label="ProSkillAI Home"
         >
           <div className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center shrink-0">
@@ -61,13 +69,14 @@ export function PublicMobileHeader({ locale }: { locale: string }) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <LanguageSwitcher currentLocale={locale} />
-          <ThemeToggle label="Toggle theme" />
+          <ThemeToggle label="Toggle theme" locale={locale} />
+          <PublicUserNav user={user ?? null} locale={locale} />
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="inline-flex items-center justify-center w-8 h-8 rounded border border-border text-foreground hover:bg-muted"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
             aria-expanded={isOpen}
             aria-label={isOpen ? tNav("close") : tNav("menu")}
           >
@@ -78,6 +87,23 @@ export function PublicMobileHeader({ locale }: { locale: string }) {
 
       {isOpen && (
         <div className="border-b border-border bg-background px-4 py-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+          {user && (
+            <div className="p-3 rounded-lg border border-border bg-surface flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-md bg-foreground text-background font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                  {user.name.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
+                  <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-muted text-foreground border border-border">
+                {user.role}
+              </span>
+            </div>
+          )}
+
           <div>
             <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase block mb-1.5">
               {locale === "en" ? "Build" : "Bangun"}
@@ -133,20 +159,33 @@ export function PublicMobileHeader({ locale }: { locale: string }) {
             <Link
               href="/admin"
               onClick={() => setIsOpen(false)}
-              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium"
             >
               <Shield className="w-3.5 h-3.5" />
               <span>{tNav("admin")}</span>
             </Link>
-            <a
-              href="https://github.com/dresar/ProSkillAI/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>{locale === "en" ? "Feedback" : "Umpan Balik"}</span>
-            </a>
+
+            {user ? (
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>{locale === "en" ? "Sign Out" : "Keluar"}</span>
+                </button>
+              </form>
+            ) : (
+              <a
+                href="https://github.com/dresar/ProSkillAI/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>{locale === "en" ? "Feedback" : "Umpan Balik"}</span>
+              </a>
+            )}
           </div>
         </div>
       )}
