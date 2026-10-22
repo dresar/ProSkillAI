@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { PublicSidebar } from "@/components/public-sidebar";
 import { PublicMobileHeader } from "@/components/public-mobile-header";
 import { PublicFooter } from "@/components/public-footer";
+import { HtmlLangSetter } from "@/components/html-lang-setter";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -61,9 +62,7 @@ export default async function LocaleLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
       />
-      <script
-        dangerouslySetInnerHTML={{ __html: `document.documentElement.lang="${locale}";` }}
-      />
+      <HtmlLangSetter locale={locale} />
 
       <a
         href="#main-content"
