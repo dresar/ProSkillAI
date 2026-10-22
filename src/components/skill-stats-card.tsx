@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
 import { Star, GitFork, GitCommit, Users, Scale, Folder, FolderGit2, ExternalLink } from "lucide-react";
+import { motion } from "motion/react";
 import type { Skill, Category } from "@/db/schema";
 import { formatIdNumber, formatIsoDate } from "@/lib/format";
 
@@ -66,7 +69,13 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
   const repoPath = skill.repoUrl ? skill.repoUrl.replace(/^https?:\/\/github\.com\//, "") : null;
 
   return (
-    <aside className="rounded-xl border border-border/60 bg-surface overflow-hidden">
+    <motion.aside
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: "easeOut" } }}
+      className="rounded-xl border border-border/70 bg-surface overflow-hidden hover:border-foreground/30 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-[border-color,box-shadow] duration-200"
+    >
       <div className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-b border-border/60 bg-muted/30">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground">
           {isEn ? "Statistics" : "Statistik"}
@@ -137,6 +146,6 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
           )}
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }

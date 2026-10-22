@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
+import { motion } from "motion/react";
 import type { Skill, Category } from "@/db/schema";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
@@ -9,6 +12,8 @@ interface SkillCardProps {
   category?: Category | null;
   locale: string;
 }
+
+const MotionLink = motion.create(Link);
 
 export function SkillCard({ skill, category, locale }: SkillCardProps) {
   const isEn = locale === "en";
@@ -29,9 +34,14 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
   const starCount = skill.copyCount > 0 ? formatCount(skill.copyCount) : "4.8k";
 
   return (
-    <Link
+    <MotionLink
       href={`/${locale}/skills/${skill.slug}`}
-      className="group flex flex-col justify-between rounded-xl border border-border bg-surface p-4 sm:p-5 hover:border-foreground/30 dark:hover:border-zinc-700 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground shadow-xs"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: "easeOut" } }}
+      whileTap={{ scale: 0.98 }}
+      className="group flex flex-col justify-between rounded-xl border border-border/80 bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-[border-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground shadow-xs min-h-[44px]"
     >
       <div>
         {skill.previewType === "image" && skill.previewImageUrl && (
@@ -82,6 +92,6 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
           <span className="text-[11px] font-mono">{starCount}</span>
         </div>
       </div>
-    </Link>
+    </MotionLink>
   );
 }

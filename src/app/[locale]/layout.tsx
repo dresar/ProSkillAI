@@ -71,9 +71,13 @@ export default async function LocaleLayout({
         {locale === "en" ? "Skip to main content" : "Lewati ke konten utama"}
       </a>
 
-      <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground relative">
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+          <div className="absolute inset-0 bg-grid-lines bg-grid-mask opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none" />
+        </div>
         <PublicSidebar locale={locale} />
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 relative z-10">
           <PublicMobileHeader locale={locale} />
           <main id="main-content" className="flex-1 flex flex-col">
             {children}

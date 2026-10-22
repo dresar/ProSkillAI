@@ -32,9 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" data-theme="noir" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
-        <ThemeProvider defaultTheme="system">
+        <ThemeProvider defaultTheme="system" defaultColorTheme="noir">
           {children}
         </ThemeProvider>
       </body>

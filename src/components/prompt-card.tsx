@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Star, Variable } from "lucide-react";
+import { motion } from "motion/react";
 import type { Prompt, Category } from "@/db/schema";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
@@ -8,6 +11,8 @@ interface PromptCardProps {
   category?: Category | null;
   locale: string;
 }
+
+const MotionLink = motion.create(Link);
 
 export function PromptCard({ prompt, category, locale }: PromptCardProps) {
   const isEn = locale === "en";
@@ -29,9 +34,14 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
   const starCount = prompt.copyCount > 0 ? formatCount(prompt.copyCount) : "3.2k";
 
   return (
-    <Link
+    <MotionLink
       href={`/${locale}/prompts/${prompt.slug}`}
-      className="group flex flex-col justify-between rounded-xl border border-border bg-surface p-4 sm:p-5 hover:border-foreground/30 dark:hover:border-zinc-700 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground shadow-xs"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      whileHover={{ y: -4, transition: { duration: 0.2, ease: "easeOut" } }}
+      whileTap={{ scale: 0.98 }}
+      className="group flex flex-col justify-between rounded-xl border border-border/80 bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-[border-color,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground shadow-xs min-h-[44px]"
     >
       <div>
         <div className="flex items-center justify-between gap-2 mb-2">
@@ -70,6 +80,6 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
           <span className="text-[11px] font-mono">{starCount}</span>
         </div>
       </div>
-    </Link>
+    </MotionLink>
   );
 }
