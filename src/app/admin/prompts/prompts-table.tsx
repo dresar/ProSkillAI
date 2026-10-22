@@ -38,7 +38,7 @@ interface PromptsTableProps {
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`text-[11px] px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
+      className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
         status === "published"
           ? "border-border bg-foreground text-background"
           : status === "draft"
@@ -125,20 +125,20 @@ export function PromptsTable({
   const renderActions = (prompt: Prompt & { category?: Category | null }) => {
     if (confirmDeleteId === prompt.id) {
       return (
-        <div className="inline-flex items-center gap-1.5 text-xs">
+        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs">
           <span className="text-muted-foreground">Hapus?</span>
           <button
             type="button"
             disabled={isDeleting}
             onClick={() => handleDelete(prompt.id)}
-            className="px-2 py-0.5 rounded bg-foreground text-background font-medium hover:opacity-90"
+            className="px-1.5 sm:px-2 py-0.5 rounded bg-foreground text-background font-medium hover:opacity-90"
           >
             Ya
           </button>
           <button
             type="button"
             onClick={() => setConfirmDeleteId(null)}
-            className="px-2 py-0.5 rounded border border-border text-foreground"
+            className="px-1.5 sm:px-2 py-0.5 rounded border border-border text-foreground"
           >
             Batal
           </button>
@@ -147,18 +147,18 @@ export function PromptsTable({
     }
 
     return (
-      <div className="inline-flex items-center gap-1">
+      <div className="inline-flex items-center gap-0.5 sm:gap-1">
         <Link
           href={`/id/prompts/${prompt.slug}`}
           target="_blank"
-          className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
           title="Lihat halaman publik"
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </Link>
         <Link
           href={`/admin/prompts/${prompt.id}/edit`}
-          className="p-1.5 rounded hover:bg-muted text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-foreground"
           title="Edit prompt"
         >
           <Edit className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export function PromptsTable({
         <button
           type="button"
           onClick={() => setConfirmDeleteId(prompt.id)}
-          className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
           title="Hapus prompt"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -244,7 +244,7 @@ export function PromptsTable({
           Belum ada prompt yang sesuai filter.
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
           {promptsList.map((prompt) => {
             const cover = getCoverImage(prompt.images);
             const vars = variableCount(prompt.variables);
@@ -263,38 +263,38 @@ export function PromptsTable({
                       alt={prompt.titleId}
                       fill
                       unoptimized
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 768px) 50vw, 33vw"
                       className="object-cover"
                     />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-muted-foreground">
-                      <ImageOff className="w-5 h-5" />
-                      <span className="text-[10px]">Tanpa gambar</span>
+                      <ImageOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-[9px] sm:text-[10px]">Tanpa gambar</span>
                     </div>
                   )}
                 </Link>
 
-                <div className="p-3.5 flex flex-col gap-2 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
+                <div className="p-2.5 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
                       <Link
                         href={`/admin/prompts/${prompt.id}/edit`}
-                        className="font-semibold text-sm text-foreground truncate block hover:underline"
+                        className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
                       >
                         {prompt.titleId}
                       </Link>
-                      <div className="font-mono text-[11px] text-muted-foreground truncate">
+                      <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
                         /{prompt.slug}
                       </div>
                     </div>
                     <StatusBadge status={prompt.status} />
                   </div>
 
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
                     {prompt.category?.nameId || "Tanpa kategori"}
                   </div>
 
-                  <div className="text-[11px] font-mono text-muted-foreground">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-muted-foreground">
                     {vars} variabel
                   </div>
 

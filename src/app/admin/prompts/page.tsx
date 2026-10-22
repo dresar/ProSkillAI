@@ -12,6 +12,7 @@ interface PageProps {
   searchParams: Promise<{
     q?: string;
     status?: string;
+    category?: string;
     sort?: string;
     page?: string;
     pageSize?: string;
@@ -33,7 +34,7 @@ function parseColumns(value?: string): string[] {
 }
 
 export default async function AdminPromptsPage({ searchParams }: PageProps) {
-  const { q, status, sort, page, pageSize, view, cols } = await searchParams;
+  const { q, status, category, sort, page, pageSize, view, cols } = await searchParams;
 
   const pageSizeNumber = parsePageSize(pageSize);
   const pageNumber = Math.max(1, Number(page) || 1);
@@ -44,16 +45,23 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
     getAllCategories("all"),
   ]);
 
-  const catMap = new Map(categoriesList.map((category) => [category.id, category]));
+  const catMap = new Map(categoriesList.map((c) => [c.id, c]));
 
-  const formatted = rows.map((prompt) => ({
+  let formatted = rows.map((prompt) => ({
     ...prompt,
     category: prompt.categoryId ? catMap.get(prompt.categoryId) || null : null,
   }));
 
+  if (category) {
+    formatted = formatted.filter(
+      (prompt) => prompt.categoryId === category || prompt.category?.slug === category
+    );
+  }
+
   const params = {
     q,
     status,
+    category,
     sort,
     pageSize: String(pageSizeNumber),
     view,
@@ -85,11 +93,13 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
         basePath={BASE_PATH}
         q={q}
         status={status}
+        category={category}
         pageSize={pageSizeNumber}
         params={params}
+        categories={categoriesList}
         placeholder="Cari judul atau slug prompt..."
         statusOptions={[
-          { label: "Semua" },
+          { label: "Semua Status" },
           { label: "Terbit", value: "published" },
           { label: "Draft", value: "draft" },
           { label: "Arsip", value: "archived" },
@@ -107,7 +117,7 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
       <AdminPagination
         page={pageNumber}
         pageSize={pageSizeNumber}
-        total={total}
+        total={category ? formatted.length : total}
         basePath={BASE_PATH}
         params={params}
       />

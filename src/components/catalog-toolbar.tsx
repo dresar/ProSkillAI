@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Search, X, SlidersHorizontal } from "lucide-react";
+import { Search, X, ChevronDown } from "lucide-react";
 import type { Category } from "@/db/schema";
 
 interface CatalogToolbarProps {
@@ -21,7 +21,6 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
   const currentSort = searchParams.get("sort") || "newest";
 
   const [searchValue, setSearchValue] = React.useState(currentSearch);
-  const [filterOpen, setFilterOpen] = React.useState(false);
 
   const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -65,7 +64,7 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
                 setSearchValue("");
                 updateParams({ q: null });
               }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
               aria-label={locale === "en" ? "Clear search" : "Hapus pencarian"}
             >
               <X className="w-3.5 h-3.5" />
@@ -73,66 +72,49 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
           )}
         </form>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setFilterOpen(!filterOpen)}
-            className={`inline-flex items-center gap-1.5 h-9 px-3 text-xs font-medium rounded-lg border ${
-              currentCategory
-                ? "border-foreground bg-foreground text-background font-semibold"
-                : "border-border bg-surface text-foreground hover:bg-muted"
-            } transition-colors cursor-pointer`}
-            aria-expanded={filterOpen}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>{locale === "en" ? "Filter" : "Filter"}</span>
-          </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative inline-flex items-center">
+            <select
+              value={currentCategory}
+              onChange={(e) => updateParams({ category: e.target.value || null })}
+              className={`h-9 pl-3 pr-8 text-xs font-medium rounded-lg border appearance-none cursor-pointer focus:outline-2 focus:outline-foreground transition-colors ${
+                currentCategory
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border bg-surface text-foreground hover:border-foreground/40"
+              }`}
+              aria-label={locale === "en" ? "Filter by category" : "Filter berdasarkan kategori"}
+            >
+              <option value="" className="bg-surface text-foreground">
+                {locale === "en" ? "All Categories" : "Semua Kategori"}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.slug} className="bg-surface text-foreground">
+                  {locale === "en" ? cat.nameEn : cat.nameId}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none ${
+                currentCategory ? "text-background" : "text-muted-foreground"
+              }`}
+            />
+          </div>
 
-          <select
-            value={currentSort}
-            onChange={(e) => updateParams({ sort: e.target.value })}
-            className="h-9 px-2.5 text-xs rounded-lg border border-border bg-surface text-foreground cursor-pointer focus:outline-2 focus:outline-foreground"
-            aria-label={locale === "en" ? "Sort items" : "Urutkan item"}
-          >
-            <option value="newest">{locale === "en" ? "Newest" : "Terbaru"}</option>
-            <option value="oldest">{locale === "en" ? "Oldest" : "Terlama"}</option>
-            <option value="popular">{locale === "en" ? "Most popular" : "Terpopuler"}</option>
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              value={currentSort}
+              onChange={(e) => updateParams({ sort: e.target.value })}
+              className="h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-border bg-surface text-foreground appearance-none cursor-pointer focus:outline-2 focus:outline-foreground hover:border-foreground/40 transition-colors"
+              aria-label={locale === "en" ? "Sort items" : "Urutkan item"}
+            >
+              <option value="newest">{locale === "en" ? "Newest" : "Terbaru"}</option>
+              <option value="oldest">{locale === "en" ? "Oldest" : "Terlama"}</option>
+              <option value="popular">{locale === "en" ? "Most popular" : "Terpopuler"}</option>
+            </select>
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+          </div>
         </div>
       </div>
-
-      {filterOpen && (
-        <div className="p-3 rounded-lg border border-border bg-muted/40 flex flex-wrap gap-2 animate-in fade-in">
-          <button
-            type="button"
-            onClick={() => updateParams({ category: null })}
-            className={`text-xs px-2.5 py-1 rounded-md border transition-colors cursor-pointer ${
-              !currentCategory
-                ? "border-foreground bg-foreground text-background font-semibold"
-                : "border-border bg-surface text-foreground hover:bg-muted"
-            }`}
-          >
-            {locale === "en" ? "All Categories" : "Semua Kategori"}
-          </button>
-          {categories.map((cat) => {
-            const isSelected = currentCategory === cat.slug;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => updateParams({ category: cat.slug })}
-                className={`text-xs px-2.5 py-1 rounded-md border transition-colors cursor-pointer ${
-                  isSelected
-                    ? "border-foreground bg-foreground text-background font-semibold"
-                    : "border-border bg-surface text-foreground hover:bg-muted"
-                }`}
-              >
-                {locale === "en" ? cat.nameEn : cat.nameId}
-              </button>
-            );
-          })}
-        </div>
-      )}
 
       {(currentSearch || currentCategory) && (
         <div className="flex items-center gap-2 flex-wrap pt-1 text-xs text-muted-foreground">

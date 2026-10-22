@@ -14,6 +14,7 @@ import {
   Lightbulb,
   Palette,
   HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { updateFeedbackStatusAction, deleteFeedbackAction } from "./actions";
 import type { Feedback } from "@/db/schema";
@@ -133,57 +134,68 @@ export function FeedbackClient({ initialFeedbacks, userRole }: FeedbackClientPro
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
-          <span className="text-[11px] font-medium text-muted-foreground block">Total Umpan Balik</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="p-3 sm:p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
+          <span className="text-[11px] font-medium text-muted-foreground block truncate">Total Umpan Balik</span>
           <span className="text-xl font-bold text-foreground font-mono">{stats.total}</span>
         </div>
-        <div className="p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
-          <span className="text-[11px] font-medium text-amber-500 block">Belum Dibaca</span>
+        <div className="p-3 sm:p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
+          <span className="text-[11px] font-medium text-amber-500 block truncate">Belum Dibaca</span>
           <span className="text-xl font-bold text-amber-500 font-mono">{stats.unread}</span>
         </div>
-        <div className="p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
-          <span className="text-[11px] font-medium text-rose-500 block">Laporan Bug</span>
+        <div className="p-3 sm:p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
+          <span className="text-[11px] font-medium text-rose-500 block truncate">Laporan Bug</span>
           <span className="text-xl font-bold text-rose-500 font-mono">{stats.bugs}</span>
         </div>
-        <div className="p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
-          <span className="text-[11px] font-medium text-emerald-500 block">Permintaan Skill</span>
+        <div className="p-3 sm:p-3.5 rounded-xl border border-border bg-surface shadow-2xs space-y-1">
+          <span className="text-[11px] font-medium text-emerald-500 block truncate">Permintaan Skill</span>
           <span className="text-xl font-bold text-emerald-500 font-mono">{stats.requests}</span>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 text-xs">
-          {[
-            { id: "all", label: `Semua (${stats.total})` },
-            { id: "unread", label: `Belum Dibaca (${stats.unread})` },
-            { id: "bug", label: `Bug (${stats.bugs})` },
-            { id: "skill_request", label: `Permintaan Skill (${stats.requests})` },
-            { id: "resolved", label: `Selesai (${stats.resolved})` },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setFilter(tab.id as typeof filter)}
-              className={`h-8 px-3 rounded-[6px] border text-xs font-medium transition-all whitespace-nowrap cursor-pointer ${
-                filter === tab.id
-                  ? "bg-foreground text-background border-foreground font-semibold shadow-2xs"
-                  : "bg-surface hover:bg-muted text-muted-foreground hover:text-foreground border-border/80"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div className="relative inline-flex items-center w-full sm:w-auto">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as typeof filter)}
+            className={`h-8 w-full sm:w-auto pl-2.5 pr-8 text-xs rounded-lg border appearance-none cursor-pointer focus:outline-2 focus:outline-foreground font-medium transition-colors ${
+              filter !== "all"
+                ? "border-foreground bg-foreground text-background"
+                : "border-border bg-surface text-foreground hover:border-foreground/40"
+            }`}
+            aria-label="Filter status umpan balik"
+          >
+            <option value="all" className="bg-surface text-foreground">
+              Semua Umpan Balik ({stats.total})
+            </option>
+            <option value="unread" className="bg-surface text-foreground">
+              Belum Dibaca ({stats.unread})
+            </option>
+            <option value="bug" className="bg-surface text-foreground">
+              Laporan Bug ({stats.bugs})
+            </option>
+            <option value="skill_request" className="bg-surface text-foreground">
+              Permintaan Skill ({stats.requests})
+            </option>
+            <option value="resolved" className="bg-surface text-foreground">
+              Selesai ({stats.resolved})
+            </option>
+          </select>
+          <ChevronDown
+            className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none ${
+              filter !== "all" ? "text-background" : "text-muted-foreground"
+            }`}
+          />
         </div>
 
         <div className="relative w-full sm:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari pesan, email, URL..."
-            className="w-full h-8 pl-8 pr-3 rounded-[6px] border border-border bg-surface text-foreground text-xs focus:outline-2 focus:outline-foreground"
+            className="w-full h-8 pl-8 pr-3 rounded-lg border border-border bg-surface text-foreground text-xs focus:outline-2 focus:outline-foreground"
           />
         </div>
       </div>

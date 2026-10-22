@@ -57,7 +57,7 @@ function getPreviewBadge(previewType: string): { label: string; active: boolean 
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`text-[11px] px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
+      className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
         status === "published"
           ? "border-border bg-foreground text-background"
           : status === "pending"
@@ -67,14 +67,14 @@ function StatusBadge({ status }: { status: string }) {
           : "border-border text-muted-foreground line-through"
       }`}
     >
-      {status === "pending" ? "Menunggu Review" : status}
+      {status === "pending" ? "Review" : status}
     </span>
   );
 }
 
 function SourceBadge({ sourceType }: { sourceType: string }) {
   return (
-    <span className="text-[11px] px-2 py-0.5 rounded border border-border bg-muted text-foreground font-mono">
+    <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border border-border bg-muted text-foreground font-mono">
       {sourceType === "github" ? "GitHub" : "Orisinal"}
     </span>
   );
@@ -83,10 +83,10 @@ function SourceBadge({ sourceType }: { sourceType: string }) {
 function PreviewBadge({ previewType }: { previewType: string }) {
   const preview = getPreviewBadge(previewType);
   if (!preview.active) {
-    return <span className="text-[11px] text-muted-foreground">—</span>;
+    return <span className="text-[10px] sm:text-[11px] text-muted-foreground">—</span>;
   }
   return (
-    <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium whitespace-nowrap">
+    <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium whitespace-nowrap">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
       {preview.label}
     </span>
@@ -163,20 +163,20 @@ export function SkillsTable({
   const renderActions = (skill: Skill & { category?: Category | null }) => {
     if (confirmDeleteId === skill.id) {
       return (
-        <div className="inline-flex items-center gap-1.5 text-xs">
+        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs">
           <span className="text-muted-foreground">Hapus?</span>
           <button
             type="button"
             disabled={isDeleting}
             onClick={() => handleDelete(skill.id)}
-            className="px-2 py-0.5 rounded bg-foreground text-background font-medium hover:opacity-90"
+            className="px-1.5 sm:px-2 py-0.5 rounded bg-foreground text-background font-medium hover:opacity-90"
           >
             Ya
           </button>
           <button
             type="button"
             onClick={() => setConfirmDeleteId(null)}
-            className="px-2 py-0.5 rounded border border-border text-foreground"
+            className="px-1.5 sm:px-2 py-0.5 rounded border border-border text-foreground"
           >
             Batal
           </button>
@@ -185,7 +185,7 @@ export function SkillsTable({
     }
 
     return (
-      <div className="inline-flex items-center gap-1">
+      <div className="inline-flex items-center gap-0.5 sm:gap-1">
         {skill.status === "pending" && (
           <button
             type="button"
@@ -193,24 +193,24 @@ export function SkillsTable({
               await approveSkillAction(skill.id);
               router.refresh();
             }}
-            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 text-[11px] font-medium cursor-pointer mr-1"
+            className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 text-[10px] sm:text-[11px] font-medium cursor-pointer mr-0.5 sm:mr-1"
             title="Setujui dan Publikasikan"
           >
             <CheckCircle2 className="w-3 h-3" />
-            <span>Setujui</span>
+            <span className="hidden sm:inline">Setujui</span>
           </button>
         )}
         <Link
           href={`/id/skills/${skill.slug}`}
           target="_blank"
-          className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
           title="Lihat halaman publik"
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </Link>
         <Link
           href={`/admin/skills/${skill.id}/edit`}
-          className="p-1.5 rounded hover:bg-muted text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-foreground"
           title="Edit skill"
         >
           <Edit className="w-3.5 h-3.5" />
@@ -218,7 +218,7 @@ export function SkillsTable({
         <button
           type="button"
           onClick={() => setConfirmDeleteId(skill.id)}
-          className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
           title="Hapus skill"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -296,7 +296,7 @@ export function SkillsTable({
           Belum ada skill yang sesuai filter.
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
           {skillsList.map((skill) => {
             const cover = getCoverImage(skill.images, skill.previewImageUrl);
             return (
@@ -314,38 +314,38 @@ export function SkillsTable({
                       alt={skill.titleId}
                       fill
                       unoptimized
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 768px) 50vw, 33vw"
                       className="object-cover"
                     />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-muted-foreground">
-                      <ImageOff className="w-5 h-5" />
-                      <span className="text-[10px]">Tanpa gambar</span>
+                      <ImageOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-[9px] sm:text-[10px]">Tanpa gambar</span>
                     </div>
                   )}
                 </Link>
 
-                <div className="p-3.5 flex flex-col gap-2 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
+                <div className="p-2.5 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
+                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
                       <Link
                         href={`/admin/skills/${skill.id}/edit`}
-                        className="font-semibold text-sm text-foreground truncate block hover:underline"
+                        className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
                       >
                         {skill.titleId}
                       </Link>
-                      <div className="font-mono text-[11px] text-muted-foreground truncate">
+                      <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
                         /{skill.slug}
                       </div>
                     </div>
                     <StatusBadge status={skill.status} />
                   </div>
 
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
                     {skill.category?.nameId || "Tanpa kategori"}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
                     <SourceBadge sourceType={skill.sourceType} />
                     <PreviewBadge previewType={skill.previewType} />
                   </div>

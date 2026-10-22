@@ -72,23 +72,23 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((c) => {
           const Icon = c.icon;
           return (
             <Link
               key={c.label}
               href={c.href}
-              className="p-4 rounded-md border border-border bg-surface hover:border-foreground/30 transition-colors block"
+              className="p-3 sm:p-4 rounded-xl border border-border bg-surface hover:border-foreground/30 transition-colors block"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium">{c.label}</span>
-                <Icon className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground font-medium truncate">{c.label}</span>
+                <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
               </div>
-              <div className="mt-2 text-2xl font-bold tracking-tight text-foreground font-mono">
+              <div className="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-foreground font-mono">
                 {c.value}
               </div>
-              <div className="mt-1 text-[11px] text-muted-foreground">{c.detail}</div>
+              <div className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground truncate">{c.detail}</div>
             </Link>
           );
         })}
