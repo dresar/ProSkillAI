@@ -6,13 +6,8 @@ import { Sun, Moon, Palette, Check, ChevronUp } from "lucide-react";
 
 export function ThemeSidebarToggle({ locale }: { locale: string }) {
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   React.useEffect(() => {
     if (!open) return;
@@ -68,15 +63,14 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
       ];
       document.documentElement.animate(
         {
-          clipPath: resolvedTheme === "dark" ? [...clipPath].reverse() : clipPath,
+          clipPath: isDark ? [...clipPath].reverse() : clipPath,
         },
         {
           duration: 350,
           easing: "ease-in-out",
-          pseudoElement:
-            resolvedTheme === "dark"
-              ? "::view-transition-old(root)"
-              : "::view-transition-new(root)",
+          pseudoElement: isDark
+            ? "::view-transition-old(root)"
+            : "::view-transition-new(root)",
         }
       );
     });
@@ -119,10 +113,10 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
 
           <div className="px-1.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
             <Palette className="w-3 h-3" />
-            <span>{isEn ? "10 Themes" : "10 Pilihan Tema"}</span>
+            <span>{isEn ? "Color Theme" : "Tema Warna"}</span>
           </div>
 
-          <div className="mt-1 grid grid-cols-2 gap-1 max-h-52 overflow-y-auto pr-0.5">
+          <div className="mt-1 grid grid-cols-2 gap-1.5 max-h-56 overflow-y-auto">
             {COLOR_THEMES.map((item) => {
               const isSelected = item.id === colorTheme;
               return (
@@ -133,18 +127,18 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
                     setColorTheme(item.id);
                     setOpen(false);
                   }}
-                  className={`flex items-center gap-1.5 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
+                  className={`flex items-center gap-2 p-1.5 rounded-lg border text-left transition-all cursor-pointer ${
                     isSelected
                       ? "border-foreground bg-muted font-semibold text-foreground shadow-2xs"
                       : "border-border/60 hover:border-foreground/40 hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <span
-                    className="w-3.5 h-3.5 rounded-md shrink-0 border border-black/10 dark:border-white/20 flex items-center justify-center shadow-2xs"
+                    className="w-4 h-4 rounded-md shrink-0 border border-black/10 dark:border-white/20 flex items-center justify-center shadow-2xs"
                     style={{ backgroundColor: item.color }}
                   >
                     <span
-                      className="w-1.5 h-1.5 rounded-full"
+                      className="w-2 h-2 rounded-full"
                       style={{ backgroundColor: item.accent }}
                     />
                   </span>
@@ -176,9 +170,7 @@ export function ThemeSidebarToggle({ locale }: { locale: string }) {
             style={{ backgroundColor: activeDef.accent }}
           />
           <span className="truncate" suppressHydrationWarning>
-            {mounted
-              ? `${activeDef.name} · ${isDark ? (isEn ? "Dark" : "Gelap") : (isEn ? "Light" : "Terang")}`
-              : activeDef.name}
+            {activeDef.name} · {isDark ? (isEn ? "Dark" : "Gelap") : (isEn ? "Light" : "Terang")}
           </span>
         </div>
         <ChevronUp className={`w-3.5 h-3.5 text-muted-foreground/80 shrink-0 transition-transform ${open ? "" : "rotate-180"}`} />

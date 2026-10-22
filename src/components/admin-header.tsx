@@ -12,7 +12,7 @@ export function AdminHeader({ userEmail, title }: { userEmail: string; title?: s
   }
 
   return (
-    <header className="h-14 border-b border-border bg-surface px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="h-14 shrink-0 border-b border-border bg-surface px-4 sm:px-6 flex items-center justify-between gap-4 relative z-20">
       <div className="flex items-center gap-3">
         <h1 className="text-sm font-semibold text-foreground tracking-tight">
           {title || "Panel Admin"}

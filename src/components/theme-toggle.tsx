@@ -12,13 +12,8 @@ export function ThemeToggle({
   locale?: string;
 }) {
   const { resolvedTheme, setTheme, colorTheme, setColorTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   React.useEffect(() => {
     if (!open) return;
@@ -74,15 +69,14 @@ export function ThemeToggle({
       ];
       document.documentElement.animate(
         {
-          clipPath: resolvedTheme === "dark" ? [...clipPath].reverse() : clipPath,
+          clipPath: isDark ? [...clipPath].reverse() : clipPath,
         },
         {
           duration: 350,
           easing: "ease-in-out",
-          pseudoElement:
-            resolvedTheme === "dark"
-              ? "::view-transition-old(root)"
-              : "::view-transition-new(root)",
+          pseudoElement: isDark
+            ? "::view-transition-old(root)"
+            : "::view-transition-new(root)",
         }
       );
     });
@@ -93,8 +87,8 @@ export function ThemeToggle({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        aria-label={mounted ? `${label} (${activeDef.name}, ${isDark ? "Gelap" : "Terang"})` : label}
-        title={mounted ? `${label} (${activeDef.name})` : label}
+        aria-label={`${label} (${activeDef.name}, ${isDark ? "Gelap" : "Terang"})`}
+        title={`${label} (${activeDef.name})`}
         aria-haspopup="true"
         aria-expanded={open}
         suppressHydrationWarning
@@ -105,14 +99,10 @@ export function ThemeToggle({
           className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 shadow-2xs flex items-center justify-center"
           style={{ backgroundColor: activeDef.accent }}
         />
-        {mounted ? (
-          isDark ? (
-            <Moon className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
-          ) : (
-            <Sun className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
-          )
+        {isDark ? (
+          <Moon className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
         ) : (
-          <span className="w-3.5 h-3.5 shrink-0 inline-block" aria-hidden="true" />
+          <Sun className="w-3.5 h-3.5 text-foreground shrink-0" aria-hidden="true" />
         )}
         <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
       </button>

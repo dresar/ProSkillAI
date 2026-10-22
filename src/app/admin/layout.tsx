@@ -25,12 +25,14 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
+    <div className="h-screen h-dvh bg-background flex flex-col lg:flex-row overflow-hidden">
       <AdminSidebar userRole={user.role} />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <AdminHeader userEmail={user.email} />
-        <main className="flex-1 p-4 sm:p-6 max-w-6xl w-full mx-auto">
-          {children}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="max-w-6xl w-full mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

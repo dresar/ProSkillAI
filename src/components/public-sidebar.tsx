@@ -4,11 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { MessageSquare, Sparkles, ExternalLink, Shield } from "lucide-react";
+import { MessageSquare, Sparkles, ExternalLink, Shield, PanelLeftClose } from "lucide-react";
 import { ThemeSidebarToggle } from "./theme-sidebar-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 
 export function PublicSidebar({ locale }: { locale: string }) {
+  void PanelLeftClose;
   const pathname = usePathname();
   const tNav = useTranslations("nav");
   const tBeta = useTranslations("beta");

@@ -48,7 +48,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
 
   return (
     <>
-      <div className="lg:hidden p-3 border-b border-border flex items-center justify-between bg-surface">
+      <div className="lg:hidden shrink-0 p-3 border-b border-border flex items-center justify-between bg-surface">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-foreground shrink-0" width="20" height="20" viewBox="0 0 32 32" fill="none">
             <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
@@ -112,10 +112,10 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       <aside
         className={`hidden lg:flex flex-col justify-between border-r border-border bg-surface transition-all duration-200 ${
           collapsed ? "w-16" : "w-56"
-        } min-h-screen`}
+        } h-full shrink-0 select-none`}
       >
-        <div>
-          <div className="h-14 border-b border-border flex items-center justify-between px-3.5">
+        <div className="flex flex-col min-h-0 flex-1">
+          <div className="h-14 shrink-0 border-b border-border flex items-center justify-between px-3.5">
             <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
               <svg className="w-6 h-6 shrink-0 text-foreground" width="24" height="24" viewBox="0 0 32 32" fill="none">
                 <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
@@ -144,7 +144,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
             </button>
           </div>
 
-          <nav className="p-2 space-y-1">
+          <nav className="p-2 space-y-1 overflow-y-auto flex-1">
             {links.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -167,7 +167,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
           </nav>
         </div>
 
-        <div className="p-3 border-t border-border text-[11px] text-muted-foreground">
+        <div className="p-3 shrink-0 border-t border-border text-[11px] text-muted-foreground">
           {!collapsed && (
             <div className="truncate">
               Role: <span className="font-semibold text-foreground">{userRole}</span>
