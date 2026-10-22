@@ -1,0 +1,45 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/README.md'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check SSH configuration
+        id: check_ssh
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          if [ -z "$SSH_HOST" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "SSH_HOST secret is not configured in repository secrets."
+            echo "Deployment step skipped gracefully."
+            echo "To enable instant automated deployment on git push, configure:"
+            echo "- SSH_HOST"
+            echo "- SSH_USER"
+            echo "- SSH_KEY"
+            echo "- SSH_PORT (optional, defaults to 22)"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger remote deployment via SSH
+        if: steps.check_ssh.outputs.configured == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: /opt/data/home/proskillai/scripts/auto-update.sh
