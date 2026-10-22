@@ -27,7 +27,7 @@ export function PublicHeader({ locale }: { locale: string }) {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-xs">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/95 backdrop-blur-xs">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         <Link
           href={`/${locale}`}

@@ -1,99 +1,109 @@
 "use client";
 
 import * as React from "react";
-import { Eye, FileText } from "lucide-react";
+import { Eye, FileText, Braces } from "lucide-react";
 
 interface SkillDetailTabsProps {
   hasPreview: boolean;
   previewNode: React.ReactNode;
   contentNode: React.ReactNode;
+  rawNode: React.ReactNode;
   locale: string;
 }
+
+type TabId = "preview" | "content" | "raw";
 
 export function SkillDetailTabs({
   hasPreview,
   previewNode,
   contentNode,
+  rawNode,
   locale,
 }: SkillDetailTabsProps) {
-  const [activeTab, setActiveTab] = React.useState<"preview" | "content">(
-    hasPreview ? "preview" : "content"
-  );
-
   const isEn = locale === "en";
 
-  if (!hasPreview) {
-    return <div>{contentNode}</div>;
+  const tabs: Array<{ id: TabId; label: string; icon: React.ReactNode; node: React.ReactNode }> = [];
+
+  if (hasPreview) {
+    tabs.push({
+      id: "preview",
+      label: isEn ? "Preview" : "Pratinjau",
+      icon: <Eye className="w-3.5 h-3.5" />,
+      node: previewNode,
+    });
   }
 
+  tabs.push({
+    id: "content",
+    label: isEn ? "SKILL.md Content" : "Isi SKILL.md",
+    icon: <FileText className="w-3.5 h-3.5" />,
+    node: contentNode,
+  });
+
+  tabs.push({
+    id: "raw",
+    label: isEn ? "Raw Markdown" : "Markdown Mentah",
+    icon: <Braces className="w-3.5 h-3.5" />,
+    node: rawNode,
+  });
+
+  const [selectedId, setSelectedId] = React.useState<TabId>(hasPreview ? "preview" : "content");
+
+  const activeId: TabId = tabs.some((t) => t.id === selectedId) ? selectedId : tabs[0].id;
+  const activeIndex = Math.max(
+    0,
+    tabs.findIndex((t) => t.id === activeId)
+  );
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      setActiveTab((prev) => (prev === "preview" ? "content" : "preview"));
-    }
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const dir = e.key === "ArrowRight" ? 1 : -1;
+    const next = (activeIndex + dir + tabs.length) % tabs.length;
+    setSelectedId(tabs[next].id);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div
         role="tablist"
         aria-label={isEn ? "Skill view options" : "Pilihan tampilan skill"}
         onKeyDown={handleKeyDown}
         className="flex items-center gap-1.5 p-1 rounded-lg border border-border bg-muted w-fit"
       >
-        <button
-          type="button"
-          role="tab"
-          id="tab-preview"
-          aria-selected={activeTab === "preview"}
-          aria-controls="panel-preview"
-          tabIndex={activeTab === "preview" ? 0 : -1}
-          onClick={() => setActiveTab("preview")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-            activeTab === "preview"
-              ? "bg-foreground text-background shadow-xs font-semibold"
-              : "text-muted-foreground hover:text-foreground hover:bg-surface"
-          }`}
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            id={`tab-${tab.id}`}
+            aria-selected={activeId === tab.id}
+            aria-controls={`panel-${tab.id}`}
+            tabIndex={activeId === tab.id ? 0 : -1}
+            onClick={() => setSelectedId(tab.id)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              activeId === tab.id
+                ? "bg-foreground text-background shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-surface"
+            }`}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {tabs.map((tab) => (
+        <div
+          key={tab.id}
+          role="tabpanel"
+          id={`panel-${tab.id}`}
+          aria-labelledby={`tab-${tab.id}`}
+          hidden={activeId !== tab.id}
         >
-          <Eye className="w-3.5 h-3.5" />
-          <span>{isEn ? "Visual Preview" : "Pratinjau Visual"}</span>
-        </button>
-
-        <button
-          type="button"
-          role="tab"
-          id="tab-content"
-          aria-selected={activeTab === "content"}
-          aria-controls="panel-content"
-          tabIndex={activeTab === "content" ? 0 : -1}
-          onClick={() => setActiveTab("content")}
-          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
-            activeTab === "content"
-              ? "bg-foreground text-background shadow-xs font-semibold"
-              : "text-muted-foreground hover:text-foreground hover:bg-surface"
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          <span>{isEn ? "SKILL.md Content" : "Isi SKILL.md"}</span>
-        </button>
-      </div>
-
-      <div
-        role="tabpanel"
-        id="panel-preview"
-        aria-labelledby="tab-preview"
-        hidden={activeTab !== "preview"}
-      >
-        {activeTab === "preview" && previewNode}
-      </div>
-
-      <div
-        role="tabpanel"
-        id="panel-content"
-        aria-labelledby="tab-content"
-        hidden={activeTab !== "content"}
-      >
-        {activeTab === "content" && contentNode}
-      </div>
+          {activeId === tab.id && tab.node}
+        </div>
+      ))}
     </div>
   );
 }

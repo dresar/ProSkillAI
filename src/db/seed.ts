@@ -362,22 +362,90 @@ Guide to designing technical architecture slides and executive decks without clu
       slug: "copy-editing",
       titleId: "Penyuntingan Copy & Teks Pemasaran",
       titleEn: "Copy Editing",
-      summaryId: "Sunting dan poles teks produk dengan 7 tahap terfokus: kejernihan, suara merek, bukti nyata, dan ritme kalimat.",
-      summaryEn: "Edit and polish marketing copy with seven focused passes: clarity, brand voice, factual proof, and authentic cadence.",
-      contentId: `# Copy Editing
-Protokol penyuntingan teks dan copywriting tingkat lanjut. Mengeliminasi kata-kata hiasan generik AI dan menonjolkan nilai nyata.`,
-      contentEn: `# Copy Editing
-Advanced copywriting and editing protocol. Eliminates generic AI padding and highlights concrete product value.`,
+      summaryId: "Sunting dan poles teks produk melalui 7 tahap terfokus: kejernian, suara merek, bukti nyata, spesifisitas, dan ritme kalimat.",
+      summaryEn: "Edit and polish product copy through seven focused passes: clarity, brand voice, factual proof, specificity, and authentic cadence.",
+      contentId: `# Copy Editing — Penyuntingan Copy Produksi
+
+## Tujuan
+Menyunting dan memoles copy produk serta pemasaran melalui tujuh tahap terfokus. Elimininasi penjelas hiasan generik AI dan tampilkan nilai nyata pada setiap kalimat.
+
+## Tujuh Tahap Penyuntingan
+1. **Kejernian** — satu ide per kalimat; buang penguat berlebihan dan ambiguitas.
+2. **Suara Merek** — sesuaikan nada bicara; persona dan tense harus konsisten.
+3. **Bukti Nyata** — ganti klaim abstrak dengan data, angka, dan contoh konkret.
+4. **Ritme** — variasikan panjang kalimat; baca lantang untuk menguji kelancaran.
+5. **Spesifisitas** — buang adjektif kabur; sebutkan objek, aksi, dan hasilnya.
+6. **Struktur** — pimpin dengan hasil akhir, baru jelaskan mekanismenya.
+7. **Pemolesan** — perbaiki grammar, ejaan, dan tanda baca pada tahap terakhir.
+
+## Aturan Wajib
+- Utamakan kalimat aktif dan kata kerja yang kuat.
+- Hapus kata pengisi: "sangat", "benar-benar", "guna", "adalah".
+- Jangan pernah mengarang metrik, testimoni, atau jaminan hasil.
+- CTA diawali kata kerja: "Mulai", "Unduh", "Ajak", "Bandingkan".
+- Satu paragraf maksimal tiga hingga empat kalimat padat.
+
+## Contoh Sebelum / Sesudah
+**Sebelum:** "Platform kami memanfaatkan AI mutakhir guna benar-benar membantu tim berkolaborasi lebih baik secara menyeluruh."
+**Sesudah:** "Tim Anda merencanakan, membangun, dan meluncurkan dalam satu ruang kerja."
+
+## Klise AI yang Wajib Dihilangkan
+- "Bukti kunci", "tingkatkan produktivitas", "integrasi mulus", "solusi revolusioner", "mengubah permainan".
+
+## Daftar Periksa Suara Merek
+- Nada: percaya diri, hangat, langsung pada substansi.
+- Persona: "kami" dan "Anda", hindari pasif.
+- Konsistensi angka, kapitalisasi judul, dan format tanggal ISO (YYYY-MM-DD).`,
+      contentEn: `# Copy Editing — Production Editing Protocol
+
+## Purpose
+Edit and polish product and marketing copy through seven focused passes. Eliminate generic AI padding and surface concrete value in every sentence.
+
+## The Seven Editing Passes
+1. **Clarity** — one idea per sentence; remove hedges and ambiguity.
+2. **Brand Voice** — match the tone; keep persona and tense consistent.
+3. **Factual Proof** — replace abstract claims with data, numbers, and concrete examples.
+4. **Cadence** — vary sentence length; read aloud to test flow.
+5. **Specificity** — cut vague adjectives; name the object, action, and outcome.
+6. **Structure** — lead with the end result, then explain the mechanism.
+7. **Polish** — fix grammar, spelling, and punctuation on the final pass.
+
+## Mandatory Rules
+- Prefer active voice and strong verbs.
+- Delete filler: "very", "really", "in order to", "utilize", "is able to".
+- Never fabricate metrics, testimonials, or guarantees.
+- CTAs are verb-first: "Start", "Download", "Invite", "Compare".
+- One paragraph holds no more than three to four dense sentences.
+
+## Before / After Example
+**Before:** "Our platform utilizes cutting-edge AI in order to really help teams collaborate better across the board."
+**After:** "Your team plans, builds, and ships from one workspace."
+
+## AI-isms to Eliminate
+- "Unlock", "boost productivity", "seamless integration", "revolutionary solution", "game-changing".
+
+## Brand Voice Checklist
+- Tone: confident, warm, and substantive.
+- Persona: "we" and "you"; avoid passive constructions.
+- Consistency: numbers, title capitalization, and ISO dates (YYYY-MM-DD).`,
       sourceType: "github",
       repoUrl: "https://github.com/coreyhaines31/marketing-skills",
       authorName: "coreyhaines31",
       authorUrl: "https://github.com/coreyhaines31",
-      attribution: "Corey Haines Marketing Skills under MIT license.",
+      attribution: "Corey Haines Marketing Skills under Apache 2.0.",
+      license: "Apache-2.0",
+      frontmatter: {
+        stars: 182126,
+        forks: 21586,
+        contributors: 3,
+        lastCommit: "2026-09-03",
+      },
       categoryId: "cat-marketing",
       tags: ["copywriting", "marketing", "editing", "clarity"],
-      previewType: "tokens",
+      previewType: "none",
       status: "published",
       copyCount: 5100,
+      downloadCount: 1840,
       createdBy: adminId,
     },
     {

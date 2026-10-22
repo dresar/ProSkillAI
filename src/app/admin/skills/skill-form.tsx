@@ -37,6 +37,7 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
   const [previewType, setPreviewType] = React.useState<string>(initialSkill?.previewType || "none");
   const [previewHtml, setPreviewHtml] = React.useState(initialSkill?.previewHtml || "");
   const [previewImageUrl, setPreviewImageUrl] = React.useState(initialSkill?.previewImageUrl || "");
+  const [previewVideoUrl, setPreviewVideoUrl] = React.useState(initialSkill?.previewVideoUrl || "");
 
   const handleTitleChange = (val: string, lang: "id" | "en") => {
     if (lang === "id") {
@@ -349,6 +350,8 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                 <option value="none">Tidak Ada (Teks Murni)</option>
                 <option value="html">Potongan HTML/CSS Statis</option>
                 <option value="image">Gambar Thumbnail</option>
+                <option value="video">Video (YouTube / Loom / MP4)</option>
+                <option value="markdown">Markdown Terrender</option>
                 <option value="tokens">Token Desain Terstruktur</option>
               </select>
             </div>
@@ -381,9 +384,33 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
                   type="url"
                   value={previewImageUrl}
                   onChange={(e) => setPreviewImageUrl(e.target.value)}
-                  placeholder="https://..."
+                  placeholder="https://cdn.jsdelivr.net/gh/owner/repo@main/public/img.png"
                   className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
                 />
+                <p className="text-[10px] text-neutral-400 leading-relaxed">
+                  Didukung aset GitHub CDN via jsDelivr:
+                  <span className="font-mono"> cdn.jsdelivr.net/gh/owner/repo@main/...</span>
+                </p>
+              </div>
+            )}
+
+            {previewType === "video" && (
+              <div className="space-y-1">
+                <label htmlFor="previewVideoUrl" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                  URL Video
+                </label>
+                <input
+                  id="previewVideoUrl"
+                  name="previewVideoUrl"
+                  type="url"
+                  value={previewVideoUrl}
+                  onChange={(e) => setPreviewVideoUrl(e.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=... atau https://.../demo.mp4"
+                  className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                />
+                <p className="text-[10px] text-neutral-400 leading-relaxed">
+                  Mendukung embed YouTube, Loom, atau file MP4 langsung (rasio 16:9).
+                </p>
               </div>
             )}
           </div>

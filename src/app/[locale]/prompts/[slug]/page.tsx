@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 
 interface PageProps {
@@ -12,6 +12,8 @@ interface PageProps {
     slug: string;
   }>;
 }
+
+const SITE_URL = "https://proskillai.dev";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -30,17 +32,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `https://proskillai.dev/${locale}/prompts/${slug}`,
+      canonical: `${SITE_URL}/${locale}/prompts/${slug}`,
       languages: {
-        id: `https://proskillai.dev/id/prompts/${slug}`,
-        en: `https://proskillai.dev/en/prompts/${slug}`,
-        "x-default": `https://proskillai.dev/id/prompts/${slug}`,
+        id: `${SITE_URL}/id/prompts/${slug}`,
+        en: `${SITE_URL}/en/prompts/${slug}`,
+        "x-default": `${SITE_URL}/id/prompts/${slug}`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `https://proskillai.dev/${locale}/prompts/${slug}`,
+      url: `${SITE_URL}/${locale}/prompts/${slug}`,
       siteName: "ProSkillAI",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
@@ -64,6 +66,9 @@ export default async function PromptDetailPage({ params }: PageProps) {
   const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
 
+  const canonical = `${SITE_URL}/${locale}/prompts/${slug}`;
+  const dateModified = prompt.updatedAt ? new Date(prompt.updatedAt).toISOString() : undefined;
+
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -72,21 +77,32 @@ export default async function PromptDetailPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: isEn ? "Home" : "Beranda",
-        item: `https://proskillai.dev/${locale}`,
+        item: `${SITE_URL}/${locale}`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Prompts",
-        item: `https://proskillai.dev/${locale}/prompts`,
+        item: `${SITE_URL}/${locale}/prompts`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: title,
-        item: `https://proskillai.dev/${locale}/prompts/${slug}`,
+        item: canonical,
       },
     ],
+  };
+
+  const techArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: title,
+    description,
+    programmingLanguage: "Markdown",
+    url: canonical,
+    dateModified,
+    author: { "@type": "Organization", name: "ProSkillAI", url: SITE_URL },
   };
 
   return (
@@ -95,28 +111,36 @@ export default async function PromptDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
+      />
+
+      <nav aria-label="Breadcrumb" className="pb-2">
+        <ol className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <li>
+            <Link href={`/${locale}`} className="hover:text-foreground transition-colors">
+              {isEn ? "Home" : "Beranda"}
+            </Link>
+          </li>
+          <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
+          <li>
+            <Link href={`/${locale}/prompts`} className="hover:text-foreground transition-colors">
+              Prompts
+            </Link>
+          </li>
+          <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
+          <li className="text-foreground font-medium truncate max-w-[50vw]">{title}</li>
+        </ol>
+      </nav>
 
       <div className="space-y-4">
-        <Link
-          href={`/${locale}/prompts`}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>{isEn ? "Back to Prompts" : "Kembali ke Katalog Prompts"}</span>
-        </Link>
-
         <div className="space-y-2">
           {categoryName && (
-            <div className="text-xs font-medium text-muted-foreground">
-              {categoryName}
-            </div>
+            <div className="text-xs font-medium text-muted-foreground">{categoryName}</div>
           )}
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            {title}
-          </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-            {description}
-          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{description}</p>
           {prompt.copyCount > 0 && (
             <div className="text-xs font-mono text-muted-foreground pt-1">
               {prompt.copyCount} {isEn ? "copies recorded" : "kali disalin"}

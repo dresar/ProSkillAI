@@ -11,6 +11,23 @@ interface SkillsTableProps {
   skillsList: (Skill & { category?: Category | null })[];
 }
 
+function getPreviewBadge(previewType: string): { label: string; active: boolean } {
+  switch (previewType) {
+    case "html":
+      return { label: "HTML", active: true };
+    case "video":
+      return { label: "Video", active: true };
+    case "image":
+      return { label: "Gambar", active: true };
+    case "markdown":
+      return { label: "Markdown", active: true };
+    case "tokens":
+      return { label: "Token", active: true };
+    default:
+      return { label: "—", active: false };
+  }
+}
+
 export function SkillsTable({ skillsList }: SkillsTableProps) {
   const router = useRouter();
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null);
@@ -38,15 +55,18 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
         <table className="w-full text-left text-xs">
           <thead className="border-b border-border bg-muted/60 text-muted-foreground">
             <tr>
-              <th className="p-3 font-medium text-foreground">Judul & Slug</th>
+              <th className="p-3 font-medium text-foreground">Judul &amp; Slug</th>
               <th className="p-3 font-medium text-foreground">Kategori</th>
               <th className="p-3 font-medium text-foreground">Sumber</th>
+              <th className="p-3 font-medium text-foreground">Pratinjau</th>
               <th className="p-3 font-medium text-foreground">Status</th>
               <th className="p-3 font-medium text-foreground text-right">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {skillsList.map((skill) => (
+            {skillsList.map((skill) => {
+              const preview = getPreviewBadge(skill.previewType);
+              return (
               <tr key={skill.id} className="hover:bg-muted/40 transition-colors">
                 <td className="p-3">
                   <div className="font-medium text-foreground">{skill.titleId}</div>
@@ -59,6 +79,16 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
                   <span className="text-[11px] px-2 py-0.5 rounded border border-border bg-muted text-foreground font-mono">
                     {skill.sourceType === "github" ? "GitHub" : "Orisinal"}
                   </span>
+                </td>
+                <td className="p-3">
+                  {preview.active ? (
+                    <span className="inline-flex items-center gap-1.5 text-[11px] px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+                      {preview.label}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-muted-foreground">—</span>
+                  )}
                 </td>
                 <td className="p-3">
                   <span
@@ -122,7 +152,8 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
                   )}
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -147,6 +178,12 @@ export function SkillsTable({ skillsList }: SkillsTableProps) {
               <span>{skill.category?.nameId || "-"}</span>
               <span>&bull;</span>
               <span>{skill.sourceType === "github" ? "GitHub" : "Orisinal"}</span>
+              {skill.previewType !== "none" && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+                  {skill.previewType}
+                </span>
+              )}
             </div>
 
             <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800/60 flex justify-end gap-2">

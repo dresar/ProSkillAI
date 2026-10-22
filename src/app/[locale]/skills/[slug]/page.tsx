@@ -3,13 +3,16 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, CheckCircle2 } from "lucide-react";
+import { ChevronRight, CheckCircle2 } from "lucide-react";
 import { CopySkillButton } from "@/components/copy-skill-button";
 import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
 import { SkillCard } from "@/components/skill-card";
 import { SkillDetailTabs } from "@/components/skill-detail-tabs";
+import { SkillStatsCard } from "@/components/skill-stats-card";
+import { CliInstallBox } from "@/components/cli-install-box";
+import { ProviderBadge, type ProviderId } from "@/components/provider-logos";
 
 interface PageProps {
   params: Promise<{
@@ -17,6 +20,8 @@ interface PageProps {
     slug: string;
   }>;
 }
+
+const SITE_URL = "https://proskillai.dev";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -35,17 +40,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `https://proskillai.dev/${locale}/skills/${slug}`,
+      canonical: `${SITE_URL}/${locale}/skills/${slug}`,
       languages: {
-        id: `https://proskillai.dev/id/skills/${slug}`,
-        en: `https://proskillai.dev/en/skills/${slug}`,
-        "x-default": `https://proskillai.dev/id/skills/${slug}`,
+        id: `${SITE_URL}/id/skills/${slug}`,
+        en: `${SITE_URL}/en/skills/${slug}`,
+        "x-default": `${SITE_URL}/id/skills/${slug}`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `https://proskillai.dev/${locale}/skills/${slug}`,
+      url: `${SITE_URL}/${locale}/skills/${slug}`,
       siteName: "ProSkillAI",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
@@ -70,9 +75,12 @@ export default async function SkillDetailPage({ params }: PageProps) {
   const content = isEn ? skill.contentEn : skill.contentId;
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
 
-  const related = skill.categoryId
-    ? await getRelatedSkills(skill.categoryId, skill.id, 3)
-    : [];
+  const related = skill.categoryId ? await getRelatedSkills(skill.categoryId, skill.id, 3) : [];
+
+  const canonical = `${SITE_URL}/${locale}/skills/${slug}`;
+  const dateModified = skill.updatedAt ? new Date(skill.updatedAt).toISOString() : undefined;
+  const authorName = skill.authorName || "ProSkillAI";
+  const authorUrl = skill.authorUrl || SITE_URL;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -82,24 +90,56 @@ export default async function SkillDetailPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: isEn ? "Home" : "Beranda",
-        item: `https://proskillai.dev/${locale}`,
+        item: `${SITE_URL}/${locale}`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Skills",
-        item: `https://proskillai.dev/${locale}/skills`,
+        item: `${SITE_URL}/${locale}/skills`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: title,
-        item: `https://proskillai.dev/${locale}/skills/${slug}`,
+        item: canonical,
       },
     ],
   };
 
-  const hasPreview = skill.previewType !== "none" && Boolean(skill.previewHtml || skill.previewImageUrl || skill.designTokens);
+  const techArticleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: title,
+    description: summary,
+    programmingLanguage: "Markdown",
+    url: canonical,
+    dateModified,
+    author: { "@type": "Organization", name: authorName, url: authorUrl },
+    ...(skill.repoUrl ? { codeRepository: skill.repoUrl } : {}),
+  };
+
+  const sourceCodeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    name: title,
+    description: summary,
+    programmingLanguage: "Markdown",
+    url: canonical,
+    dateModified,
+    author: { "@type": "Organization", name: authorName, url: authorUrl },
+    ...(skill.repoUrl ? { codeRepository: skill.repoUrl } : {}),
+  };
+
+  const hasPreview =
+    skill.previewType !== "none" &&
+    Boolean(
+      skill.previewHtml ||
+        skill.previewImageUrl ||
+        skill.previewVideoUrl ||
+        skill.designTokens ||
+        skill.previewType === "markdown"
+    );
 
   const previewNode = (
     <section aria-labelledby="preview-heading" className="space-y-3">
@@ -112,7 +152,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   const contentNode = (
     <section aria-labelledby="content-heading" className="space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-border">
+      <div className="flex items-center justify-between pb-2 border-b border-border/60">
         <h2 id="content-heading" className="text-sm font-semibold text-foreground tracking-tight">
           {t("tabContent")}
         </h2>
@@ -125,152 +165,198 @@ export default async function SkillDetailPage({ params }: PageProps) {
     </section>
   );
 
+  const rawNode = (
+    <section aria-labelledby="raw-heading" className="space-y-3">
+      <div className="flex items-center justify-between pb-2 border-b border-border/60">
+        <h2 id="raw-heading" className="text-sm font-semibold text-foreground tracking-tight">
+          {isEn ? "Raw Markdown" : "Markdown Mentah"}
+        </h2>
+        <span className="font-mono text-xs text-muted-foreground">.md</span>
+      </div>
+      <pre className="p-4 sm:p-6 rounded-xl border border-border bg-surface overflow-x-auto text-xs font-mono text-foreground leading-relaxed whitespace-pre-wrap break-words">
+        {content}
+      </pre>
+    </section>
+  );
+
+  const compatibleProviders: ProviderId[] = ["cmdc", "anthropic", "openai", "gemini", "cursor", "deepseek"];
+
   return (
-    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+    <article className="w-full">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-
-      <div className="space-y-4">
-        <Link
-          href={`/${locale}/skills`}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>{isEn ? "Back to Skills" : "Kembali ke Katalog Skills"}</span>
-        </Link>
-
-        <div className="space-y-2">
-          {categoryName && (
-            <div className="text-xs font-medium text-muted-foreground">
-              {categoryName}
-            </div>
-          )}
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            {title}
-          </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
-            {summary}
-          </p>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-2.5 pt-2">
-          <CopySkillButton
-            skillId={skill.id}
-            content={content}
-            label={t("copyRaw")}
-            copiedLabel={t("copied")}
-          />
-          <DownloadSkillButton
-            skillId={skill.id}
-            content={content}
-            filename={`${skill.slug}.md`}
-            label={t("download")}
-          />
-          {(skill.copyCount > 0 || skill.downloadCount > 0) && (
-            <span className="text-xs font-mono text-muted-foreground pl-2">
-              {skill.copyCount > 0 && `${skill.copyCount} ${isEn ? "copies" : "salinan"}`}
-              {skill.copyCount > 0 && skill.downloadCount > 0 && " • "}
-              {skill.downloadCount > 0 && `${skill.downloadCount} ${isEn ? "downloads" : "unduhan"}`}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <SkillDetailTabs
-        hasPreview={hasPreview}
-        previewNode={previewNode}
-        contentNode={contentNode}
-        locale={locale}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(sourceCodeJsonLd) }}
       />
 
-      <section aria-labelledby="install-heading" className="p-4 sm:p-5 rounded-xl border border-border bg-muted/30 space-y-3 text-xs">
-        <h2 id="install-heading" className="font-semibold text-foreground tracking-tight">
-          {t("installGuide")}
-        </h2>
-        <ol className="list-decimal pl-4 space-y-1.5 text-muted-foreground leading-relaxed">
-          <li>{t("installStep1")}</li>
-          <li>{t("installStep2")}</li>
-          <li>{t("installStep3")}</li>
-        </ol>
-      </section>
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav aria-label="Breadcrumb" className="mb-6">
+          <ol className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <li>
+              <Link href={`/${locale}`} className="hover:text-foreground transition-colors">
+                {isEn ? "Home" : "Beranda"}
+              </Link>
+            </li>
+            <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
+            <li>
+              <Link href={`/${locale}/skills`} className="hover:text-foreground transition-colors">
+                Skills
+              </Link>
+            </li>
+            <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
+            <li className="text-foreground font-medium truncate max-w-[50vw]">{title}</li>
+          </ol>
+        </nav>
 
-      <section aria-labelledby="provenance-heading" className="p-4 rounded-xl border border-border bg-surface space-y-3 text-xs">
-        <h2 id="provenance-heading" className="font-semibold text-foreground tracking-tight">
-          {t("provenance")}
-        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-10">
+          <div className="min-w-0 space-y-8">
+            <header className="space-y-3">
+              {categoryName && (
+                <div className="text-xs font-medium text-muted-foreground">{categoryName}</div>
+              )}
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{summary}</p>
 
-        {skill.sourceType === "github" ? (
-          <div className="space-y-1.5 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span>{t("sourceRepo")}:</span>
-              {skill.repoUrl ? (
-                <a
-                  href={skill.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-mono text-foreground hover:underline inline-flex items-center gap-1"
-                >
-                  <span>{skill.repoUrl.replace("https://github.com/", "")}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ) : (
-                <span>-</span>
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70 mr-1">
+                  {isEn ? "Works with" : "Kompatibel dengan"}
+                </span>
+                {compatibleProviders.map((p) => (
+                  <ProviderBadge key={p} provider={p} />
+                ))}
+              </div>
+            </header>
+
+            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
+              <CopySkillButton
+                skillId={skill.id}
+                content={content}
+                label={t("copyRaw")}
+                copiedLabel={t("copied")}
+              />
+              <DownloadSkillButton
+                skillId={skill.id}
+                content={content}
+                filename={`${skill.slug}.md`}
+                label={t("download")}
+              />
+              {(skill.copyCount > 0 || skill.downloadCount > 0) && (
+                <span className="text-xs font-mono text-muted-foreground sm:pl-2">
+                  {skill.copyCount > 0 && `${skill.copyCount} ${isEn ? "copies" : "salinan"}`}
+                  {skill.copyCount > 0 && skill.downloadCount > 0 && " • "}
+                  {skill.downloadCount > 0 && `${skill.downloadCount} ${isEn ? "downloads" : "unduhan"}`}
+                </span>
               )}
             </div>
 
-            {skill.filePath && (
-              <div className="flex items-center gap-2">
-                <span>{t("filePath")}:</span>
-                <span className="font-mono">{skill.filePath}</span>
-              </div>
-            )}
+            <CliInstallBox slug={skill.slug} locale={locale} />
 
-            {skill.commitHash && (
-              <div className="flex items-center gap-2">
-                <span>{t("commit")}:</span>
-                <span className="font-mono">{skill.commitHash.slice(0, 7)}</span>
-              </div>
-            )}
+            <SkillDetailTabs
+              hasPreview={hasPreview}
+              previewNode={previewNode}
+              contentNode={contentNode}
+              rawNode={rawNode}
+              locale={locale}
+            />
 
-            {skill.license && (
-              <div className="flex items-center gap-2">
-                <span>{t("license")}:</span>
-                <span className="font-semibold text-foreground">{skill.license}</span>
-              </div>
-            )}
+            <section
+              aria-labelledby="install-heading"
+              className="p-4 sm:p-5 rounded-xl border border-border bg-muted/30 space-y-3 text-xs"
+            >
+              <h2 id="install-heading" className="font-semibold text-foreground tracking-tight">
+                {t("installGuide")}
+              </h2>
+              <ol className="list-decimal pl-4 space-y-1.5 text-muted-foreground leading-relaxed">
+                <li>{t("installStep1")}</li>
+                <li>{t("installStep2")}</li>
+                <li>{t("installStep3")}</li>
+              </ol>
+            </section>
+
+            <section
+              aria-labelledby="provenance-heading"
+              className="p-4 rounded-xl border border-border bg-surface space-y-3 text-xs"
+            >
+              <h2 id="provenance-heading" className="font-semibold text-foreground tracking-tight">
+                {t("provenance")}
+              </h2>
+
+              {skill.sourceType === "github" ? (
+                <div className="space-y-1.5 text-muted-foreground">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span>{t("sourceRepo")}:</span>
+                    {skill.repoUrl ? (
+                      <a
+                        href={skill.repoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-foreground hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>{skill.repoUrl.replace("https://github.com/", "")}</span>
+                      </a>
+                    ) : (
+                      <span>-</span>
+                    )}
+                  </div>
+
+                  {skill.filePath && (
+                    <div className="flex items-center gap-2">
+                      <span>{t("filePath")}:</span>
+                      <span className="font-mono">{skill.filePath}</span>
+                    </div>
+                  )}
+
+                  {skill.commitHash && (
+                    <div className="flex items-center gap-2">
+                      <span>{t("commit")}:</span>
+                      <span className="font-mono">{skill.commitHash.slice(0, 7)}</span>
+                    </div>
+                  )}
+
+                  {skill.license && (
+                    <div className="flex items-center gap-2">
+                      <span>{t("license")}:</span>
+                      <span className="font-semibold text-foreground">{skill.license}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-1 text-muted-foreground">
+                  <div className="flex items-center gap-1.5 text-foreground font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    <span>{t("originalWork")}</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">{t("originalDesc")}</p>
+                </div>
+              )}
+            </section>
           </div>
-        ) : (
-          <div className="space-y-1 text-muted-foreground">
-            <div className="flex items-center gap-1.5 text-foreground font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-              <span>{t("originalWork")}</span>
+
+          <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+            <SkillStatsCard skill={skill} category={category} locale={locale} />
+          </div>
+        </div>
+
+        {related.length > 0 && (
+          <section aria-labelledby="related-heading" className="space-y-4 pt-10 mt-10 border-t border-border/60">
+            <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
+              {t("relatedSkills")}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
+              {related.map(({ skill: rSkill, category: rCategory }) => (
+                <SkillCard key={rSkill.id} skill={rSkill} category={rCategory} locale={locale} />
+              ))}
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              {t("originalDesc")}
-            </p>
-          </div>
+          </section>
         )}
-      </section>
-
-      {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="space-y-4 pt-6 border-t border-border">
-          <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
-            {t("relatedSkills")}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
-            {related.map(({ skill: rSkill, category: rCategory }) => (
-              <SkillCard
-                key={rSkill.id}
-                skill={rSkill}
-                category={rCategory}
-                locale={locale}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+      </div>
     </article>
   );
 }

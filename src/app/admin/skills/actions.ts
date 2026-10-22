@@ -25,9 +25,10 @@ const skillFormSchema = z.object({
   authorName: z.string().nullable().optional(),
   authorUrl: z.string().nullable().optional(),
   attribution: z.string().nullable().optional(),
-  previewType: z.enum(["none", "html", "image", "tokens"]).default("none"),
+  previewType: z.enum(["none", "html", "image", "video", "markdown", "tokens"]).default("none"),
   previewHtml: z.string().nullable().optional(),
   previewImageUrl: z.string().nullable().optional(),
+  previewVideoUrl: z.string().nullable().optional(),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
 });
 
@@ -50,9 +51,10 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
     authorName: (formData.get("authorName") as string) || null,
     authorUrl: (formData.get("authorUrl") as string) || null,
     attribution: (formData.get("attribution") as string) || null,
-    previewType: (formData.get("previewType") as "none" | "html" | "image" | "tokens") || "none",
+    previewType: (formData.get("previewType") as "none" | "html" | "image" | "video" | "markdown" | "tokens") || "none",
     previewHtml: (formData.get("previewHtml") as string) || null,
     previewImageUrl: (formData.get("previewImageUrl") as string) || null,
+    previewVideoUrl: (formData.get("previewVideoUrl") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
   };
 
@@ -112,9 +114,10 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
     authorName: (formData.get("authorName") as string) || null,
     authorUrl: (formData.get("authorUrl") as string) || null,
     attribution: (formData.get("attribution") as string) || null,
-    previewType: (formData.get("previewType") as "none" | "html" | "image" | "tokens") || "none",
+    previewType: (formData.get("previewType") as "none" | "html" | "image" | "video" | "markdown" | "tokens") || "none",
     previewHtml: (formData.get("previewHtml") as string) || null,
     previewImageUrl: (formData.get("previewImageUrl") as string) || null,
+    previewVideoUrl: (formData.get("previewVideoUrl") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
   };
 

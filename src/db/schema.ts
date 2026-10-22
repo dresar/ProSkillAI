@@ -62,6 +62,7 @@ export const skills = pgTable("skills", {
   previewType: text("preview_type").notNull().default("none"),
   previewHtml: text("preview_html"),
   previewImageUrl: text("preview_image_url"),
+  previewVideoUrl: text("preview_video_url"),
   designTokens: jsonb("design_tokens"),
   status: text("status").notNull().default("draft"),
   copyCount: integer("copy_count").notNull().default(0),

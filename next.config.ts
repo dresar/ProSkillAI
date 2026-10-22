@@ -6,7 +6,8 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
-    value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; object-src 'none'; frame-src 'self' blob:; base-uri 'self'; form-action 'self';",
+    value:
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self'; object-src 'none'; media-src 'self' https: blob: data:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com https://www.loom.com; base-uri 'self'; form-action 'self';",
   },
   {
     key: "X-Content-Type-Options",

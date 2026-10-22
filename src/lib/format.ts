@@ -8,6 +8,19 @@ export function formatCount(count: number): string {
   return count.toString();
 }
 
+const idNumberFormatter = new Intl.NumberFormat("id-ID");
+
+export function formatIdNumber(value: number): string {
+  return idNumberFormatter.format(value);
+}
+
+export function formatIsoDate(value?: string | Date | null): string | null {
+  if (!value) return null;
+  const date = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+}
+
 export function getCategoryColor(slugOrName?: string | null): string {
   if (!slugOrName) return "text-zinc-400";
   const s = slugOrName.toLowerCase();
