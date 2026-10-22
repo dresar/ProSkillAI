@@ -4,15 +4,8 @@ import * as React from "react";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
 
-const emptySubscribe = () => () => {};
-
 export function ThemeToggle({ label = "Ganti tema" }: { label?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const mounted = React.useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
 
   const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
     const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
@@ -54,21 +47,16 @@ export function ThemeToggle({ label = "Ganti tema" }: { label?: string }) {
     });
   };
 
-  if (!mounted) {
-    return (
-      <div className="w-8 h-8 rounded border border-border bg-surface" />
-    );
-  }
-
   const isDark = resolvedTheme === "dark";
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
+      suppressHydrationWarning
       aria-label={`${label} (${isDark ? "Gelap" : "Terang"})`}
       title={`${label} (${isDark ? "Gelap" : "Terang"})`}
-      className="inline-flex items-center justify-center w-8 h-8 rounded border border-border bg-surface hover:bg-muted text-foreground transition-transform active:scale-95 cursor-pointer"
+      className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-transform active:scale-95 cursor-pointer shrink-0"
     >
       {isDark ? (
         <Sun className="w-4 h-4 text-foreground" aria-hidden="true" />

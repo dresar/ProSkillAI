@@ -22,24 +22,25 @@ export function useTheme() {
   return React.useContext(ThemeContext);
 }
 
-const EVENT_NAME = "proskillai:theme-change";
+const THEME_STORAGE_KEY = "theme";
+const THEME_CHANGE_EVENT = "proskillai:theme-change";
 
 function subscribe(callback: () => void) {
   window.addEventListener("storage", callback);
-  window.addEventListener(EVENT_NAME, callback);
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   mediaQuery.addEventListener("change", callback);
 
   return () => {
     window.removeEventListener("storage", callback);
-    window.removeEventListener(EVENT_NAME, callback);
+    window.removeEventListener(THEME_CHANGE_EVENT, callback);
     mediaQuery.removeEventListener("change", callback);
   };
 }
 
 function getSnapshot(): Theme {
   try {
-    const val = localStorage.getItem("theme");
+    const val = localStorage.getItem(THEME_STORAGE_KEY);
     if (val === "dark" || val === "light" || val === "system") {
       return val;
     }
@@ -53,6 +54,29 @@ function getServerSnapshot(): Theme {
   return "system";
 }
 
+function applyThemeToDocument(theme: Theme) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  let isDark = false;
+  if (theme === "dark") {
+    isDark = true;
+  } else if (theme === "light") {
+    isDark = false;
+  } else {
+    isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  if (isDark) {
+    root.classList.add("dark");
+    root.classList.remove("light");
+    root.style.colorScheme = "dark";
+  } else {
+    root.classList.add("light");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+  }
+}
+
 interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
@@ -64,22 +88,12 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  storageKey = "theme",
+  storageKey = THEME_STORAGE_KEY,
 }: ThemeProviderProps) {
   const theme = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   React.useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-      root.classList.remove("light");
-    } else if (theme === "light") {
-      root.classList.add("light");
-      root.classList.remove("dark");
-    } else {
-      root.classList.remove("dark");
-      root.classList.remove("light");
-    }
+    applyThemeToDocument(theme);
   }, [theme]);
 
   const setTheme = React.useCallback(
@@ -89,7 +103,8 @@ export function ThemeProvider({
       } catch {
         void newTheme;
       }
-      window.dispatchEvent(new Event(EVENT_NAME));
+      applyThemeToDocument(newTheme);
+      window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
     },
     [storageKey]
   );
