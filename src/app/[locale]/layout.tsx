@@ -82,10 +82,14 @@ export default async function LocaleLayout({
         {locale === "en" ? "Skip to main content" : "Lewati ke konten utama"}
       </a>
 
-      <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground relative">
+      <div className="min-h-screen flex flex-col lg:flex-row bg-background text-foreground relative transition-colors duration-200">
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-          <div className="absolute inset-0 bg-grid-lines bg-grid-mask opacity-60 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none" />
+          <div
+            className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[450px] rounded-full blur-[110px] opacity-35 dark:opacity-40 pointer-events-none transition-all duration-500"
+            style={{ background: "radial-gradient(ellipse at center, var(--accent) 0%, transparent 70%)" }}
+          />
+          <div className="absolute inset-0 bg-grid-lines bg-grid-mask opacity-70 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
         </div>
         <div className="relative z-20 shrink-0">
           <PublicSidebar locale={locale} user={sessionUser} />

@@ -27,15 +27,15 @@ export interface ColorThemeDefinition {
 
 export const COLOR_THEMES: readonly ColorThemeDefinition[] = [
   { id: "noir", name: "Noir", nameId: "Noir", color: "#09090b", accent: "#f4f4f5", border: "#27272a" },
-  { id: "cyber", name: "Cyber", nameId: "Cyber", color: "#040d12", accent: "#06b6d4", border: "#155e75" },
-  { id: "emerald", name: "Emerald", nameId: "Zamrud", color: "#05130b", accent: "#10b981", border: "#065f46" },
-  { id: "indigo", name: "Indigo", nameId: "Indigo", color: "#080816", accent: "#6366f1", border: "#3730a3" },
-  { id: "amber", name: "Amber", nameId: "Amber", color: "#130d04", accent: "#f59e0b", border: "#78350f" },
-  { id: "rose", name: "Rose", nameId: "Mawar", color: "#14050a", accent: "#f43f5e", border: "#881337" },
-  { id: "slate", name: "Slate", nameId: "Slate", color: "#0b0f14", accent: "#38bdf8", border: "#0369a1" },
-  { id: "aurora", name: "Aurora", nameId: "Aurora", color: "#061214", accent: "#14b8a6", border: "#115e59" },
-  { id: "neon", name: "Neon", nameId: "Neon", color: "#100516", accent: "#d946ef", border: "#701a75" },
-  { id: "espresso", name: "Espresso", nameId: "Espresso", color: "#130c08", accent: "#d97706", border: "#7c2d12" },
+  { id: "cyber", name: "Cyber", nameId: "Cyber", color: "#04141c", accent: "#06b6d4", border: "#155e75" },
+  { id: "emerald", name: "Emerald", nameId: "Zamrud", color: "#04180f", accent: "#10b981", border: "#065f46" },
+  { id: "indigo", name: "Indigo", nameId: "Indigo", color: "#090a20", accent: "#6366f1", border: "#3730a3" },
+  { id: "amber", name: "Amber", nameId: "Amber", color: "#150e05", accent: "#f59e0b", border: "#78350f" },
+  { id: "rose", name: "Rose", nameId: "Mawar", color: "#190610", accent: "#f43f5e", border: "#881337" },
+  { id: "slate", name: "Slate", nameId: "Slate", color: "#09121a", accent: "#38bdf8", border: "#0369a1" },
+  { id: "aurora", name: "Aurora", nameId: "Aurora", color: "#041618", accent: "#14b8a6", border: "#115e59" },
+  { id: "neon", name: "Neon", nameId: "Neon", color: "#16061c", accent: "#d946ef", border: "#701a75" },
+  { id: "espresso", name: "Espresso", nameId: "Espresso", color: "#170e08", accent: "#d97706", border: "#7c2d12" },
 ] as const;
 
 interface ThemeContextType {
