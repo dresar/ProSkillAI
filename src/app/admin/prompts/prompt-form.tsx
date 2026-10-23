@@ -3,10 +3,11 @@
 import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Eye, Code, ExternalLink, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Eye, Code, ExternalLink, Sparkles, Loader2, ShieldCheck } from "lucide-react";
 import { createPromptAction, updatePromptAction } from "./actions";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { PromptPreviewDialog } from "@/components/admin/prompt-preview-dialog";
+import { AiAuditModal } from "@/components/admin/ai-audit-modal";
 import type { Prompt, Category } from "@/db/schema";
 
 interface VariableItem {
@@ -65,6 +66,7 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
   const [contentEn, setContentEn] = React.useState(initialPrompt?.contentEn || "");
   const [previewMode, setPreviewMode] = React.useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = React.useState(false);
+  const [auditModalOpen, setAuditModalOpen] = React.useState(false);
   const [images, setImages] = React.useState<string[]>(() =>
     Array.isArray(initialPrompt?.images) ? (initialPrompt.images as string[]) : []
   );
@@ -208,6 +210,15 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
               <span>URL Publik</span>
             </Link>
           )}
+
+          <button
+            type="button"
+            onClick={() => setAuditModalOpen(true)}
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-medium transition-all active:scale-95 cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Audit AI Prompt</span>
+          </button>
 
           <button
             type="button"
@@ -719,6 +730,15 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
         contentEn={contentEn}
         variables={variables}
         initialLang={activeTab}
+      />
+
+      <AiAuditModal
+        isOpen={auditModalOpen}
+        onClose={() => setAuditModalOpen(false)}
+        targetType="prompt"
+        title={activeTab === "en" ? titleEn : titleId}
+        description={activeTab === "en" ? descriptionEn : descriptionId}
+        content={activeTab === "en" ? contentEn : contentId}
       />
     </form>
   );

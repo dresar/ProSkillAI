@@ -39,6 +39,14 @@ export const categories = pgTable("categories", {
   index("categories_type_idx").on(table.type),
 ]);
 
+export interface SkillFileItem {
+  id: string;
+  name: string;
+  content: string;
+  language?: string;
+  size?: number;
+}
+
 export const skills = pgTable("skills", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
@@ -48,6 +56,7 @@ export const skills = pgTable("skills", {
   summaryEn: text("summary_en").notNull(),
   contentId: text("content_id").notNull(),
   contentEn: text("content_en").notNull(),
+  files: jsonb("files").$type<SkillFileItem[]>().default([]),
   frontmatter: jsonb("frontmatter"),
   sourceType: text("source_type").notNull().default("original"),
   repoUrl: text("repo_url"),

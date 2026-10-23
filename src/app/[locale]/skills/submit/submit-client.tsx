@@ -11,6 +11,7 @@ import {
   Eye,
   Edit3,
   ArrowLeft,
+  FileCode,
 } from "lucide-react";
 import {
   parseRawSkillAction,
@@ -18,7 +19,8 @@ import {
   submitUserSkillAction,
 } from "./actions";
 import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
-import type { Category } from "@/db/schema";
+import { SkillFilesManager } from "@/components/skill-files-manager";
+import type { Category, SkillFileItem } from "@/db/schema";
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -61,15 +63,12 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   const [githubUrl, setGithubUrl] = React.useState("");
   const [isFetchingGithub, setIsFetchingGithub] = React.useState(false);
 
-  const [activeLang, setActiveLang] = React.useState<"id" | "en">("id");
   const [previewTab, setPreviewTab] = React.useState<"edit" | "preview">("edit");
 
-  const [titleId, setTitleId] = React.useState("");
-  const [titleEn, setTitleEn] = React.useState("");
-  const [summaryId, setSummaryId] = React.useState("");
-  const [summaryEn, setSummaryEn] = React.useState("");
-  const [contentId, setContentId] = React.useState("");
-  const [contentEn, setContentEn] = React.useState("");
+  const [title, setTitle] = React.useState("");
+  const [summary, setSummary] = React.useState("");
+  const [content, setContent] = React.useState("");
+  const [files, setFiles] = React.useState<SkillFileItem[]>([]);
   const [slug, setSlug] = React.useState("");
   const [categoryId, setCategoryId] = React.useState("");
   const [tagsInput, setTagsInput] = React.useState("");
@@ -78,58 +77,6 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   const [authorUrl, setAuthorUrl] = React.useState("");
   const [repoUrl, setRepoUrl] = React.useState("");
   const [sourceType, setSourceType] = React.useState<"original" | "github">("original");
-  const [translatingField, setTranslatingField] = React.useState<string | null>(null);
-
-  const handleTranslate = async (field: "title" | "summary" | "content" | "all") => {
-    try {
-      setTranslatingField(field);
-
-      if (field === "title" || field === "all") {
-        if (titleId.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: titleId.trim(), type: "title" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setTitleEn(data.translatedText);
-          }
-        }
-      }
-
-      if (field === "summary" || field === "all") {
-        if (summaryId.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: summaryId.trim(), type: "description" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setSummaryEn(data.translatedText);
-          }
-        }
-      }
-
-      if (field === "content" || field === "all") {
-        if (contentId.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: contentId.trim(), type: "content" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setContentEn(data.translatedText);
-          }
-        }
-      }
-    } catch {
-    } finally {
-      setTranslatingField(null);
-    }
-  };
 
   const handleSmartParse = async () => {
     if (!rawText.trim()) return;
@@ -145,30 +92,15 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
     }
 
     if (res.data) {
-      if (res.data.title) {
-        setTitleId(res.data.title);
-        setTitleEn(res.data.title);
-      }
-      if (res.data.summary) {
-        setSummaryId(res.data.summary);
-        setSummaryEn(res.data.summary);
-      }
-      if (res.data.content) {
-        setContentId(res.data.content);
-        setContentEn(res.data.content);
-      }
-      if (res.data.slug) {
-        setSlug(res.data.slug);
-      }
+      if (res.data.title) setTitle(res.data.title);
+      if (res.data.summary) setSummary(res.data.summary);
+      if (res.data.content) setContent(res.data.content);
+      if (res.data.slug) setSlug(res.data.slug);
       if (res.data.tags && res.data.tags.length > 0) {
         setTagsInput(res.data.tags.join(", "));
       }
-      if (res.data.license) {
-        setLicense(res.data.license);
-      }
-      if (res.data.author) {
-        setAuthorName(res.data.author);
-      }
+      if (res.data.license) setLicense(res.data.license);
+      if (res.data.author) setAuthorName(res.data.author);
 
       setParseMessage({
         type: "success",
@@ -194,12 +126,9 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
     }
 
     if (res.data) {
-      setTitleId(res.data.title);
-      setTitleEn(res.data.title);
-      setSummaryId(res.data.summary);
-      setSummaryEn(res.data.summary);
-      setContentId(res.data.content);
-      setContentEn(res.data.content);
+      setTitle(res.data.title);
+      setSummary(res.data.summary);
+      setContent(res.data.content);
       setSlug(res.data.slug);
       setLicense(res.data.license || "MIT");
       setAuthorName(res.data.author);
@@ -246,7 +175,7 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
           <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             {isPendingApproval
               ? isEn
-                ? "Your skill has been queued for review by the curator team. Once verified, it will appear publicly in the catalog."
+                ? "Your skill has been queued for review by the curator team. Once approved, it will appear publicly in the library."
                 : "Skill Anda telah masuk ke antrean kurasi. Setelah ditinjau oleh admin, skill akan otomatis tayang di katalog publik."
               : isEn
               ? "Your skill is now live and accessible in the public registry."
@@ -259,12 +188,12 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
             href={`/${locale}/skills`}
             className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-colors"
           >
-            <span>{isEn ? "Browse Catalog" : "Lihat Katalog"}</span>
+            <span>{isEn ? "Browse Skills" : "Lihat Koleksi Skill"}</span>
           </Link>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95"
+            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95 cursor-pointer"
           >
             <span>{isEn ? "Submit Another Skill" : "Kirim Skill Lain"}</span>
           </button>
@@ -274,7 +203,7 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   }
 
   return (
-    <div className="w-full max-w-5xl space-y-5">
+    <div className="w-full max-w-4xl space-y-5">
       <div className="mb-2 lg:hidden">
         <Link
           href={`/${locale}/skills`}
@@ -289,177 +218,169 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
             <Sparkles className="w-3.5 h-3.5 text-foreground" />
-            <span>{isEn ? "Community Contributor" : "Kontributor Komunitas"}</span>
+            <span>{isEn ? "Community Submission" : "Kontributor Komunitas"}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            {isEn ? "Submit AI Agent Skill" : "Kirim Skill AI Agent"}
+            {isEn ? "Submit New AI Skill" : "Kirim Skill AI Baru"}
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
             {isEn
-              ? "Add your custom agent instructions, rules, or tools to the open registry."
-              : "Daftarkan instruksi sistem, aturan agent koding, atau perkakas AI buatan Anda ke katalog terbuka."}
+              ? "Publish your custom AI instructions, tool definitions, and auxiliary scripts."
+              : "Bagikan instruksi AI kustom, berkas konfigurasi, dan script pendukung ke komunitas."}
           </p>
         </div>
 
-        <div className="inline-flex rounded-[6px] border border-border p-0.5 bg-muted/40 shrink-0">
-          <button
-            type="button"
-            onClick={() => setMode("smart")}
-            className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
-              mode === "smart"
-                ? "bg-surface text-foreground font-semibold shadow-2xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{isEn ? "Smart Paste" : "Parser Cerdas"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("github")}
-            className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
-              mode === "github"
-                ? "bg-surface text-foreground font-semibold shadow-2xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <GitHubIcon className="w-3.5 h-3.5" />
-            <span>GitHub</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("manual")}
-            className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
-              mode === "manual"
-                ? "bg-surface text-foreground font-semibold shadow-2xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Edit3 className="w-3.5 h-3.5" />
-            <span>{isEn ? "Manual Form" : "Formulir"}</span>
-          </button>
-        </div>
+        {user && (
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] border border-border bg-surface text-xs text-muted-foreground">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>{user.email}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 p-1 rounded-lg border border-border bg-surface w-fit">
+        <button
+          type="button"
+          onClick={() => setMode("smart")}
+          className={`h-7 px-3 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
+            mode === "smart"
+              ? "bg-foreground text-background font-semibold shadow-2xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {isEn ? "Paste SKILL.md" : "Tempel SKILL.md"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("github")}
+          className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
+            mode === "github"
+              ? "bg-foreground text-background font-semibold shadow-2xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <GitHubIcon className="w-3.5 h-3.5" />
+          <span>GitHub</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("manual")}
+          className={`h-7 px-3 rounded-[5px] text-xs font-medium transition-colors cursor-pointer ${
+            mode === "manual"
+              ? "bg-foreground text-background font-semibold shadow-2xs"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {isEn ? "Manual Form" : "Form Manual"}
+        </button>
       </div>
 
       {parseMessage && (
         <div
-          className={`p-3 rounded-[6px] border text-xs flex items-center justify-between gap-2 ${
+          role="alert"
+          className={`p-3.5 rounded-[6px] border text-xs flex items-center gap-2 ${
             parseMessage.type === "success"
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
               : "border-rose-500/40 bg-rose-500/10 text-rose-500"
           }`}
         >
-          <div className="flex items-center gap-2">
-            {parseMessage.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-            ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
-            )}
-            <span>{parseMessage.text}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setParseMessage(null)}
-            className="text-[11px] hover:underline font-mono"
-          >
-            Tutup
-          </button>
+          {parseMessage.type === "success" ? (
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          ) : (
+            <AlertCircle className="w-4 h-4 shrink-0" />
+          )}
+          <span>{parseMessage.text}</span>
         </div>
       )}
 
       {mode === "smart" && (
-        <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
+        <div className="p-5 rounded-xl border border-border bg-surface space-y-3.5 shadow-2xs">
           <div>
-            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-foreground" />
-              <span>{isEn ? "Smart SKILL.md Parser" : "Parser SKILL.md Otomatis"}</span>
+            <h3 className="text-sm font-semibold text-foreground">
+              {isEn ? "Smart SKILL.md Extractor" : "Ekstraksi Otomatis SKILL.md"}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {isEn
-                ? "Paste the raw text of your SKILL.md. We will automatically detect YAML frontmatter, title, summary, tags, and license."
-                : "Tempelkan teks mentah SKILL.md Anda. Sistem akan mendeteksi judul, deskripsi, tag, lisensi, dan konten secara otomatis."}
+                ? "Paste your raw markdown content with frontmatter. The parser will extract title, summary, license, and tags automatically."
+                : "Tempel konten markdown SKILL.md Anda. Sistem akan mengekstrak judul, deskripsi, lisensi, dan tag secara otomatis."}
             </p>
           </div>
 
           <textarea
+            rows={7}
             value={rawText}
             onChange={(e) => setRawText(e.target.value)}
-            rows={10}
             placeholder={`---
-name: Web Architect Pro
-description: Standar arsitektur web modern anti-slop.
+name: Clean Code Architecture
+description: Tactical guidelines for building clean software architecture
+tags: ["clean-code", "refactoring"]
 license: MIT
-tags: [architecture, web, typescript]
 ---
 
-# Web Architect Pro
-Instruksi skill lengkap...`}
-            className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground leading-relaxed resize-y placeholder:text-muted-foreground/50"
+# Clean Code Guidelines...`}
+            className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground font-mono text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
           />
 
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[11px] text-muted-foreground font-mono">
-              {rawText.length} karakter
-            </span>
+          <div className="flex justify-end">
             <button
               type="button"
-              disabled={isParsing || !rawText.trim()}
               onClick={handleSmartParse}
-              className="inline-flex items-center gap-2 h-8 px-4 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer shadow-xs"
+              disabled={isParsing || !rawText.trim()}
+              className="inline-flex items-center gap-1.5 h-8 px-4 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs"
             >
-              {isParsing ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Sparkles className="w-3.5 h-3.5" />
-              )}
-              <span>{isParsing ? "Menganalisis..." : "Ekstrak & Isi Formulir"}</span>
+              {isParsing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              <span>{isParsing ? "Memproses..." : "Ekstrak Metadata"}</span>
             </button>
           </div>
         </div>
       )}
 
       {mode === "github" && (
-        <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
+        <div className="p-5 rounded-xl border border-border bg-surface space-y-3.5 shadow-2xs">
           <div>
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <GitHubIcon className="w-4 h-4 text-foreground" />
-              <span>{isEn ? "Import from GitHub" : "Ambil Otomatis dari GitHub"}</span>
+              <GitHubIcon className="w-4 h-4" />
+              <span>{isEn ? "Import from GitHub Repository" : "Impor dari Repositori GitHub"}</span>
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
               {isEn
-                ? "Enter a public GitHub repository or direct link to a SKILL.md file."
-                : "Masukkan URL repositori GitHub publik atau tautan langsung ke file SKILL.md."}
+                ? "Provide a public repository URL containing a SKILL.md or README.md."
+                : "Masukkan tautan repositori GitHub publik yang memiliki berkas SKILL.md atau README.md."}
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div className="flex gap-2">
             <input
               type="url"
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
-              placeholder="https://github.com/owner/repo/blob/main/SKILL.md"
-              className="flex-1 h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground"
+              placeholder="https://github.com/owner/repo atau https://github.com/owner/repo/tree/main/skills/my-skill"
+              className="flex-1 h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
             />
             <button
               type="button"
-              disabled={isFetchingGithub || !githubUrl.trim()}
               onClick={handleGitHubFetch}
-              className="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer shadow-xs shrink-0"
+              disabled={isFetchingGithub || !githubUrl.trim()}
+              className="inline-flex items-center gap-1.5 h-9 px-4 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs shrink-0"
             >
-              {isFetchingGithub ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <GitHubIcon className="w-3.5 h-3.5" />
-              )}
+              {isFetchingGithub ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <GitHubIcon className="w-3.5 h-3.5" />}
               <span>{isFetchingGithub ? "Mengambil..." : "Ambil & Ekstrak"}</span>
             </button>
           </div>
         </div>
       )}
 
-      <form action={formAction} className="space-y-6">
+      <form action={formAction} className="space-y-5">
         <input type="hidden" name="sourceType" value={sourceType} />
         <input type="hidden" name="repoUrl" value={repoUrl} />
+        <input type="hidden" name="filesJson" value={JSON.stringify(files)} />
+
+        <input type="hidden" name="titleId" value={title} />
+        <input type="hidden" name="titleEn" value={title} />
+        <input type="hidden" name="summaryId" value={summary} />
+        <input type="hidden" name="summaryEn" value={summary} />
+        <input type="hidden" name="contentId" value={content} />
+        <input type="hidden" name="contentEn" value={content} />
 
         {state?.error && (
           <div className="p-3 rounded-[6px] border border-rose-500/40 bg-rose-500/10 text-rose-500 text-xs flex items-center gap-2">
@@ -469,171 +390,48 @@ Instruksi skill lengkap...`}
         )}
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
-          <div className="flex items-center justify-between pb-3 border-b border-border/80 flex-wrap gap-2">
-            <h3 className="text-sm font-semibold text-foreground">
-              {isEn ? "1. General Information" : "1. Informasi Utama Skill"}
-            </h3>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleTranslate("all")}
-                disabled={(!titleId.trim() && !summaryId.trim() && !contentId.trim()) || translatingField !== null}
-                className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs"
-              >
-                {translatingField === "all" ? (
-                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                ) : (
-                  <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                )}
-                <span>{isEn ? "AI Translate All" : "✨ Auto Terjemahkan Semua (AI)"}</span>
-              </button>
+          <h3 className="text-sm font-semibold text-foreground pb-2 border-b border-border/80">
+            {isEn ? "1. General Information" : "1. Informasi Utama Skill"}
+          </h3>
 
-              <div className="inline-flex rounded-[5px] border border-border p-0.5 bg-muted/40">
-                <button
-                  type="button"
-                  onClick={() => setActiveLang("id")}
-                  className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                    activeLang === "id"
-                      ? "bg-surface text-foreground font-semibold shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  Indonesia
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveLang("en")}
-                  className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                    activeLang === "en"
-                      ? "bg-surface text-foreground font-semibold shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  English
-                </button>
-              </div>
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="submit-title" className="block text-xs font-medium text-foreground">
+              {isEn ? "Skill Title *" : "Judul Skill *"}
+            </label>
+            <input
+              id="submit-title"
+              name="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (!slug) generateSlugFromTitle(e.target.value);
+              }}
+              placeholder={isEn ? "e.g. Clean Code Architecture" : "mis. Arsitektur Kode Bersih"}
+              className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="submit-title-id"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
-                Judul Skill (Indonesia) *
-              </label>
-              <input
-                id="submit-title-id"
-                name="titleId"
-                type="text"
-                required
-                value={titleId}
-                onChange={(e) => {
-                  setTitleId(e.target.value);
-                  if (!slug) generateSlugFromTitle(e.target.value);
-                }}
-                placeholder="mis. Arsitektur Kode Bersih"
-                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="submit-title-en"
-                  className="block text-xs font-medium text-foreground"
-                >
-                  Skill Title (English) *
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleTranslate("title")}
-                  disabled={!titleId.trim() || translatingField !== null}
-                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                >
-                  {translatingField === "title" || translatingField === "all" ? (
-                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                  )}
-                  <span>Auto AI</span>
-                </button>
-              </div>
-              <input
-                id="submit-title-en"
-                name="titleEn"
-                type="text"
-                required
-                value={titleEn}
-                onChange={(e) => setTitleEn(e.target.value)}
-                placeholder="e.g. Clean Code Architecture"
-                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="submit-summary-id"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
-                Ringkasan Singkat (Indonesia) *
-              </label>
-              <textarea
-                id="submit-summary-id"
-                name="summaryId"
-                required
-                rows={2}
-                value={summaryId}
-                onChange={(e) => setSummaryId(e.target.value)}
-                placeholder="Pedoman taktis untuk menyusun struktur kode terorganisir..."
-                className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="submit-summary-en"
-                  className="block text-xs font-medium text-foreground"
-                >
-                  Summary (English) *
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleTranslate("summary")}
-                  disabled={!summaryId.trim() || translatingField !== null}
-                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                >
-                  {translatingField === "summary" || translatingField === "all" ? (
-                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                  )}
-                  <span>Auto AI</span>
-                </button>
-              </div>
-              <textarea
-                id="submit-summary-en"
-                name="summaryEn"
-                required
-                rows={2}
-                value={summaryEn}
-                onChange={(e) => setSummaryEn(e.target.value)}
-                placeholder="Tactical guidelines for organizing clean code architecture..."
-                className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="submit-summary" className="block text-xs font-medium text-foreground">
+              {isEn ? "Summary *" : "Ringkasan Singkat *"}
+            </label>
+            <textarea
+              id="submit-summary"
+              name="summary"
+              required
+              rows={2}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder={isEn ? "Tactical guidelines for organizing clean code architecture..." : "Pedoman taktis untuk menyusun struktur kode terorganisir..."}
+              className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
             <div>
-              <label
-                htmlFor="submit-slug"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="submit-slug" className="block text-xs font-medium text-foreground mb-1.5">
                 URL Slug *
               </label>
               <input
@@ -649,10 +447,7 @@ Instruksi skill lengkap...`}
             </div>
 
             <div>
-              <label
-                htmlFor="submit-category"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="submit-category" className="block text-xs font-medium text-foreground mb-1.5">
                 {isEn ? "Category" : "Kategori"}
               </label>
               <select
@@ -660,7 +455,7 @@ Instruksi skill lengkap...`}
                 name="categoryId"
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                className="w-full h-8 px-2 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground cursor-pointer"
               >
                 <option value="">{isEn ? "Select Category" : "Pilih Kategori"}</option>
                 {categories.map((c) => (
@@ -672,10 +467,7 @@ Instruksi skill lengkap...`}
             </div>
 
             <div>
-              <label
-                htmlFor="submit-tags"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="submit-tags" className="block text-xs font-medium text-foreground mb-1.5">
                 Tags (pisahkan koma)
               </label>
               <input
@@ -694,7 +486,7 @@ Instruksi skill lengkap...`}
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
           <div className="flex items-center justify-between pb-3 border-b border-border/80">
             <h3 className="text-sm font-semibold text-foreground">
-              {isEn ? "2. SKILL.md Content" : "2. Isi Lengkap SKILL.md"}
+              {isEn ? "2. SKILL.md Content" : "2. Isi Lengkap SKILL.md"} *
             </h3>
             <div className="inline-flex rounded-[5px] border border-border p-0.5 bg-muted/40">
               <button
@@ -725,86 +517,37 @@ Instruksi skill lengkap...`}
           </div>
 
           <div className="space-y-3">
-            {activeLang === "id" ? (
-              <div>
-                <label
-                  htmlFor="submit-content-id"
-                  className="block text-xs font-medium text-foreground mb-1.5"
-                >
-                  Konten Markdown (Indonesia) *
-                </label>
-                {previewTab === "edit" ? (
-                  <textarea
-                    id="submit-content-id"
-                    name="contentId"
-                    required
-                    rows={12}
-                    value={contentId}
-                    onChange={(e) => setContentId(e.target.value)}
-                    placeholder="# Judul Skill&#10;&#10;Instruksi lengkap..."
-                    className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground leading-relaxed resize-y"
-                  />
-                ) : (
-                  <div className="p-4 rounded-[6px] border border-border bg-background max-h-96 overflow-y-auto">
-                    <ClientMarkdownRenderer content={contentId || "*(Belum ada konten)*"} />
-                  </div>
-                )}
-              </div>
+            {previewTab === "edit" ? (
+              <textarea
+                id="submit-content"
+                name="content"
+                required
+                rows={13}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="# Judul Skill&#10;&#10;Instruksi detail agen AI, aturan kerja, dan panduan eksekusi..."
+                className="w-full p-3.5 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground leading-relaxed resize-y"
+              />
             ) : (
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label
-                    htmlFor="submit-content-en"
-                    className="block text-xs font-medium text-foreground"
-                  >
-                    Markdown Content (English) *
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => handleTranslate("content")}
-                    disabled={!contentId.trim() || translatingField !== null}
-                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                  >
-                    {translatingField === "content" || translatingField === "all" ? (
-                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                    )}
-                    <span>Auto AI</span>
-                  </button>
-                </div>
-                {previewTab === "edit" ? (
-                  <textarea
-                    id="submit-content-en"
-                    name="contentEn"
-                    required
-                    rows={12}
-                    value={contentEn}
-                    onChange={(e) => setContentEn(e.target.value)}
-                    placeholder="# Skill Title&#10;&#10;Full instructions..."
-                    className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground leading-relaxed resize-y"
-                  />
-                ) : (
-                  <div className="p-4 rounded-[6px] border border-border bg-background max-h-96 overflow-y-auto">
-                    <ClientMarkdownRenderer content={contentEn || "*(No content)*"} />
-                  </div>
-                )}
+              <div className="p-4 rounded-[6px] border border-border bg-background max-h-96 overflow-y-auto">
+                <ClientMarkdownRenderer content={content || "*(Belum ada konten)*"} />
               </div>
             )}
           </div>
         </div>
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
-          <h3 className="text-sm font-semibold text-foreground pb-3 border-b border-border/80">
-            {isEn ? "3. Author & License Attribution" : "3. Pengarang & Lisensi"}
+          <SkillFilesManager files={files} onChange={setFiles} maxFiles={10} />
+        </div>
+
+        <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
+          <h3 className="text-sm font-semibold text-foreground pb-2 border-b border-border/80">
+            {isEn ? "4. Author & License Attribution" : "4. Pengarang & Lisensi"}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label
-                htmlFor="submit-author-name"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="submit-author-name" className="block text-xs font-medium text-foreground mb-1.5">
                 Nama Pengarang / Tim
               </label>
               <input
@@ -813,17 +556,14 @@ Instruksi skill lengkap...`}
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                placeholder="Nama Anda atau Komunitas"
+                placeholder="mis. Antigravity Core Team"
                 className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="submit-author-url"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
-                Tautan Profil / Website
+              <label htmlFor="submit-author-url" className="block text-xs font-medium text-foreground mb-1.5">
+                URL Profil Pengarang
               </label>
               <input
                 id="submit-author-url"
@@ -837,10 +577,7 @@ Instruksi skill lengkap...`}
             </div>
 
             <div>
-              <label
-                htmlFor="submit-license"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="submit-license" className="block text-xs font-medium text-foreground mb-1.5">
                 Lisensi
               </label>
               <input
@@ -849,36 +586,27 @@ Instruksi skill lengkap...`}
                 type="text"
                 value={license}
                 onChange={(e) => setLicense(e.target.value)}
-                placeholder="MIT / Apache-2.0"
+                placeholder="MIT, Apache-2.0, dll."
                 className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             href={`/${locale}/skills`}
-            className="h-8 px-3.5 rounded-[6px] border border-border hover:bg-muted text-foreground text-xs font-medium inline-flex items-center justify-center transition-colors"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-colors"
           >
-            {isEn ? "Cancel" : "Batal"}
+            <span>{isEn ? "Cancel" : "Batal"}</span>
           </Link>
-
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || !title.trim() || !content.trim()}
             className="inline-flex items-center gap-2 h-9 px-5 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer shadow-xs"
           >
-            {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            <span>
-              {isPending
-                ? isEn
-                  ? "Submitting..."
-                  : "Mengirimkan..."
-                : isEn
-                ? "Submit Skill"
-                : "Kirim Skill Sekarang"}
-            </span>
+            <span>{isPending ? "Mengirim..." : isEn ? "Submit Skill" : "Kirim Skill"}</span>
+            <Sparkles className="w-3.5 h-3.5" />
           </button>
         </div>
       </form>

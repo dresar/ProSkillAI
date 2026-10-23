@@ -317,6 +317,139 @@ export async function translateIdToEn({
   return fallbackContent.trim();
 }
 
+export interface AiAuditResult {
+  score: number;
+  grade: "S" | "A" | "B" | "C" | "D";
+  summary: string;
+  strengths: string[];
+  warnings: string[];
+  recommendations: string[];
+}
+
+export async function auditPromptOrSkill({
+  targetType,
+  title,
+  description,
+  content,
+  files = [],
+  config,
+}: {
+  targetType: "prompt" | "skill";
+  title: string;
+  description: string;
+  content: string;
+  files?: Array<{ name: string; content: string; language?: string }>;
+  config?: AiConfig;
+}): Promise<AiAuditResult> {
+  const activeConfig = config || (await getStoredAiConfig());
+
+  const systemPrompt = `You are an elite AI Prompt and Skill Security & Quality Auditor.
+Analyze the provided ${targetType === "prompt" ? "AI Prompt Template" : "Agent Skill Package"} thoroughly.
+Evaluate its instructions, variable schema, safety/injection guardrails, structure, clarity, executability, and best practices.
+Respond ONLY with a valid JSON object matching this schema:
+{
+  "score": number between 0 and 100,
+  "grade": "S" (90-100) | "A" (80-89) | "B" (70-79) | "C" (55-69) | "D" (<55),
+  "summary": "Executive summary of the audit findings in Indonesian (2-3 sentences)",
+  "strengths": ["List of 2-5 positive points and strengths in Indonesian"],
+  "warnings": ["List of potential flaws, security risks, ambiguous directives, or missing guards in Indonesian"],
+  "recommendations": ["List of 3-6 concrete, actionable improvements in Indonesian"]
+}
+Do not enclose in markdown ticks or code blocks. Return strictly pure JSON.`;
+
+  let filesSummary = "";
+  if (files && files.length > 0) {
+    filesSummary = `\nAttached Auxiliary Files (${files.length} files):\n` +
+      files.map((f, i) => `File ${i + 1}: ${f.name} (${f.language || "text"})\n${f.content.slice(0, 1500)}`).join("\n\n");
+  }
+
+  const userPayload = `Audit Target: ${targetType.toUpperCase()}
+Title: ${title}
+Description: ${description}
+Content:
+${content.slice(0, 8000)}
+${filesSummary}`;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
+    const res = await fetch(`${activeConfig.endpoint}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${activeConfig.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: activeConfig.defaultModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPayload },
+        ],
+        temperature: 0.2,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const rawText = data?.choices?.[0]?.message?.content;
+      if (rawText && typeof rawText === "string") {
+        const cleaned = rawText.replace(/^```json\s*|\s*```$/g, "").trim();
+        const parsed = JSON.parse(cleaned);
+        return {
+          score: Number(parsed.score) || 75,
+          grade: parsed.grade || "B",
+          summary: parsed.summary || "Audit selesai.",
+          strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+          warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
+          recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
+        };
+      }
+    }
+  } catch {}
+
+  const fallbackRes = await fetch(`${activeConfig.fallbackEndpoint}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${activeConfig.fallbackApiKey}`,
+    },
+    body: JSON.stringify({
+      model: activeConfig.fallbackModel,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPayload },
+      ],
+      temperature: 0.2,
+    }),
+  });
+
+  if (!fallbackRes.ok) {
+    throw new Error("Audit service temporarily unavailable");
+  }
+
+  const fallbackData = await fallbackRes.json();
+  const rawFallback = fallbackData?.choices?.[0]?.message?.content;
+  if (!rawFallback || typeof rawFallback !== "string") {
+    throw new Error("No response received from audit AI model");
+  }
+
+  const cleaned = rawFallback.replace(/^```json\s*|\s*```$/g, "").trim();
+  const parsed = JSON.parse(cleaned);
+
+  return {
+    score: Number(parsed.score) || 75,
+    grade: parsed.grade || "B",
+    summary: parsed.summary || "Audit selesai.",
+    strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+    warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
+    recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
+  };
+}
+
 export async function testAiModel(
   modelId: string,
   config?: AiConfig

@@ -14,9 +14,11 @@ import { SkillDetailTabs } from "@/components/skill-detail-tabs";
 import { SkillStatsCard } from "@/components/skill-stats-card";
 import { SkillAiChat } from "@/components/skill-ai-chat";
 import { CliInstallBox } from "@/components/cli-install-box";
+import { SkillFilesViewer } from "@/components/skill-files-viewer";
 import { ProviderBadge, type ProviderId } from "@/components/provider-logos";
 import { ImageGallery } from "@/components/admin/image-gallery";
 import { getSkillCoverImage, getImageList } from "@/lib/images";
+import type { SkillFileItem } from "@/db/schema";
 
 interface PageProps {
   params: Promise<{
@@ -186,6 +188,22 @@ export default async function SkillDetailPage({ params }: PageProps) {
     </section>
   );
 
+  const attachedFiles: SkillFileItem[] = Array.isArray(skill.files)
+    ? (skill.files as unknown as SkillFileItem[])
+    : [];
+
+  const filesNode = (
+    <section aria-labelledby="files-heading" className="space-y-3">
+      <div className="flex items-center justify-between pb-2 border-b border-border/60">
+        <h2 id="files-heading" className="text-sm font-semibold text-foreground tracking-tight">
+          {isEn ? "Auxiliary Skill Files" : "Berkas Pendukung Skill"}
+        </h2>
+        <span className="font-mono text-xs text-muted-foreground">{attachedFiles.length} file</span>
+      </div>
+      <SkillFilesViewer files={attachedFiles} locale={locale} />
+    </section>
+  );
+
   const compatibleProviders: ProviderId[] = ["cmdc", "anthropic", "openai", "gemini", "cursor", "deepseek"];
 
   return (
@@ -286,6 +304,8 @@ export default async function SkillDetailPage({ params }: PageProps) {
               previewNode={previewNode}
               contentNode={contentNode}
               rawNode={rawNode}
+              filesNode={filesNode}
+              filesCount={attachedFiles.length}
               locale={locale}
             />
 

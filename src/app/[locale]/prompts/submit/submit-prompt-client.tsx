@@ -10,9 +10,7 @@ import {
   AlertCircle,
   ArrowRight,
   Variable,
-  Layers,
   ArrowLeft,
-  Loader2,
 } from "lucide-react";
 import { submitPromptAction } from "./actions";
 import type { Category } from "@/db/schema";
@@ -33,14 +31,10 @@ export function SubmitPromptClient({
   const isEn = locale === "en";
 
   const [title, setTitle] = React.useState("");
-  const [titleEn, setTitleEn] = React.useState("");
   const [slug, setSlug] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [descriptionEn, setDescriptionEn] = React.useState("");
   const [content, setContent] = React.useState("");
-  const [contentEn, setContentEn] = React.useState("");
   const [detectedVars, setDetectedVars] = React.useState<string[]>([]);
-  const [translatingField, setTranslatingField] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const matches = content.match(/\[([a-zA-Z0-9_\-\s]+)\]/g) || [];
@@ -61,69 +55,6 @@ export function SubmitPromptClient({
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
     setSlug(s);
-  };
-
-  const handleTitleBlur = () => {
-    if (!titleEn.trim() && title.trim().length >= 3) {
-      handleTranslate("title");
-    }
-  };
-
-  const handleDescriptionBlur = () => {
-    if (!descriptionEn.trim() && description.trim().length >= 10) {
-      handleTranslate("description");
-    }
-  };
-
-  const handleTranslate = async (field: "title" | "description" | "content" | "all") => {
-    try {
-      setTranslatingField(field);
-
-      if (field === "title" || field === "all") {
-        if (title.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: title.trim(), type: "title" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setTitleEn(data.translatedText);
-          }
-        }
-      }
-
-      if (field === "description" || field === "all") {
-        if (description.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: description.trim(), type: "description" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setDescriptionEn(data.translatedText);
-          }
-        }
-      }
-
-      if (field === "content" || field === "all") {
-        if (content.trim()) {
-          const res = await fetch("/api/ai/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: content.trim(), type: "content" }),
-          });
-          const data = await res.json();
-          if (data?.success && data?.translatedText) {
-            setContentEn(data.translatedText);
-          }
-        }
-      }
-    } catch {
-    } finally {
-      setTranslatingField(null);
-    }
   };
 
   if (state?.success) {
@@ -165,7 +96,7 @@ export function SubmitPromptClient({
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95"
+            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-transform active:scale-95 cursor-pointer"
           >
             <span>{isEn ? "Submit Another Prompt" : "Kirim Prompt Lain"}</span>
           </button>
@@ -175,7 +106,7 @@ export function SubmitPromptClient({
   }
 
   return (
-    <div className="w-full max-w-5xl space-y-5">
+    <div className="w-full max-w-4xl space-y-5">
       <div className="mb-2 lg:hidden">
         <Link
           href={`/${locale}/prompts`}
@@ -197,8 +128,8 @@ export function SubmitPromptClient({
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
             {isEn
-              ? "Share your reusable AI prompt engineering instructions, system directives, or multi-step reasoning workflows."
-              : "Bagikan templat prompt engineering, instruksi sistem AI, atau workflow reasoning siap pakai ke komunitas."}
+              ? "Share your reusable AI prompt engineering instructions or reasoning workflows."
+              : "Bagikan templat prompt engineering atau workflow reasoning siap pakai ke komunitas."}
           </p>
         </div>
 
@@ -208,7 +139,7 @@ export function SubmitPromptClient({
         </div>
       </div>
 
-      <form action={formAction} className="space-y-6">
+      <form action={formAction} className="space-y-5">
         {state?.error && (
           <div
             role="alert"
@@ -220,75 +151,24 @@ export function SubmitPromptClient({
         )}
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-sm font-semibold text-foreground tracking-tight">
-              {isEn ? "Prompt Metadata" : "Informasi Prompt"}
-            </h2>
-            <button
-              type="button"
-              onClick={() => handleTranslate("all")}
-              disabled={
-                (!title.trim() && !description.trim() && !content.trim()) ||
-                translatingField !== null
-              }
-              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs"
-            >
-              {translatingField === "all" ? (
-                <Loader2 className="w-3 h-3 animate-spin text-foreground" />
-              ) : (
-                <Sparkles className="w-3 h-3 text-indigo-500" />
-              )}
-              <span>{isEn ? "AI Auto-Translate All to English" : "✨ Auto Terjemahkan Semua ke English"}</span>
-            </button>
-          </div>
+          <h2 className="text-sm font-semibold text-foreground tracking-tight">
+            {isEn ? "Prompt Details" : "Informasi Prompt"}
+          </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="titleId" className="block text-xs font-medium text-foreground">
-                {isEn ? "Title (Indonesian)" : "Judul (Bahasa Indonesia)"} *
-              </label>
-              <input
-                id="titleId"
-                name="titleId"
-                type="text"
-                required
-                value={title}
-                onChange={(e) => handleTitleChange(e.target.value)}
-                onBlur={handleTitleBlur}
-                placeholder="mis. Master Prompt Audit Keamanan Codebase"
-                className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="titleEn" className="block text-xs font-medium text-foreground">
-                  {isEn ? "Title (English)" : "Judul (Bahasa Inggris)"}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleTranslate("title")}
-                  disabled={!title.trim() || translatingField !== null}
-                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                >
-                  {translatingField === "title" || translatingField === "all" ? (
-                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                  )}
-                  <span>{isEn ? "AI Translate" : "Auto AI"}</span>
-                </button>
-              </div>
-              <input
-                id="titleEn"
-                name="titleEn"
-                type="text"
-                value={titleEn}
-                onChange={(e) => setTitleEn(e.target.value)}
-                placeholder="e.g. Master Codebase Security Audit Prompt"
-                className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="title" className="block text-xs font-medium text-foreground">
+              {isEn ? "Prompt Title *" : "Judul Prompt *"}
+            </label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => handleTitleChange(e.target.value)}
+              placeholder={isEn ? "e.g. Master Codebase Security Audit Prompt" : "mis. Master Prompt Audit Keamanan Codebase"}
+              className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -328,53 +208,20 @@ export function SubmitPromptClient({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="descriptionId" className="block text-xs font-medium text-foreground">
-                {isEn ? "Description (Indonesian)" : "Deskripsi Singkat (Bahasa Indonesia)"} *
-              </label>
-              <textarea
-                id="descriptionId"
-                name="descriptionId"
-                rows={2}
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                onBlur={handleDescriptionBlur}
-                placeholder="Deskripsi singkat tujuan, output yang dihasilkan, dan cara penggunaannya..."
-                className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label htmlFor="descriptionEn" className="block text-xs font-medium text-foreground">
-                  {isEn ? "Description (English)" : "Deskripsi Singkat (Bahasa Inggris)"}
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleTranslate("description")}
-                  disabled={!description.trim() || translatingField !== null}
-                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-                >
-                  {translatingField === "description" || translatingField === "all" ? (
-                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                  )}
-                  <span>{isEn ? "AI Translate" : "Auto AI"}</span>
-                </button>
-              </div>
-              <textarea
-                id="descriptionEn"
-                name="descriptionEn"
-                rows={2}
-                value={descriptionEn}
-                onChange={(e) => setDescriptionEn(e.target.value)}
-                placeholder="Brief summary of intent, expected output, and execution steps..."
-                className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
-              />
-            </div>
+          <div className="space-y-1.5">
+            <label htmlFor="description" className="block text-xs font-medium text-foreground">
+              {isEn ? "Short Description *" : "Deskripsi Singkat *"}
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows={2}
+              required
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={isEn ? "Brief summary of intent, expected output, and execution steps..." : "Deskripsi singkat tujuan, output yang dihasilkan, dan cara penggunaannya..."}
+              className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
+            />
           </div>
         </div>
 
@@ -383,7 +230,7 @@ export function SubmitPromptClient({
             <div>
               <h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
                 <FileCode className="w-4 h-4 text-foreground" />
-                <span>{isEn ? "Prompt Template Content" : "Isi Templat Prompt"} *</span>
+                <span>{isEn ? "Prompt Template Content *" : "Isi Templat Prompt *"}</span>
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {isEn
@@ -414,9 +261,9 @@ export function SubmitPromptClient({
 
           <div className="space-y-1.5">
             <textarea
-              id="contentId"
-              name="contentId"
-              rows={12}
+              id="content"
+              name="content"
+              rows={13}
               required
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -429,36 +276,6 @@ Fokuskan pemeriksaan pada:
 
 Hasilkan laporan berformat markdown dengan tabel rekomendasi prioritas.`}
               className="w-full p-3.5 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="contentEn" className="block text-xs font-medium text-muted-foreground">
-                {isEn ? "English Template (Optional)" : "Templat Versi Bahasa Inggris (Opsional)"}
-              </label>
-              <button
-                type="button"
-                onClick={() => handleTranslate("content")}
-                disabled={!content.trim() || translatingField !== null}
-                className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
-              >
-                {translatingField === "content" || translatingField === "all" ? (
-                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                ) : (
-                  <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
-                )}
-                <span>{isEn ? "AI Translate" : "Auto AI"}</span>
-              </button>
-            </div>
-            <textarea
-              id="contentEn"
-              name="contentEn"
-              rows={6}
-              value={contentEn}
-              onChange={(e) => setContentEn(e.target.value)}
-              placeholder="Act as a Senior Security Engineer. Audit the codebase..."
-              className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground resize-y leading-relaxed text-muted-foreground/90"
             />
           </div>
         </div>

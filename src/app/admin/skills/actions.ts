@@ -63,6 +63,25 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
+  let files: any[] = [];
+  const rawFiles = formData.get("filesJson") as string;
+  if (rawFiles) {
+    try {
+      const parsed = JSON.parse(rawFiles);
+      if (Array.isArray(parsed)) {
+        files = parsed.slice(0, 10).map((f: any) => ({
+          id: String(f.id || `file_${Date.now()}`),
+          name: String(f.name || "file.txt").slice(0, 100),
+          content: String(f.content || ""),
+          language: typeof f.language === "string" ? f.language : undefined,
+          size: typeof f.size === "number" ? f.size : (f.content?.length || 0),
+        }));
+      }
+    } catch {
+      files = [];
+    }
+  }
+
   const titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
   const summaryId = ((formData.get("summaryId") as string) || "").trim();
@@ -123,6 +142,7 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
     ...val.data,
     images: val.data.images ?? [],
     tags: val.data.tags ?? [],
+    files,
     previewImageUrl: val.data.images?.[0] ?? val.data.previewImageUrl ?? null,
     createdBy: user.id,
     createdAt: new Date(),
@@ -151,6 +171,25 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
 
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
+
+  let files: any[] = [];
+  const rawFiles = formData.get("filesJson") as string;
+  if (rawFiles) {
+    try {
+      const parsed = JSON.parse(rawFiles);
+      if (Array.isArray(parsed)) {
+        files = parsed.slice(0, 10).map((f: any) => ({
+          id: String(f.id || `file_${Date.now()}`),
+          name: String(f.name || "file.txt").slice(0, 100),
+          content: String(f.content || ""),
+          language: typeof f.language === "string" ? f.language : undefined,
+          size: typeof f.size === "number" ? f.size : (f.content?.length || 0),
+        }));
+      }
+    } catch {
+      files = [];
+    }
+  }
 
   const titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
@@ -215,6 +254,7 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
       ...val.data,
       images: val.data.images ?? [],
       tags: val.data.tags ?? [],
+      files,
       previewImageUrl: val.data.images?.[0] ?? val.data.previewImageUrl ?? null,
       updatedAt: new Date(),
     })

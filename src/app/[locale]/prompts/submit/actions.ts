@@ -22,23 +22,29 @@ const submitPromptSchema = z.object({
 
 export async function submitPromptAction(prevState: unknown, formData: FormData) {
   try {
-    const titleId = ((formData.get("titleId") as string) || "").trim();
-    let titleEn = ((formData.get("titleEn") as string) || "").trim();
-    const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
-    let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
-    const contentId = ((formData.get("contentId") as string) || "").trim();
-    let contentEn = ((formData.get("contentEn") as string) || "").trim();
+    const rawTitle = ((formData.get("title") || formData.get("titleId")) as string || "").trim();
+    let titleId = ((formData.get("titleId") || rawTitle) as string || "").trim();
+    let titleEn = ((formData.get("titleEn") || rawTitle) as string || "").trim();
+
+    const rawDesc = ((formData.get("description") || formData.get("descriptionId")) as string || "").trim();
+    let descriptionId = ((formData.get("descriptionId") || rawDesc) as string || "").trim();
+    let descriptionEn = ((formData.get("descriptionEn") || rawDesc) as string || "").trim();
+
+    const rawContent = ((formData.get("content") || formData.get("contentId")) as string || "").trim();
+    let contentId = ((formData.get("contentId") || rawContent) as string || "").trim();
+    let contentEn = ((formData.get("contentEn") || rawContent) as string || "").trim();
+
     let slug = ((formData.get("slug") as string) || "").trim();
     const categoryId = (formData.get("categoryId") as string) || null;
 
     if (!titleEn && titleId) {
-      titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+      titleEn = titleId;
     }
     if (!descriptionEn && descriptionId) {
-      descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+      descriptionEn = descriptionId;
     }
     if (!contentEn && contentId) {
-      contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+      contentEn = contentId;
     }
 
     let variables: string[] = [];

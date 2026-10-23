@@ -1,23 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { Eye, FileText, Braces } from "lucide-react";
+import { Eye, FileText, Braces, FileCode } from "lucide-react";
 
 interface SkillDetailTabsProps {
   hasPreview: boolean;
   previewNode: React.ReactNode;
   contentNode: React.ReactNode;
   rawNode: React.ReactNode;
+  filesNode?: React.ReactNode;
+  filesCount?: number;
   locale: string;
 }
 
-type TabId = "preview" | "content" | "raw";
+type TabId = "preview" | "content" | "raw" | "files";
 
 export function SkillDetailTabs({
   hasPreview,
   previewNode,
   contentNode,
   rawNode,
+  filesNode,
+  filesCount = 0,
   locale,
 }: SkillDetailTabsProps) {
   const isEn = locale === "en";
@@ -39,6 +43,15 @@ export function SkillDetailTabs({
     icon: <FileText className="w-3.5 h-3.5" />,
     node: contentNode,
   });
+
+  if (filesNode && filesCount > 0) {
+    tabs.push({
+      id: "files",
+      label: isEn ? `Files (${filesCount})` : `Berkas (${filesCount})`,
+      icon: <FileCode className="w-3.5 h-3.5" />,
+      node: filesNode,
+    });
+  }
 
   tabs.push({
     id: "raw",

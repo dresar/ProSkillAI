@@ -4,14 +4,16 @@ import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code, Sparkles, Loader2, ShieldCheck } from "lucide-react";
 import { createSkillAction, updateSkillAction } from "./actions";
 import { resyncSkillAction } from "../github-import/actions";
 import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { GitHubImportPanel } from "@/components/admin/github-import-panel";
+import { SkillFilesManager } from "@/components/skill-files-manager";
+import { AiAuditModal } from "@/components/admin/ai-audit-modal";
 import type { GitHubFormCandidate, GitHubFormRepo } from "./github-actions";
-import type { Skill, Category } from "@/db/schema";
+import type { Skill, Category, SkillFileItem } from "@/db/schema";
 
 interface SkillFormProps {
   initialSkill?: Skill;
@@ -61,6 +63,10 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
     const tags = Array.isArray(initialSkill?.tags) ? (initialSkill.tags as string[]) : [];
     return tags.join(", ");
   });
+  const [files, setFiles] = React.useState<SkillFileItem[]>(() => {
+    return Array.isArray(initialSkill?.files) ? (initialSkill.files as SkillFileItem[]) : [];
+  });
+  const [auditModalOpen, setAuditModalOpen] = React.useState(false);
   const [translatingField, setTranslatingField] = React.useState<string | null>(null);
 
   const handleTranslate = async (field: "title" | "summary" | "content" | "all") => {
@@ -192,6 +198,15 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
         </Link>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setAuditModalOpen(true)}
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-medium transition-all active:scale-95 cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Audit AI Skill</span>
+          </button>
+
           {initialSkill?.sourceType === "github" && (
             <button
               type="button"
@@ -458,6 +473,12 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
               <input type="hidden" name="contentId" value={contentId} />
             </>
           )}
+
+          <input type="hidden" name="filesJson" value={JSON.stringify(files)} />
+
+          <div className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-3">
+            <SkillFilesManager files={files} onChange={setFiles} maxFiles={10} />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -775,6 +796,16 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
           </div>
         </div>
       </div>
+
+      <AiAuditModal
+        isOpen={auditModalOpen}
+        onClose={() => setAuditModalOpen(false)}
+        targetType="skill"
+        title={activeTab === "en" ? titleEn : titleId}
+        description={activeTab === "en" ? summaryEn : summaryId}
+        content={activeTab === "en" ? contentEn : contentId}
+        files={files}
+      />
     </form>
   );
 }

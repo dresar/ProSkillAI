@@ -141,21 +141,45 @@ export async function submitUserSkillAction(
   _prevState: unknown,
   formData: FormData
 ) {
-  const titleId = ((formData.get("titleId") as string) || "").trim();
-  let titleEn = ((formData.get("titleEn") as string) || "").trim();
-  const summaryId = ((formData.get("summaryId") as string) || "").trim();
-  let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
-  const contentId = ((formData.get("contentId") as string) || "").trim();
-  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+  const rawTitle = ((formData.get("title") || formData.get("titleId")) as string || "").trim();
+  let titleId = ((formData.get("titleId") || rawTitle) as string || "").trim();
+  let titleEn = ((formData.get("titleEn") || rawTitle) as string || "").trim();
+
+  const rawSummary = ((formData.get("summary") || formData.get("summaryId")) as string || "").trim();
+  let summaryId = ((formData.get("summaryId") || rawSummary) as string || "").trim();
+  let summaryEn = ((formData.get("summaryEn") || rawSummary) as string || "").trim();
+
+  const rawContent = ((formData.get("content") || formData.get("contentId")) as string || "").trim();
+  let contentId = ((formData.get("contentId") || rawContent) as string || "").trim();
+  let contentEn = ((formData.get("contentEn") || rawContent) as string || "").trim();
+
+  let files: Array<{ id: string; name: string; content: string; language?: string; size?: number }> = [];
+  const rawFiles = formData.get("filesJson") as string;
+  if (rawFiles) {
+    try {
+      const parsedFiles = JSON.parse(rawFiles);
+      if (Array.isArray(parsedFiles)) {
+        files = parsedFiles.slice(0, 10).map((f: any) => ({
+          id: String(f.id || `file_${Date.now()}`),
+          name: String(f.name || "file.txt").slice(0, 100),
+          content: String(f.content || ""),
+          language: typeof f.language === "string" ? f.language : undefined,
+          size: typeof f.size === "number" ? f.size : (f.content?.length || 0),
+        }));
+      }
+    } catch {
+      files = [];
+    }
+  }
 
   if (!titleEn && titleId) {
-    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+    titleEn = titleId;
   }
   if (!summaryEn && summaryId) {
-    summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+    summaryEn = summaryId;
   }
   if (!contentEn && contentId) {
-    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+    contentEn = contentId;
   }
 
   let slug = ((formData.get("slug") as string) || "").trim();
@@ -232,6 +256,7 @@ export async function submitUserSkillAction(
     summaryEn: parsed.data.summaryEn,
     contentId: parsed.data.contentId,
     contentEn: parsed.data.contentEn,
+    files,
     categoryId: parsed.data.categoryId || null,
     sourceType: parsed.data.sourceType,
     repoUrl: parsed.data.repoUrl || null,
