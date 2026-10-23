@@ -59,7 +59,7 @@ export default async function HomePage({ params }: PageProps) {
   ]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 sm:space-y-10">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-8">
       <section className="space-y-3 max-w-2xl">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { getAllCategories } from "@/db/queries";
 import { getCurrentUser } from "@/lib/auth";
@@ -33,14 +34,16 @@ export default async function SubmitSkillPage({ params }: PageProps) {
     getCurrentUser(),
   ]);
 
-  const sessionUser = user
-    ? {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      }
-    : null;
+  if (!user) {
+    redirect(`/login?redirect=/${locale}/skills/submit`);
+  }
+
+  const sessionUser = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">

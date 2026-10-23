@@ -201,7 +201,13 @@ export async function submitUserSkillAction(
   }
 
   const currentUser = await getCurrentUser();
-  const isAdmin = currentUser?.role === "admin" || currentUser?.role === "editor";
+  if (!currentUser) {
+    return {
+      error: "Anda harus masuk untuk mengirim skill. Silakan login terlebih dahulu.",
+    };
+  }
+
+  const isAdmin = currentUser.role === "admin" || currentUser.role === "editor";
   const status = isAdmin ? "published" : "pending";
   const skillId = `skl_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
@@ -218,12 +224,12 @@ export async function submitUserSkillAction(
     sourceType: parsed.data.sourceType,
     repoUrl: parsed.data.repoUrl || null,
     license: parsed.data.license || "MIT",
-    authorName: parsed.data.authorName || currentUser?.name || "Kontributor Komunitas",
+    authorName: parsed.data.authorName || currentUser.name || "Kontributor Komunitas",
     authorUrl: parsed.data.authorUrl || null,
     tags: parsed.data.tags || [],
     status,
     previewType: "none",
-    createdBy: currentUser?.id || null,
+    createdBy: currentUser.id,
   });
 
   if (currentUser) {

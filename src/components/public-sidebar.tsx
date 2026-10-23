@@ -4,11 +4,23 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Sparkles, Shield, PanelLeftClose, LogIn, LogOut, Plus } from "lucide-react";
+import {
+  FileCode,
+  Layers,
+  LogIn,
+  LogOut,
+  Package,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus,
+  Shield,
+  Sparkles,
+} from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { ThemeSidebarToggle } from "./theme-sidebar-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { type PublicUser } from "./public-user-nav";
+import { usePublicSidebar } from "./public-sidebar-context";
 import { logoutAction } from "@/app/login/actions";
 
 export function PublicSidebar({
@@ -18,226 +30,272 @@ export function PublicSidebar({
   locale: string;
   user?: PublicUser | null;
 }) {
-  void PanelLeftClose;
   const pathname = usePathname();
   const tNav = useTranslations("nav");
-  const tBeta = useTranslations("beta");
+  const { collapsed, toggleSidebar } = usePublicSidebar();
 
+  const isEn = locale === "en";
   const isSkills = pathname.startsWith(`/${locale}/skills`);
   const isPrompts = pathname.startsWith(`/${locale}/prompts`);
+  const isSubmit = pathname.startsWith(`/${locale}/skills/submit`);
 
-  const learnItems = [
-    { label: tBeta("teardowns"), key: "teardowns" },
-    { label: tBeta("patterns"), key: "patterns" },
-    { label: tBeta("guides"), key: "guides" },
-    { label: tBeta("glossary"), key: "glossary" },
-  ];
+  const submitHref = user
+    ? `/${locale}/skills/submit`
+    : `/login?redirect=/${locale}/skills/submit`;
 
-  const buildBetaItems = [
-    { label: tBeta("tools"), key: "tools" },
-    { label: tBeta("inspirations"), key: "inspirations" },
+  const navItems = [
+    { href: `/${locale}/skills`, label: tNav("skills"), icon: Layers, active: isSkills, badge: "Catalog" },
+    { href: `/${locale}/prompts`, label: tNav("prompts"), icon: FileCode, active: isPrompts, badge: "Library" },
+    {
+      href: submitHref,
+      label: isEn ? "Submit Skill" : "Kirim Skill",
+      icon: Plus,
+      active: isSubmit,
+      badge: "Community",
+    },
   ];
 
   return (
-    <aside className="hidden lg:flex flex-col w-60 xl:w-64 shrink-0 border-r border-border bg-background sticky top-0 h-screen overflow-y-auto p-4 select-none">
+    <aside
+      className={`hidden lg:flex flex-col shrink-0 border-r border-border bg-background sticky top-0 h-screen overflow-y-auto select-none transition-all duration-200 ${
+        collapsed ? "w-16 p-2" : "w-60 xl:w-64 p-4"
+      }`}
+    >
       <div className="space-y-6 flex-1">
-        <Link
-          href={`/${locale}`}
-          className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/40 transition-colors"
-          aria-label="ProSkillAI Home"
+        <div
+          className={`flex ${collapsed ? "flex-col gap-2" : "items-center justify-between gap-2"} px-1 py-1`}
         >
-          <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0 shadow-xs">
-            <svg
-              className="w-4 h-4 text-background"
-              viewBox="0 0 32 32"
-              fill="none"
-              aria-hidden="true"
-            >
-              <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
-              <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
-              <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
-              <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold tracking-wider text-foreground uppercase">
-              PROSKILL AI
-            </span>
-            <span className="text-[10px] font-medium text-muted-foreground tracking-tight">
-              Agent Skills & Prompts
-            </span>
-          </div>
-        </Link>
-
-        <div>
-          <span className="text-[11px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
-            {locale === "en" ? "Learn" : "Pelajari"}
-          </span>
-          <nav className="space-y-0.5" aria-label="Learn navigation">
-            {learnItems.map((item) => (
-              <div
-                key={item.key}
-                className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground/80 hover:text-foreground cursor-not-allowed select-none"
+          <Link
+            href={`/${locale}`}
+            className={`flex items-center rounded-lg hover:bg-muted/40 transition-colors ${
+              collapsed ? "justify-center w-full" : "gap-3"
+            }`}
+            aria-label="ProSkillAI Home"
+            title={collapsed ? "ProSkillAI Home" : undefined}
+          >
+            <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0 shadow-xs">
+              <svg
+                className="w-4 h-4 text-background"
+                viewBox="0 0 32 32"
+                fill="none"
+                aria-hidden="true"
               >
-                <span>{item.label}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted/70 text-muted-foreground">
-                  {locale === "en" ? "Beta" : "Beta"}
+                <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
+                <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
+                <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
+                <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
+              </svg>
+            </div>
+            {!collapsed && (
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold tracking-wider text-foreground uppercase">
+                  PROSKILL AI
+                </span>
+                <span className="text-[10px] font-medium text-muted-foreground tracking-tight truncate">
+                  Agent Skills &amp; Prompts
                 </span>
               </div>
-            ))}
-          </nav>
+            )}
+          </Link>
+
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className={`inline-flex items-center justify-center w-7 h-7 rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer ${
+              collapsed ? "" : "shrink-0"
+            }`}
+            aria-label={collapsed ? (isEn ? "Expand sidebar" : "Perlebar sidebar") : (isEn ? "Collapse sidebar" : "Ciutkan sidebar")}
+            aria-expanded={!collapsed}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="w-3.5 h-3.5" />
+            ) : (
+              <PanelLeftClose className="w-3.5 h-3.5" />
+            )}
+          </button>
         </div>
 
         <div>
-          <span className="text-[11px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
-            {locale === "en" ? "Build" : "Bangun"}
-          </span>
+          {!collapsed && (
+            <span className="text-[11px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
+              {isEn ? "Build" : "Bangun"}
+            </span>
+          )}
           <nav className="space-y-0.5" aria-label="Build navigation">
-            <Link
-              href={`/${locale}/skills`}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                isSkills
-                  ? "bg-foreground text-background font-semibold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  title={collapsed ? item.label : undefined}
+                  className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
+                    collapsed ? "justify-center px-0" : "justify-between px-3"
+                  } ${
+                    item.active
+                      ? "bg-foreground text-background font-semibold shadow-xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <span
+                    className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
+                  >
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    {!collapsed && <span className="truncate">{item.label}</span>}
+                  </span>
+                  {!collapsed && (
+                    <span
+                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                        item.active
+                          ? "bg-background/20 text-background"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+
+            <div
+              title={collapsed ? "Agent Kits" : undefined}
+              className={`flex items-center py-2 rounded-lg text-xs font-medium text-muted-foreground/80 cursor-not-allowed select-none ${
+                collapsed ? "justify-center px-0" : "justify-between px-3"
               }`}
             >
-              <span>{tNav("skills")}</span>
-              <span
-                className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                  isSkills ? "bg-background/20 text-background" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                Catalog
+              <span className={`flex items-center ${collapsed ? "" : "gap-1.5"}`}>
+                <Package className="w-3.5 h-3.5 shrink-0" />
+                {!collapsed && <span>Agent Kits</span>}
               </span>
-            </Link>
-
-            <Link
-              href={`/${locale}/prompts`}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                isPrompts
-                  ? "bg-foreground text-background font-semibold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              <span>{tNav("prompts")}</span>
-              <span
-                className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                  isPrompts ? "bg-background/20 text-background" : "bg-muted text-muted-foreground"
-                }`}
-              >
-                Library
-              </span>
-            </Link>
-
-            <Link
-              href={`/${locale}/skills/submit`}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                pathname.startsWith(`/${locale}/skills/submit`)
-                  ? "bg-foreground text-background font-semibold shadow-xs"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              <span className="flex items-center gap-1.5">
-                <Plus className="w-3.5 h-3.5" />
-                <span>{locale === "en" ? "Submit Skill" : "Kirim Skill"}</span>
-              </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted text-muted-foreground">
-                Community
-              </span>
-            </Link>
-
-            <div className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground/80 hover:text-foreground cursor-not-allowed select-none">
-              <span>Agent Kits</span>
-              <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
-                New
-              </span>
-            </div>
-
-            {buildBetaItems.map((item) => (
-              <div
-                key={item.key}
-                className="flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground/80 hover:text-foreground cursor-not-allowed select-none"
-              >
-                <span>{item.label}</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted/70 text-muted-foreground">
-                  {locale === "en" ? "Beta" : "Beta"}
+              {!collapsed && (
+                <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
+                  New
                 </span>
-              </div>
-            ))}
+              )}
+            </div>
           </nav>
         </div>
       </div>
 
       <div className="pt-4 border-t border-border space-y-3">
-        <div className="p-3 rounded-lg border border-border/60 bg-muted/30">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md bg-foreground/10 text-foreground flex items-center justify-center shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-foreground" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium text-foreground truncate">
-                ProSkillAI Open
-              </p>
-              <p className="text-[10px] text-muted-foreground truncate">
-                {locale === "en" ? "Curated agent skills" : "Katalog skill terverifikasi"}
-              </p>
+        {!collapsed && (
+          <div className="p-3 rounded-lg border border-border/60 bg-muted/30">
+            <div className="flex items-center gap-2.5">
+              <div className="w-6 h-6 rounded-md bg-foreground/10 text-foreground flex items-center justify-center shrink-0">
+                <Sparkles className="w-3.5 h-3.5 text-foreground" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-foreground truncate">ProSkillAI Open</p>
+                <p className="text-[10px] text-muted-foreground truncate">
+                  {isEn ? "Curated agent skills" : "Katalog skill terverifikasi"}
+                </p>
+              </div>
             </div>
           </div>
+        )}
+
+        <div
+          className={
+            collapsed
+              ? "[&>button]:justify-center [&>button]:px-0 [&>button>span>span]:hidden [&>button>span:last-child]:hidden"
+              : ""
+          }
+        >
+          <FeedbackModal locale={locale} user={user} />
         </div>
 
-        <FeedbackModal locale={locale} user={user} />
+        {!collapsed && (
+          <div className="space-y-1.5 pt-2 border-t border-border/80">
+            <ThemeSidebarToggle locale={locale} />
 
-        <div className="space-y-1.5 pt-2 border-t border-border/80">
-          <ThemeSidebarToggle locale={locale} />
-
-          <div className="flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground">
-            <span>{locale === "en" ? "Language" : "Bahasa"}</span>
-            <LanguageSwitcher currentLocale={locale} />
+            <div className="flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground">
+              <span>{isEn ? "Language" : "Bahasa"}</span>
+              <LanguageSwitcher currentLocale={locale} />
+            </div>
           </div>
+        )}
 
+        <div className="pt-2 border-t border-border/80">
           {user ? (
-            <div className="p-2.5 rounded-lg border border-border/80 bg-surface/90 space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-6 h-6 rounded-[5px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
-                    {user.name.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
-                    <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
-                  </div>
+            collapsed ? (
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-8 h-8 rounded-[6px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0"
+                  title={`${user.name} · ${user.email}`}
+                >
+                  {user.name.slice(0, 2).toUpperCase()}
                 </div>
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-muted text-foreground border border-border">
-                  {user.role}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 pt-1 border-t border-border/60">
                 <Link
                   href="/admin"
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
+                  title={tNav("admin")}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-foreground/10 text-foreground hover:bg-muted transition-all active:scale-95"
                 >
-                  <Shield className="w-3 h-3" />
-                  <span>{tNav("admin")}</span>
+                  <Shield className="w-3.5 h-3.5" />
                 </Link>
-                <form action={logoutAction}>
+                <form action={logoutAction} className="flex justify-center">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center w-7 h-7 rounded-[5px] border border-border text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
-                    title={locale === "en" ? "Sign Out" : "Keluar"}
+                    title={isEn ? "Sign Out" : "Keluar"}
+                    aria-label={isEn ? "Sign Out" : "Keluar"}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
                   >
-                    <LogOut className="w-3 h-3" />
+                    <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </form>
               </div>
-            </div>
+            ) : (
+              <div className="p-2.5 rounded-lg border border-border/80 bg-surface/90 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-6 h-6 rounded-[5px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                      {user.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-muted text-foreground border border-border">
+                    {user.role}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-1.5 pt-1 border-t border-border/60">
+                  <Link
+                    href="/admin"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
+                  >
+                    <Shield className="w-3 h-3" />
+                    <span>{tNav("admin")}</span>
+                  </Link>
+                  <form action={logoutAction}>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center w-7 h-7 rounded-[5px] border border-border text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
+                      title={isEn ? "Sign Out" : "Keluar"}
+                    >
+                      <LogOut className="w-3 h-3" />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )
+          ) : collapsed ? (
+            <Link
+              href="/login"
+              title={isEn ? "Sign In to Panel" : "Masuk ke Panel"}
+              className="w-full flex items-center justify-center h-8 rounded-[6px] bg-foreground text-background hover:opacity-90 transition-all active:scale-95 shadow-xs"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+            </Link>
           ) : (
             <Link
               href="/login"
               className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium bg-foreground text-background hover:opacity-90 rounded-[6px] transition-all active:scale-95 shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>{locale === "en" ? "Sign In to Panel" : "Masuk ke Panel"}</span>
+              <span>{isEn ? "Sign In to Panel" : "Masuk ke Panel"}</span>
             </Link>
           )}
         </div>

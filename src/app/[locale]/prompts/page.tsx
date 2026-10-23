@@ -62,7 +62,7 @@ export default async function PromptsCatalogPage({
   ]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-6">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {t("title")}

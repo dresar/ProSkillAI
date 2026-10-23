@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
-import Link from "next/link";
-import { ChevronRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
 import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -200,25 +199,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(sourceCodeJsonLd) }}
       />
 
-      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <li>
-              <Link href={`/${locale}`} className="hover:text-foreground transition-colors">
-                {isEn ? "Home" : "Beranda"}
-              </Link>
-            </li>
-            <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
-            <li>
-              <Link href={`/${locale}/skills`} className="hover:text-foreground transition-colors">
-                Skills
-              </Link>
-            </li>
-            <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
-            <li className="text-foreground font-medium truncate max-w-[50vw]">{title}</li>
-          </ol>
-        </nav>
-
+      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-10">
           <div className="min-w-0 space-y-8">
             <header className="space-y-3">

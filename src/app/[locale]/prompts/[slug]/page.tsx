@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
-import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 import { ImageGallery } from "@/components/admin/image-gallery";
 import { getCoverImage, getImageList } from "@/lib/images";
@@ -110,7 +110,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -119,24 +119,6 @@ export default async function PromptDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
       />
-
-      <nav aria-label="Breadcrumb" className="pb-2">
-        <ol className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <li>
-            <Link href={`/${locale}`} className="hover:text-foreground transition-colors">
-              {isEn ? "Home" : "Beranda"}
-            </Link>
-          </li>
-          <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
-          <li>
-            <Link href={`/${locale}/prompts`} className="hover:text-foreground transition-colors">
-              Prompts
-            </Link>
-          </li>
-          <ChevronRight className="w-3 h-3 opacity-50" aria-hidden="true" />
-          <li className="text-foreground font-medium truncate max-w-[50vw]">{title}</li>
-        </ol>
-      </nav>
 
       <div className="space-y-4">
         <div className="space-y-2">

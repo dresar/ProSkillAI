@@ -22,7 +22,11 @@ export function LoginForm() {
 
   React.useEffect(() => {
     if (state?.success) {
-      router.push("/admin");
+      const search = new URLSearchParams(window.location.search);
+      const target = search.get("redirect");
+      const isSafeTarget =
+        typeof target === "string" && target.startsWith("/") && !target.startsWith("//");
+      router.push(isSafeTarget ? target : "/admin");
       router.refresh();
     }
   }, [state, router]);
