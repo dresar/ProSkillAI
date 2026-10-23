@@ -106,7 +106,7 @@ export function ThemeToggle({
         <div
           role="dialog"
           aria-label="Theme selector"
-          className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-surface shadow-xl z-50 p-2.5 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-border bg-surface shadow-2xl z-[100] p-2.5 animate-in fade-in zoom-in-95 duration-100"
         >
           <div className="flex items-center justify-between gap-1 p-1 mb-2 rounded-lg bg-muted border border-border/60">
             <button

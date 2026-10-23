@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
 import { getCurrentUser } from "@/lib/auth";
-import { CheckCircle2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
 import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -214,23 +214,23 @@ export default async function SkillDetailPage({ params }: PageProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-10">
-          <div className="min-w-0 space-y-8">
-            <header className="space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-4 sm:gap-6 lg:gap-6">
+          <div className="min-w-0 space-y-4 sm:space-y-5">
+            <header className="space-y-2">
               {categoryName && (
                 <div className="text-xs font-medium text-muted-foreground">{categoryName}</div>
               )}
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{summary}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-2xl">{summary}</p>
 
-              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                 {compatibleProviders.map((p) => (
                   <ProviderBadge key={p} provider={p} showLabel={false} />
                 ))}
               </div>
             </header>
 
-            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2.5">
+            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2">
               <CopySkillDropdown
                 skillId={skill.id}
                 slug={skill.slug}
@@ -245,22 +245,15 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 filename={`${skill.slug}.md`}
                 label={t("download")}
               />
-              {(skill.copyCount > 0 || skill.downloadCount > 0) && (
-                <span className="text-xs font-mono text-muted-foreground sm:pl-2">
-                  {skill.copyCount > 0 && `${skill.copyCount} ${isEn ? "copies" : "salinan"}`}
-                  {skill.copyCount > 0 && skill.downloadCount > 0 && " • "}
-                  {skill.downloadCount > 0 && `${skill.downloadCount} ${isEn ? "downloads" : "unduhan"}`}
-                </span>
-              )}
             </div>
 
             <CliInstallBox slug={skill.slug} locale={locale} />
 
             {getImageList(skill.images, skill.previewImageUrl).length > 0 && (
-              <section aria-labelledby="gallery-heading" className="space-y-3">
+              <section aria-labelledby="gallery-heading" className="space-y-2.5">
                 <h2
                   id="gallery-heading"
-                  className="text-sm font-semibold text-foreground tracking-tight"
+                  className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
                 >
                   {isEn ? "Gallery" : "Galeri"}
                 </h2>
@@ -298,74 +291,16 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
             <section
               aria-labelledby="install-heading"
-              className="p-4 sm:p-5 rounded-xl border border-border bg-muted/30 space-y-3 text-xs"
+              className="p-3.5 sm:p-4 rounded-xl border border-border bg-muted/30 space-y-2 text-xs"
             >
               <h2 id="install-heading" className="font-semibold text-foreground tracking-tight">
                 {t("installGuide")}
               </h2>
-              <ol className="list-decimal pl-4 space-y-1.5 text-muted-foreground leading-relaxed">
+              <ol className="list-decimal pl-4 space-y-1 text-muted-foreground leading-relaxed">
                 <li>{t("installStep1")}</li>
                 <li>{t("installStep2")}</li>
                 <li>{t("installStep3")}</li>
               </ol>
-            </section>
-
-            <section
-              aria-labelledby="provenance-heading"
-              className="p-4 rounded-xl border border-border bg-surface space-y-3 text-xs"
-            >
-              <h2 id="provenance-heading" className="font-semibold text-foreground tracking-tight">
-                {t("provenance")}
-              </h2>
-
-              {skill.sourceType === "github" ? (
-                <div className="space-y-1.5 text-muted-foreground">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span>{t("sourceRepo")}:</span>
-                    {skill.repoUrl ? (
-                      <a
-                        href={skill.repoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-foreground hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>{skill.repoUrl.replace("https://github.com/", "")}</span>
-                      </a>
-                    ) : (
-                      <span>-</span>
-                    )}
-                  </div>
-
-                  {skill.filePath && (
-                    <div className="flex items-center gap-2">
-                      <span>{t("filePath")}:</span>
-                      <span className="font-mono">{skill.filePath}</span>
-                    </div>
-                  )}
-
-                  {skill.commitHash && (
-                    <div className="flex items-center gap-2">
-                      <span>{t("commit")}:</span>
-                      <span className="font-mono">{skill.commitHash.slice(0, 7)}</span>
-                    </div>
-                  )}
-
-                  {skill.license && (
-                    <div className="flex items-center gap-2">
-                      <span>{t("license")}:</span>
-                      <span className="font-semibold text-foreground">{skill.license}</span>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-1 text-muted-foreground">
-                  <div className="flex items-center gap-1.5 text-foreground font-medium">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                    <span>{t("originalWork")}</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">{t("originalDesc")}</p>
-                </div>
-              )}
             </section>
           </div>
 
@@ -375,7 +310,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
         </div>
 
         {related.length > 0 && (
-          <section aria-labelledby="related-heading" className="space-y-4 pt-10 mt-10 border-t border-border/60">
+          <section aria-labelledby="related-heading" className="space-y-3 pt-6 mt-6 border-t border-border/60">
             <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
               {t("relatedSkills")}
             </h2>

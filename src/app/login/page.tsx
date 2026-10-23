@@ -47,7 +47,7 @@ export default async function LoginPage({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
       </div>
 
-      <header className="flex justify-between items-center max-w-md w-full mx-auto relative z-10">
+      <header className="flex justify-between items-center max-w-md w-full mx-auto relative z-50">
         <Link
           href="/id"
           className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] border border-border/80 bg-surface/80 hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 shadow-2xs backdrop-blur-xs"
