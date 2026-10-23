@@ -261,21 +261,25 @@ export default async function SkillDetailPage({ params }: PageProps) {
               </div>
             </header>
 
-            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-2">
-              <CopySkillDropdown
-                skillId={skill.id}
-                slug={skill.slug}
-                title={title}
-                summary={summary}
-                content={content}
-                locale={locale}
-              />
-              <DownloadSkillButton
-                skillId={skill.id}
-                content={content}
-                filename={`${skill.slug}.md`}
-                label={t("download")}
-              />
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <div className="flex-1 min-w-[130px]">
+                <CopySkillDropdown
+                  skillId={skill.id}
+                  slug={skill.slug}
+                  title={title}
+                  summary={summary}
+                  content={content}
+                  locale={locale}
+                />
+              </div>
+              <div className="flex-1 min-w-[130px]">
+                <DownloadSkillButton
+                  skillId={skill.id}
+                  content={content}
+                  filename={`${skill.slug}.md`}
+                  label={t("download")}
+                />
+              </div>
               <ShareButton
                 item={{
                   type: "skill",
@@ -291,8 +295,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   ],
                 }}
                 locale={locale}
-                showLabel
-                className="h-9 px-3 rounded-[6px] border border-border bg-surface hover:bg-muted text-xs font-semibold text-foreground shadow-2xs"
+                className="w-9 h-9 shrink-0 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground flex items-center justify-center shadow-2xs transition-all cursor-pointer"
               />
             </div>
 

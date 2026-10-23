@@ -182,8 +182,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
                 ],
               }}
               locale={locale}
-              showLabel
-              className="h-7 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-semibold text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+              className="w-7 h-7 rounded-[6px] border border-border bg-background hover:bg-muted text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs"
             />
             <FavoriteButton
               item={{

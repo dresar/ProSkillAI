@@ -10,6 +10,7 @@ import {
   PALETTE_CONFIGS,
   buildShareUrl,
   generateQrCodeDataUrl,
+  getCurrentDomain,
 } from "@/lib/share-utils";
 
 function wrapText(
@@ -94,7 +95,8 @@ export async function generateShareCardBlob(
   theme: ShareTheme,
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
-  userAttribution?: ShareUserAttribution
+  userAttribution?: ShareUserAttribution,
+  domain?: string
 ): Promise<Blob> {
   if (typeof document === "undefined") {
     throw new Error("Canvas generation requires browser environment");
@@ -115,6 +117,7 @@ export async function generateShareCardBlob(
   const isDark = theme === "dark";
   const p = PALETTE_CONFIGS[palette] || PALETTE_CONFIGS.zinc;
   const canonicalUrl = buildShareUrl(item.url);
+  const domainText = domain || getCurrentDomain();
 
   const bgGradient = ctx.createLinearGradient(0, 0, width, height);
   bgGradient.addColorStop(0, isDark ? p.canvasDarkBgStart : p.canvasLightBgStart);
@@ -140,15 +143,20 @@ export async function generateShareCardBlob(
   const brandMarkY = cardY + 36;
   const brandMarkSize = 46;
 
-  drawRoundedRect(ctx, brandMarkX, brandMarkY, brandMarkSize, brandMarkSize, 10);
-  ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
-  ctx.fill();
-
-  ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
-  ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("P", brandMarkX + brandMarkSize / 2, brandMarkY + brandMarkSize / 2 + 1);
+  const logoSrc = isDark ? "/brand/logo-mark-white.png" : "/brand/logo-mark-black.png";
+  try {
+    const logoImg = await loadImage(logoSrc);
+    ctx.drawImage(logoImg, brandMarkX, brandMarkY, brandMarkSize, brandMarkSize);
+  } catch {
+    drawRoundedRect(ctx, brandMarkX, brandMarkY, brandMarkSize, brandMarkSize, 10);
+    ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
+    ctx.fill();
+    ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
+    ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("P", brandMarkX + brandMarkSize / 2, brandMarkY + brandMarkSize / 2 + 1);
+  }
 
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
@@ -158,7 +166,7 @@ export async function generateShareCardBlob(
 
   ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
   ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
-  ctx.fillText("proskillai.dev", brandMarkX + brandMarkSize + 14, brandMarkY + 28);
+  ctx.fillText(domainText, brandMarkX + brandMarkSize + 14, brandMarkY + 28);
 
   const showUserBadge = Boolean(userAttribution?.show && userAttribution?.username);
   const typeLabels: Record<string, string> = {
@@ -298,7 +306,7 @@ export async function generateShareCardBlob(
     ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("proskillai.dev", width / 2, footerY + 26);
+    ctx.fillText(domainText, width / 2, footerY + 26);
   } else if (isSquare) {
     const contentY = brandMarkY + 90;
 
@@ -369,7 +377,7 @@ export async function generateShareCardBlob(
     ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    ctx.fillText("proskillai.dev", cardX + cardW - 36, footerY + 25);
+    ctx.fillText(domainText, cardX + cardW - 36, footerY + 25);
   } else {
     const contentY = brandMarkY + 76;
     const mainColWidth = cardW - 270;
@@ -477,7 +485,7 @@ export async function generateShareCardBlob(
     ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    ctx.fillText("proskillai.dev", cardX + cardW - 36, footerY + 23);
+    ctx.fillText(domainText, cardX + cardW - 36, footerY + 23);
   }
 
   return new Promise((resolve, reject) => {
@@ -496,9 +504,10 @@ export async function downloadShareCardImage(
   theme: ShareTheme,
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
-  userAttribution?: ShareUserAttribution
+  userAttribution?: ShareUserAttribution,
+  domain?: string
 ): Promise<void> {
-  const blob = await generateShareCardBlob(item, theme, palette, aspectRatio, userAttribution);
+  const blob = await generateShareCardBlob(item, theme, palette, aspectRatio, userAttribution, domain);
   const blobUrl = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = blobUrl;
@@ -519,13 +528,14 @@ export async function copyShareCardImage(
   theme: ShareTheme,
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
-  userAttribution?: ShareUserAttribution
+  userAttribution?: ShareUserAttribution,
+  domain?: string
 ): Promise<boolean> {
   try {
     if (!navigator.clipboard || typeof ClipboardItem === "undefined") {
       return false;
     }
-    const blob = await generateShareCardBlob(item, theme, palette, aspectRatio, userAttribution);
+    const blob = await generateShareCardBlob(item, theme, palette, aspectRatio, userAttribution, domain);
     const itemData = new ClipboardItem({ "image/png": blob });
     await navigator.clipboard.write([itemData]);
     return true;

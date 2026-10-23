@@ -58,7 +58,9 @@ describe("Universal Share Feature & QR Code Engine", () => {
 
     assert.ok(!cardContent.includes("radial-gradient(circle at 1px 1px"));
     assert.ok(!canvasContent.includes("gridSize"));
-    assert.ok(cardContent.includes("rootDomain = \"proskillai.dev\""));
+    assert.ok(cardContent.includes("displayDomain"));
+    assert.ok(cardContent.includes("/brand/logo-mark-white.png"));
+    assert.ok(canvasContent.includes("/brand/logo-mark-white.png"));
   });
 
   test("buildShareUrl normalizes paths and preserves absolute URLs", () => {

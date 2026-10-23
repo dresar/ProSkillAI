@@ -8,6 +8,13 @@ import type {
 
 export const SITE_URL = "https://proskillai.dev";
 
+export function getCurrentDomain(): string {
+  if (typeof window !== "undefined" && window.location && window.location.host) {
+    return window.location.host;
+  }
+  return "proskillai.dev";
+}
+
 export interface PaletteConfig {
   id: SharePalette;
   nameEn: string;

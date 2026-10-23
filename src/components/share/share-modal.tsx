@@ -26,7 +26,9 @@ import {
   ASPECT_RATIO_CONFIGS,
   buildShareUrl,
   buildSocialShareUrls,
+  getCurrentDomain,
 } from "@/lib/share-utils";
+import { BrandLogo } from "@/components/brand-logo";
 import { ShareCard } from "./share-card";
 import { downloadShareCardImage, copyShareCardImage } from "./share-canvas";
 
@@ -84,12 +86,14 @@ export function ShareModal({
   const [isExporting, setIsExporting] = React.useState(false);
   const [copiedImage, setCopiedImage] = React.useState(false);
   const [canWebShare, setCanWebShare] = React.useState(false);
+  const [currentDomain, setCurrentDomain] = React.useState("proskillai.dev");
 
   const canonicalUrl = buildShareUrl(item.url);
   const socialUrls = buildSocialShareUrls(item, canonicalUrl);
 
   React.useEffect(() => {
     setMounted(true);
+    setCurrentDomain(getCurrentDomain());
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       setCanWebShare(true);
     }
@@ -148,7 +152,7 @@ export function ShareModal({
   const handleDownloadImage = async () => {
     setIsExporting(true);
     try {
-      await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution);
+      await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution, currentDomain);
     } finally {
       setIsExporting(false);
     }
@@ -157,12 +161,12 @@ export function ShareModal({
   const handleCopyImage = async () => {
     setIsExporting(true);
     try {
-      const ok = await copyShareCardImage(item, theme, palette, aspectRatio, userAttribution);
+      const ok = await copyShareCardImage(item, theme, palette, aspectRatio, userAttribution, currentDomain);
       if (ok) {
         setCopiedImage(true);
         setTimeout(() => setCopiedImage(false), 2000);
       } else {
-        await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution);
+        await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution, currentDomain);
       }
     } finally {
       setIsExporting(false);
@@ -190,26 +194,24 @@ export function ShareModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6 bg-black/85 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
-        className="fixed inset-0"
+        className="fixed inset-0 hidden sm:block"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="relative w-full max-w-2xl flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150 max-h-[92vh]">
-        <div className="p-4 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-[6px] bg-foreground text-background flex items-center justify-center shrink-0">
-              <Share2 className="w-3.5 h-3.5" />
-            </div>
+      <div className="relative w-full h-[100dvh] sm:h-auto sm:max-h-[92vh] sm:rounded-2xl rounded-none border-0 sm:border border-border bg-surface shadow-2xl flex flex-col overflow-hidden z-10 animate-in zoom-in-95 duration-150 max-w-2xl">
+        <div className="p-3 sm:p-4 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <BrandLogo size={28} className="w-7 h-7 shrink-0" />
             <div>
               <h2 id="share-modal-title" className="text-sm font-semibold text-foreground tracking-tight">
                 {isEn ? "Share & Social Card" : "Bagikan & Kartu Sosial"}
               </h2>
               <p className="text-[11px] text-muted-foreground font-mono">
-                proskillai.dev
+                {currentDomain}
               </p>
             </div>
           </div>
@@ -224,8 +226,8 @@ export function ShareModal({
           </button>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2.5 rounded-xl border border-border bg-muted/20">
+        <div className="p-3 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-xl border border-border bg-muted/20">
             <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-medium text-foreground">
@@ -318,20 +320,20 @@ export function ShareModal({
                 {isEn ? `Card Preview (${aspectRatio})` : `Pratinjau Kartu (${aspectRatio})`}
               </span>
               <span className="text-[10px] font-mono text-muted-foreground">
-                proskillai.dev
+                {currentDomain}
               </span>
             </div>
 
-            <div className="w-full flex items-center justify-center p-2 sm:p-4 rounded-xl bg-muted/20 border border-border/70 overflow-hidden min-h-[260px] max-h-[380px] sm:max-h-[420px]">
+            <div className="w-full flex items-center justify-center p-2 sm:p-4 rounded-xl bg-muted/20 border border-border/70 overflow-hidden min-h-[250px] sm:min-h-[290px] max-h-[460px]">
               <div
-                className={`w-full transition-all duration-200 ${
+                className={`w-full transition-all duration-200 flex items-center justify-center ${
                   aspectRatio === "16:9"
                     ? "max-w-xl aspect-16/9"
                     : aspectRatio === "1:1"
-                    ? "max-w-[320px] sm:max-w-[340px] aspect-square"
+                    ? "max-w-[270px] sm:max-w-[320px] aspect-square"
                     : aspectRatio === "3:4"
-                    ? "max-w-[260px] sm:max-w-[280px] aspect-3/4"
-                    : "max-w-[210px] sm:max-w-[230px] aspect-9/16"
+                    ? "max-w-[230px] sm:max-w-[260px] aspect-3/4"
+                    : "max-w-[200px] sm:max-w-[220px] aspect-9/16"
                 }`}
               >
                 <ShareCard
@@ -340,13 +342,14 @@ export function ShareModal({
                   palette={palette}
                   aspectRatio={aspectRatio}
                   userAttribution={userAttribution}
+                  domain={currentDomain}
                   className="h-full"
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-2.5 pt-1">
+          <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
               <span className="font-semibold text-foreground tracking-tight">
                 {isEn ? "Direct Social Share" : "Bagikan Langsung ke Media Sosial"}
@@ -396,7 +399,7 @@ export function ShareModal({
             </div>
           </div>
 
-          <div className="space-y-2.5 pt-1">
+          <div className="space-y-2 pt-1 pb-2">
             <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
               <span className="font-semibold text-foreground tracking-tight">
                 {isEn ? "Export & Link Actions" : "Aksi Ekspor & Tautan"}
