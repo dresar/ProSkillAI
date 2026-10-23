@@ -42,7 +42,7 @@ export function CatalogToolbar({ categories, locale, totalCount }: CatalogToolba
   const selectedCategoryObj = categories.find((c) => c.slug === currentCategory);
 
   return (
-    <div className="space-y-3 mb-6">
+    <div className="space-y-2.5 mb-4">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
         <form onSubmit={handleSearchSubmit} className="relative flex-1">
           <label htmlFor="catalog-search" className="sr-only">

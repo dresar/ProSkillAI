@@ -221,8 +221,8 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-border">
+    <div className="w-full max-w-5xl space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
             <Sparkles className="w-3.5 h-3.5 text-foreground" />

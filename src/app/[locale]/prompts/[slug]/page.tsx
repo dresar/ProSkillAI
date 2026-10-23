@@ -110,7 +110,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="max-w-5xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+    <article className="w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

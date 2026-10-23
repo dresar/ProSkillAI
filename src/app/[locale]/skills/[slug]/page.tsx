@@ -199,7 +199,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(sourceCodeJsonLd) }}
       />
 
-      <div className="max-w-6xl w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="w-full max-w-6xl px-4 sm:px-6 py-3 sm:py-4">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-10">
           <div className="min-w-0 space-y-8">
             <header className="space-y-3">

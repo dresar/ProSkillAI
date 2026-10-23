@@ -62,7 +62,7 @@ export default async function SkillsCatalogPage({
   ]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+    <div className="w-full px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {t("title")}
