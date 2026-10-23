@@ -10,6 +10,41 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },
+      {
+        userAgent: "Googlebot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Bingbot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "GPTBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "ClaudeBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "PerplexityBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Applebot-Extended",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Google-Extended",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
     ],
     sitemap: `${BASE_URL}/sitemap.xml`,
   };

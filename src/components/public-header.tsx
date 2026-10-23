@@ -21,10 +21,11 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
   const isEn = locale === "en";
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const isSkills = pathname === `/${locale}/skills` || pathname.startsWith(`/${locale}/skills/`);
-  const isPrompts = pathname === `/${locale}/prompts` || pathname.startsWith(`/${locale}/prompts/`);
+  const isSkills = pathname === `/${locale}/skills` || (pathname.startsWith(`/${locale}/skills/`) && !pathname.includes("/submit"));
+  const isPrompts = pathname === `/${locale}/prompts` || (pathname.startsWith(`/${locale}/prompts/`) && !pathname.includes("/submit"));
+  const isTrending = pathname === `/${locale}/trending` || pathname.startsWith(`/${locale}/trending/`);
+  const isMcp = pathname === `/${locale}/mcp` || pathname.startsWith(`/${locale}/mcp/`);
   const isFavorites = pathname === `/${locale}/favorites`;
-  const isSubmit = pathname.includes("/submit");
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,22 +51,22 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
     {
       href: `/${locale}/skills`,
       label: isEn ? "Skills" : "Skill",
-      active: isSkills && !isSubmit,
+      active: isSkills,
     },
     {
       href: `/${locale}/prompts`,
       label: isEn ? "Prompts" : "Prompt",
-      active: isPrompts && !isSubmit,
+      active: isPrompts,
     },
     {
-      href: `/${locale}/skills?category=code-automation`,
-      label: isEn ? "MCP Servers" : "MCP Server",
-      active: false,
+      href: `/${locale}/trending`,
+      label: isEn ? "Trending" : "Trending",
+      active: isTrending,
     },
     {
-      href: `/${locale}/skills?category=architecture`,
-      label: isEn ? "Workflows" : "Alur Kerja",
-      active: false,
+      href: `/${locale}/mcp`,
+      label: isEn ? "MCP Servers" : "Server MCP",
+      active: isMcp,
     },
     ...(user
       ? [

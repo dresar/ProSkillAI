@@ -6,20 +6,29 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { publishedSkills, publishedPrompts } = await getSitemapData();
 
-  const staticRoutes = ["", "/skills", "/prompts", "/privacy", "/terms"];
+  const staticRoutes = [
+    { path: "", priority: 1.0, freq: "daily" as const },
+    { path: "/trending", priority: 0.95, freq: "daily" as const },
+    { path: "/mcp", priority: 0.95, freq: "daily" as const },
+    { path: "/skills", priority: 0.9, freq: "daily" as const },
+    { path: "/prompts", priority: 0.85, freq: "daily" as const },
+    { path: "/privacy", priority: 0.3, freq: "monthly" as const },
+    { path: "/terms", priority: 0.3, freq: "monthly" as const },
+  ];
+
   const entries: MetadataRoute.Sitemap = [];
 
-  for (const route of staticRoutes) {
+  for (const item of staticRoutes) {
     for (const locale of ["id", "en"]) {
       entries.push({
-        url: `${BASE_URL}/${locale}${route}`,
+        url: `${BASE_URL}/${locale}${item.path}`,
         lastModified: new Date(),
-        changeFrequency: "daily",
-        priority: route === "" ? 1.0 : 0.8,
+        changeFrequency: item.freq,
+        priority: item.priority,
         alternates: {
           languages: {
-            id: `${BASE_URL}/id${route}`,
-            en: `${BASE_URL}/en${route}`,
+            id: `${BASE_URL}/id${item.path}`,
+            en: `${BASE_URL}/en${item.path}`,
           },
         },
       });

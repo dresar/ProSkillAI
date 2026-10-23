@@ -5,6 +5,19 @@ import { skills, categories, users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { askSkillAi } from "@/lib/ai";
 
+const rateLimitMap = new Map<string, number[]>();
+
+function checkRateLimit(key: string, limit = 10, windowMs = 60000): boolean {
+  const now = Date.now();
+  const timestamps = (rateLimitMap.get(key) || []).filter((t) => now - t < windowMs);
+  if (timestamps.length >= limit) {
+    return false;
+  }
+  timestamps.push(now);
+  rateLimitMap.set(key, timestamps);
+  return true;
+}
+
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
@@ -18,6 +31,16 @@ export async function POST(req: Request) {
       );
     }
 
+    if (!checkRateLimit(`ask_${user.id}`, 10, 60000)) {
+      return NextResponse.json(
+        {
+          error: "RATE_LIMITED",
+          message: "Terlalu banyak permintaan dalam waktu singkat. Harap tunggu beberapa detik.",
+        },
+        { status: 429 }
+      );
+    }
+
     if (user.aiCredits <= 0) {
       return NextResponse.json(
         {
@@ -28,16 +51,41 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const { skillId, question, locale } = body;
-
-    if (!skillId || typeof skillId !== "string") {
-      return NextResponse.json({ error: "BAD_REQUEST", message: "ID skill diperlukan." }, { status: 400 });
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        { error: "BAD_REQUEST", message: "Payload tidak valid." },
+        { status: 400 }
+      );
     }
 
-    if (!question || typeof question !== "string" || question.trim().length < 3) {
+    const { skillId, question, locale } = body;
+
+    if (!skillId || typeof skillId !== "string" || skillId.length > 128) {
+      return NextResponse.json(
+        { error: "BAD_REQUEST", message: "ID skill tidak valid." },
+        { status: 400 }
+      );
+    }
+
+    if (!question || typeof question !== "string") {
+      return NextResponse.json(
+        { error: "BAD_REQUEST", message: "Pertanyaan diperlukan." },
+        { status: 400 }
+      );
+    }
+
+    const cleanQuestion = question.trim();
+    if (cleanQuestion.length < 3) {
       return NextResponse.json(
         { error: "BAD_REQUEST", message: "Pertanyaan minimal 3 karakter." },
+        { status: 400 }
+      );
+    }
+
+    if (cleanQuestion.length > 2000) {
+      return NextResponse.json(
+        { error: "BAD_REQUEST", message: "Pertanyaan maksimal 2000 karakter." },
         { status: 400 }
       );
     }
@@ -53,7 +101,10 @@ export async function POST(req: Request) {
       .limit(1);
 
     if (skillResult.length === 0) {
-      return NextResponse.json({ error: "NOT_FOUND", message: "Skill tidak ditemukan." }, { status: 404 });
+      return NextResponse.json(
+        { error: "NOT_FOUND", message: "Skill tidak ditemukan." },
+        { status: 404 }
+      );
     }
 
     const item = skillResult[0];
@@ -73,7 +124,7 @@ export async function POST(req: Request) {
       skillCategory: catName,
       skillContent: content,
       skillFiles,
-      question: question.trim(),
+      question: cleanQuestion,
       locale,
     });
 
@@ -92,11 +143,11 @@ export async function POST(req: Request) {
       modelUsed: aiRes.modelUsed,
       remainingCredits: updatedUser?.aiCredits ?? Math.max(0, user.aiCredits - 1),
     });
-  } catch (err: any) {
+  } catch {
     return NextResponse.json(
       {
         error: "INTERNAL_ERROR",
-        message: err?.message || "Gagal memproses pertanyaan ke model AI.",
+        message: "Gagal memproses pertanyaan ke model AI. Silakan coba kembali sesaat lagi.",
       },
       { status: 500 }
     );

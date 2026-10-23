@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { BrandLogo } from "./brand-logo";
 import { FeedbackModal } from "./feedback-modal";
-import { Layers, FileCode, Star, Plus, Sparkles, LogIn, ExternalLink } from "lucide-react";
+import { Layers, FileCode, Star, Plus, Sparkles, LogIn, ExternalLink, TrendingUp, Boxes } from "lucide-react";
 import type { PublicUser } from "./public-user-nav";
 
 export async function PublicFooter({
@@ -62,6 +62,24 @@ export async function PublicFooter({
                 >
                   <FileCode className="w-3 h-3" />
                   <span>{isEn ? "Prompt Library" : "Pustaka Prompt"}</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/trending`}
+                  className="hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                >
+                  <TrendingUp className="w-3 h-3 text-foreground" />
+                  <span>{isEn ? "GitHub Trending 100" : "Trending GitHub 100"}</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/mcp`}
+                  className="hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                >
+                  <Boxes className="w-3 h-3 text-foreground" />
+                  <span>{isEn ? "139 MCP Servers" : "139 Server MCP"}</span>
                 </Link>
               </li>
               <li>

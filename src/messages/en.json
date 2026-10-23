@@ -2,6 +2,8 @@
   "nav": {
     "skills": "Skills",
     "prompts": "Prompts",
+    "trending": "Trending",
+    "mcp": "MCP Servers",
     "admin": "Admin Panel",
     "login": "Sign In",
     "logout": "Sign Out",
