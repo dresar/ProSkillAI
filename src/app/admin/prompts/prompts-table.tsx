@@ -14,7 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { deletePromptAction } from "./actions";
-import { getCoverImage } from "@/lib/images";
+import { getPromptCoverImage } from "@/lib/images";
 import type { Prompt, Category } from "@/db/schema";
 
 const COLUMNS = [
@@ -246,7 +246,7 @@ export function PromptsTable({
       ) : view === "grid" ? (
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {promptsList.map((prompt) => {
-            const cover = getCoverImage(prompt.images);
+            const cover = getPromptCoverImage(prompt.images);
             const vars = variableCount(prompt.variables);
             return (
               <article
@@ -331,7 +331,7 @@ export function PromptsTable({
             </thead>
             <tbody className="divide-y divide-border">
               {promptsList.map((prompt) => {
-                const cover = getCoverImage(prompt.images);
+                const cover = getPromptCoverImage(prompt.images);
                 const vars = variableCount(prompt.variables);
                 return (
                   <tr key={prompt.id} className="hover:bg-muted/40 transition-colors">

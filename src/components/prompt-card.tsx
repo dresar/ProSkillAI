@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, Variable } from "lucide-react";
 import type { Prompt, Category } from "@/db/schema";
-import { getCoverImage } from "@/lib/images";
+import { getPromptCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
 interface PromptCardProps {
@@ -31,7 +31,7 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
 
   const variableList = Array.isArray(prompt.variables) ? prompt.variables : [];
   const starCount = prompt.copyCount > 0 ? formatCount(prompt.copyCount) : "3.2k";
-  const cover = getCoverImage(prompt.images);
+  const cover = getPromptCoverImage(prompt.images);
 
   return (
     <Link
