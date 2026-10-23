@@ -8,12 +8,11 @@ import {
   Users,
   Scale,
   Folder,
-  FolderGit2,
   ExternalLink,
   GitBranch,
   FileCode,
   User,
-  ShieldCheck,
+  Radio,
 } from "lucide-react";
 import { motion } from "motion/react";
 import type { Skill, Category } from "@/db/schema";
@@ -42,6 +41,8 @@ interface RepoMetrics {
   forks?: number;
   contributors?: number;
   lastCommit?: string | null;
+  license?: string | null;
+  branch?: string | null;
 }
 
 function readRepoMetrics(skill: Skill): RepoMetrics {
@@ -63,16 +64,49 @@ function readRepoMetrics(skill: Skill): RepoMetrics {
     forks: num("forks"),
     contributors: num("contributors"),
     lastCommit: str("lastCommit"),
+    license: skill.license,
+    branch: skill.branch,
   };
 }
 
 export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps) {
   const isEn = locale === "en";
-  const metrics = readRepoMetrics(skill);
-  const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
-  const lastCommit = formatIsoDate(metrics.lastCommit) ?? formatIsoDate(skill.updatedAt);
+  const initialMetrics = readRepoMetrics(skill);
+
+  const [liveMetrics, setLiveMetrics] = React.useState<RepoMetrics>(initialMetrics);
+  const [isLive, setIsLive] = React.useState(false);
+
   const repoPath = skill.repoUrl ? skill.repoUrl.replace(/^https?:\/\/github\.com\//, "") : null;
   const author = skill.authorName || (repoPath ? repoPath.split("/")[0] : "ProSkillAI");
+  const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
+
+  React.useEffect(() => {
+    if (!repoPath) return;
+
+    let active = true;
+    fetch(`/api/github/live-stats?repo=${encodeURIComponent(repoPath)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!active || !data) return;
+        setLiveMetrics((prev) => ({
+          ...prev,
+          stars: typeof data.stars === "number" ? data.stars : prev.stars,
+          forks: typeof data.forks === "number" ? data.forks : prev.forks,
+          contributors: typeof data.contributors === "number" ? data.contributors : prev.contributors,
+          license: data.license || prev.license,
+          lastCommit: data.lastCommit || prev.lastCommit,
+          branch: data.branch || prev.branch,
+        }));
+        setIsLive(true);
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [repoPath]);
+
+  const lastCommit = formatIsoDate(liveMetrics.lastCommit) ?? formatIsoDate(skill.updatedAt);
 
   return (
     <motion.aside
@@ -88,9 +122,17 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
             {isEn ? "GitHub Repository" : "Repositori GitHub"}
           </span>
         </div>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-500/20 shrink-0">
-          Verified
-        </span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {isLive && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-mono border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Realtime</span>
+            </span>
+          )}
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-500/20">
+            Verified
+          </span>
+        </div>
       </div>
 
       <div className="p-3.5 space-y-3">
@@ -123,7 +165,7 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
               <span>{isEn ? "Stars" : "Bintang"}</span>
             </div>
             <div className="text-base font-bold font-mono text-foreground tabular-nums">
-              {typeof metrics.stars === "number" ? formatIdNumber(metrics.stars) : "-"}
+              {typeof liveMetrics.stars === "number" ? formatIdNumber(liveMetrics.stars) : "-"}
             </div>
           </div>
 
@@ -133,7 +175,7 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
               <span>Forks</span>
             </div>
             <div className="text-base font-bold font-mono text-foreground tabular-nums">
-              {typeof metrics.forks === "number" ? formatIdNumber(metrics.forks) : "-"}
+              {typeof liveMetrics.forks === "number" ? formatIdNumber(liveMetrics.forks) : "-"}
             </div>
           </div>
 
@@ -143,7 +185,7 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
               <span>{isEn ? "Contributors" : "Kontributor"}</span>
             </div>
             <div className="text-base font-bold font-mono text-foreground tabular-nums">
-              {typeof metrics.contributors === "number" ? formatIdNumber(metrics.contributors) : "1"}
+              {typeof liveMetrics.contributors === "number" ? formatIdNumber(liveMetrics.contributors) : "1"}
             </div>
           </div>
 
@@ -153,20 +195,20 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
               <span>{isEn ? "License" : "Lisensi"}</span>
             </div>
             <div className="text-xs font-bold font-mono text-foreground truncate pt-0.5">
-              {skill.license || "MIT"}
+              {liveMetrics.license || skill.license || "MIT"}
             </div>
           </div>
         </div>
 
         <div className="p-2.5 rounded-[8px] border border-border/80 bg-background divide-y divide-border/60 text-xs">
-          {skill.branch && (
+          {(liveMetrics.branch || skill.branch) && (
             <div className="flex items-center justify-between py-1.5">
               <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <GitBranch className="w-3 h-3 text-muted-foreground" />
                 <span>Branch</span>
               </span>
               <span className="font-mono text-[11px] font-semibold text-foreground">
-                {skill.branch}
+                {liveMetrics.branch || skill.branch}
               </span>
             </div>
           )}

@@ -12,6 +12,7 @@ import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
 import { SkillCard } from "@/components/skill-card";
 import { SkillDetailTabs } from "@/components/skill-detail-tabs";
 import { SkillStatsCard } from "@/components/skill-stats-card";
+import { PromptsSidebarBanner } from "@/components/prompts-sidebar-banner";
 import { SkillAiChat } from "@/components/skill-ai-chat";
 import { CliInstallBox } from "@/components/cli-install-box";
 import { SkillFilesViewer } from "@/components/skill-files-viewer";
@@ -221,25 +222,33 @@ export default async function SkillDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(sourceCodeJsonLd) }}
       />
 
-      <div className="w-full max-w-6xl px-4 sm:px-6 py-3 sm:py-4">
-        <div className="mb-3 lg:hidden">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-8 space-y-6">
+        <div className="flex items-center justify-between pb-3.5 border-b border-border/70">
           <Link
             href={`/${locale}/skills`}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-foreground hover:opacity-85 transition-all group px-3 py-1.5 rounded-[6px] border border-border bg-surface hover:bg-muted shadow-2xs cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>{isEn ? "Back" : "Kembali"}</span>
+            <span>{isEn ? "Back to Skills" : "Kembali ke Katalog Skill"}</span>
           </Link>
+
+          <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground font-mono">
+            <Link href={`/${locale}`} className="hover:text-foreground transition-colors">home</Link>
+            <span>/</span>
+            <Link href={`/${locale}/skills`} className="hover:text-foreground transition-colors">skills</Link>
+            <span>/</span>
+            <span className="text-foreground font-semibold truncate max-w-[220px]">{slug}</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-4 sm:gap-6 lg:gap-6">
-          <div className="min-w-0 space-y-4 sm:space-y-5">
-            <header className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6 lg:gap-8">
+          <div className="min-w-0 space-y-5 sm:space-y-6">
+            <header className="space-y-2.5">
               {categoryName && (
                 <div className="text-xs font-medium text-muted-foreground">{categoryName}</div>
               )}
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-2xl">{summary}</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">{title}</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-3xl">{summary}</p>
 
               <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                 {compatibleProviders.map((p) => (
@@ -324,13 +333,14 @@ export default async function SkillDetailPage({ params }: PageProps) {
             </section>
           </div>
 
-          <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <div className="space-y-5 lg:sticky lg:top-20 lg:self-start">
             <SkillStatsCard skill={skill} category={category} locale={locale} />
+            <PromptsSidebarBanner locale={locale} />
           </div>
         </div>
 
         {related.length > 0 && (
-          <section aria-labelledby="related-heading" className="space-y-3 pt-6 mt-6 border-t border-border/60">
+          <section aria-labelledby="related-heading" className="space-y-3 pt-6 mt-8 border-t border-border/70">
             <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
               {t("relatedSkills")}
             </h2>
