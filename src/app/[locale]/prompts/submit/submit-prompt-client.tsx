@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Variable,
   Layers,
+  ArrowLeft,
 } from "lucide-react";
 import { submitPromptAction } from "./actions";
 import type { Category } from "@/db/schema";
@@ -107,6 +108,16 @@ export function SubmitPromptClient({
 
   return (
     <div className="w-full max-w-5xl space-y-5">
+      <div>
+        <Link
+          href={`/${locale}/prompts`}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mb-1"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>{isEn ? "Back to Prompts" : "Kembali ke Pustaka Prompt"}</span>
+        </Link>
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">

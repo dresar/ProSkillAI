@@ -5,11 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  Bot,
   FileCode,
   Layers,
   LogIn,
   LogOut,
-  Package,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { BrandLogo } from "./brand-logo";
-import { ThemeSidebarToggle } from "./theme-sidebar-toggle";
-import { LanguageSwitcher } from "./language-switcher";
 import { type PublicUser } from "./public-user-nav";
 import { usePublicSidebar } from "./public-sidebar-context";
 import { logoutAction } from "@/app/login/actions";
@@ -68,21 +66,19 @@ export function PublicSidebar({
       label: tNav("skills"),
       icon: Layers,
       active: isSkills && !isSubmitSkill,
-      badge: "Catalog",
     },
     {
       href: `/${locale}/prompts`,
       label: tNav("prompts"),
       icon: FileCode,
       active: isPrompts && !isSubmitPrompt,
-      badge: "Library",
     },
     {
       href: `/${locale}/favorites`,
       label: isEn ? "Favorites" : "Favorit",
       icon: Star,
       active: isFavorites,
-      badge: favCount > 0 ? String(favCount) : "Star",
+      count: favCount,
     },
   ];
 
@@ -92,14 +88,12 @@ export function PublicSidebar({
       label: isEn ? "Submit Skill" : "Kirim Skill",
       icon: Plus,
       active: isSubmitSkill,
-      badge: "Skill",
     },
     {
       href: submitPromptHref,
       label: isEn ? "Submit Prompt" : "Kirim Prompt",
       icon: Sparkles,
       active: isSubmitPrompt,
-      badge: "Prompt",
     },
   ];
 
@@ -161,6 +155,7 @@ export function PublicSidebar({
             <nav className="space-y-0.5" aria-label="Explore navigation">
               {exploreItems.map((item) => {
                 const Icon = item.icon;
+                const hasCount = typeof item.count === "number" && item.count > 0;
                 return (
                   <Link
                     key={item.href}
@@ -175,22 +170,20 @@ export function PublicSidebar({
                     }`}
                   >
                     <span
-                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
+                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-2"}`}
                     >
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${item.href.includes("favorites") && favCount > 0 ? "text-amber-500 fill-amber-400" : ""}`} />
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${item.href.includes("favorites") && hasCount ? "text-amber-500 fill-amber-400" : ""}`} />
                       {!collapsed && <span className="truncate">{item.label}</span>}
                     </span>
-                    {!collapsed && (
+                    {!collapsed && hasCount && (
                       <span
-                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold ${
                           item.active
                             ? "bg-background/20 text-background"
-                            : item.href.includes("favorites") && favCount > 0
-                            ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold"
-                            : "bg-muted text-muted-foreground"
+                            : "bg-amber-500/15 text-amber-600 dark:text-amber-400"
                         }`}
                       >
-                        {item.badge}
+                        {item.count}
                       </span>
                     )}
                   </Link>
@@ -222,42 +215,14 @@ export function PublicSidebar({
                     }`}
                   >
                     <span
-                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
+                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-2"}`}
                     >
                       <Icon className="w-3.5 h-3.5 shrink-0" />
                       {!collapsed && <span className="truncate">{item.label}</span>}
                     </span>
-                    {!collapsed && (
-                      <span
-                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                          item.active
-                            ? "bg-background/20 text-background"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
                   </Link>
                 );
               })}
-
-              <div
-                title={collapsed ? "Agent Kits" : undefined}
-                className={`flex items-center py-2 rounded-lg text-xs font-medium text-muted-foreground/80 cursor-not-allowed select-none ${
-                  collapsed ? "justify-center px-0" : "justify-between px-3"
-                }`}
-              >
-                <span className={`flex items-center ${collapsed ? "" : "gap-1.5"}`}>
-                  <Package className="w-3.5 h-3.5 shrink-0" />
-                  {!collapsed && <span>Agent Kits</span>}
-                </span>
-                {!collapsed && (
-                  <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
-                    Soon
-                  </span>
-                )}
-              </div>
             </nav>
           </div>
         </div>
@@ -268,12 +233,14 @@ export function PublicSidebar({
           <div className="p-3 rounded-lg border border-border/60 bg-muted/30">
             <div className="flex items-center gap-2.5">
               <div className="w-6 h-6 rounded-md bg-foreground/10 text-foreground flex items-center justify-center shrink-0">
-                <Sparkles className="w-3.5 h-3.5 text-foreground" />
+                <Bot className="w-3.5 h-3.5 text-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-foreground truncate">ProSkillAI Open</p>
+                <p className="text-xs font-medium text-foreground truncate">
+                  {isEn ? "AI Skill Assistant" : "Asisten AI Cerdas"}
+                </p>
                 <p className="text-[10px] text-muted-foreground truncate">
-                  {isEn ? "Curated agent skills" : "Katalog skill terverifikasi"}
+                  {isEn ? "5 Free credits for users" : "5 Kredit tanya skill gratis"}
                 </p>
               </div>
             </div>
@@ -290,17 +257,6 @@ export function PublicSidebar({
           <FeedbackModal locale={locale} user={user} />
         </div>
 
-        {!collapsed && (
-          <div className="space-y-1.5 pt-2 border-t border-border">
-            <ThemeSidebarToggle locale={locale} />
-
-            <div className="flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground">
-              <span>{isEn ? "Language" : "Bahasa"}</span>
-              <LanguageSwitcher currentLocale={locale} />
-            </div>
-          </div>
-        )}
-
         <div className="pt-2 border-t border-border">
           {user ? (
             collapsed ? (
@@ -311,21 +267,13 @@ export function PublicSidebar({
                 >
                   {user.name.slice(0, 2).toUpperCase()}
                 </div>
-                {user.role === "admin" || user.role === "editor" ? (
+                {(user.role === "admin" || user.role === "editor") && (
                   <Link
                     href="/admin"
                     title={tNav("admin")}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-foreground/10 text-foreground hover:bg-muted transition-all active:scale-95"
                   >
                     <Shield className="w-3.5 h-3.5" />
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/${locale}/favorites`}
-                    title={isEn ? "Favorites" : "Favorit"}
-                    className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95"
-                  >
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
                   </Link>
                 )}
                 <form action={logoutAction} className="flex justify-center">
@@ -366,13 +314,9 @@ export function PublicSidebar({
                       <span>{tNav("admin")}</span>
                     </Link>
                   ) : (
-                    <Link
-                      href={`/${locale}/favorites`}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-muted hover:bg-muted/80 text-foreground text-[11px] font-medium transition-all"
-                    >
-                      <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
-                      <span>{isEn ? "Favorites" : "Favorit"}</span>
-                    </Link>
+                    <div className="flex-1 text-[11px] font-mono text-muted-foreground truncate">
+                      {typeof user.aiCredits === "number" ? `${user.aiCredits}/5 kredit AI` : "Member"}
+                    </div>
                   )}
                   <form action={logoutAction}>
                     <button

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
-import { CheckCircle2 } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
+import { CheckCircle2, ArrowLeft } from "lucide-react";
 import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
 import { DownloadSkillButton } from "@/components/download-skill-button";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
@@ -10,6 +12,7 @@ import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
 import { SkillCard } from "@/components/skill-card";
 import { SkillDetailTabs } from "@/components/skill-detail-tabs";
 import { SkillStatsCard } from "@/components/skill-stats-card";
+import { SkillAiChat } from "@/components/skill-ai-chat";
 import { CliInstallBox } from "@/components/cli-install-box";
 import { ProviderBadge, type ProviderId } from "@/components/provider-logos";
 import { ImageGallery } from "@/components/admin/image-gallery";
@@ -71,6 +74,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const user = await getCurrentUser();
   const { skill, category } = item;
   const isEn = locale === "en";
   const title = isEn ? skill.titleEn : skill.titleId;
@@ -200,6 +204,16 @@ export default async function SkillDetailPage({ params }: PageProps) {
       />
 
       <div className="w-full max-w-6xl px-4 sm:px-6 py-3 sm:py-4">
+        <div className="mb-4">
+          <Link
+            href={`/${locale}/skills`}
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>{isEn ? "Back to Skills" : "Kembali ke Katalog Skill"}</span>
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-10">
           <div className="min-w-0 space-y-8">
             <header className="space-y-3">
@@ -256,6 +270,23 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 />
               </section>
             )}
+
+            <SkillAiChat
+              skillId={skill.id}
+              skillTitle={title}
+              locale={locale}
+              user={
+                user
+                  ? {
+                      id: user.id,
+                      email: user.email,
+                      name: user.name,
+                      role: user.role,
+                      aiCredits: user.aiCredits,
+                    }
+                  : null
+              }
+            />
 
             <SkillDetailTabs
               hasPreview={hasPreview}

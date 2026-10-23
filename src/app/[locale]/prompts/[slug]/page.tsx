@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 import { ImageGallery } from "@/components/admin/image-gallery";
 import { getCoverImage, getImageList } from "@/lib/images";
@@ -111,6 +111,15 @@ export default async function PromptDetailPage({ params }: PageProps) {
 
   return (
     <article className="w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
+      <div className="mb-1">
+        <Link
+          href={`/${locale}/prompts`}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <span>{isEn ? "Back to Prompts" : "Kembali ke Pustaka Prompt"}</span>
+        </Link>
+      </div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

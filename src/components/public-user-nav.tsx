@@ -10,6 +10,7 @@ export interface PublicUser {
   name: string;
   email: string;
   role: string;
+  aiCredits?: number;
 }
 
 export function PublicUserNav({
@@ -54,7 +55,7 @@ export function PublicUserNav({
         </span>
       </div>
 
-      {user.role === "admin" || user.role === "editor" ? (
+      {(user.role === "admin" || user.role === "editor") && (
         <Link
           href="/admin"
           className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 cursor-pointer shrink-0"
@@ -62,15 +63,6 @@ export function PublicUserNav({
         >
           <Shield className="w-3.5 h-3.5 text-foreground" />
           <span className="hidden md:inline">Panel Admin</span>
-        </Link>
-      ) : (
-        <Link
-          href={`/${locale}/favorites`}
-          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 cursor-pointer shrink-0"
-          title={isEn ? "My Favorites" : "Favorit Saya"}
-        >
-          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-          <span className="hidden md:inline">{isEn ? "Favorites" : "Favorit"}</span>
         </Link>
       )}
 

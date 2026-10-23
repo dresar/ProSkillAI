@@ -13,6 +13,7 @@ import {
   Settings,
   History,
   MessageSquare,
+  Bot,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -42,6 +43,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
   const systemLinks = [
     ...(userRole === "admin"
       ? [
+          { href: "/admin/ai", label: "Model AI", icon: Bot },
           { href: "/admin/users", label: "Pengguna", icon: Users },
           { href: "/admin/settings", label: "Pengaturan", icon: Settings },
         ]
