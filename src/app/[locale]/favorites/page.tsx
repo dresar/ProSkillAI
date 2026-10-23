@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { getCurrentUser } from "@/lib/auth";
 import { FavoritesClient } from "./favorites-client";
 
 interface PageProps {
@@ -25,6 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function FavoritesPage({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const user = await getCurrentUser();
+  if (!user) {
+    redirect(`/login?redirect=/${locale}/favorites`);
+  }
 
   return (
     <div className="w-full max-w-7xl px-4 sm:px-6 py-3 sm:py-4">

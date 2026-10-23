@@ -93,7 +93,7 @@ export default async function LocaleLayout({
             <div className="absolute inset-0 bg-grid-lines bg-grid-mask pointer-events-none transition-colors duration-300" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
           </div>
-          <div className="relative z-20 shrink-0">
+          <div className="relative z-10 shrink-0">
             <PublicSidebar locale={locale} user={sessionUser} />
           </div>
           <div className="flex-1 flex flex-col min-w-0 relative z-10">

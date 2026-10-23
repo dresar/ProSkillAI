@@ -164,7 +164,7 @@ export function SkillAiChat({
               </span>
             </h2>
             <p className="text-[10px] text-muted-foreground truncate">
-              {isEn ? "Context-aware AI assistant powered by ByNara Router" : "Asisten AI kontekstual bertenaga ByNara Router"}
+              {isEn ? "Context-aware intelligent AI assistant" : "Asisten AI kontekstual cerdas"}
             </p>
           </div>
         </div>

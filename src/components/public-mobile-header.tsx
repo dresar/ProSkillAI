@@ -120,52 +120,56 @@ export function PublicMobileHeader({
                 <FileCode className="w-3.5 h-3.5 shrink-0" />
                 <span>{tNav("prompts")}</span>
               </Link>
-              <Link
-                href={`/${locale}/favorites`}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
-                  isFavorites
-                    ? "bg-foreground text-background font-semibold"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
-                <span>{isEn ? "Favorites" : "Favorit"}</span>
-              </Link>
+              {user && (
+                <Link
+                  href={`/${locale}/favorites`}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
+                    isFavorites
+                      ? "bg-foreground text-background font-semibold"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
+                  <span>{isEn ? "Favorites" : "Favorit"}</span>
+                </Link>
+              )}
             </div>
           </div>
 
-          <div>
-            <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase block mb-1.5">
-              {isEn ? "Contribute" : "Kontribusi"}
-            </span>
-            <div className="space-y-1">
-              <Link
-                href={user ? `/${locale}/skills/submit` : `/login?redirect=/${locale}/skills/submit`}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
-                  isSubmitSkill
-                    ? "bg-foreground text-background font-semibold"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Plus className="w-3.5 h-3.5 shrink-0" />
-                <span>{isEn ? "Submit Skill" : "Kirim Skill"}</span>
-              </Link>
-              <Link
-                href={user ? `/${locale}/prompts/submit` : `/login?redirect=/${locale}/prompts/submit`}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
-                  isSubmitPrompt
-                    ? "bg-foreground text-background font-semibold"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span>{isEn ? "Submit Prompt" : "Kirim Prompt"}</span>
-              </Link>
+          {user && (
+            <div>
+              <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase block mb-1.5">
+                {isEn ? "Contribute" : "Kontribusi"}
+              </span>
+              <div className="space-y-1">
+                <Link
+                  href={`/${locale}/skills/submit`}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
+                    isSubmitSkill
+                      ? "bg-foreground text-background font-semibold"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Plus className="w-3.5 h-3.5 shrink-0" />
+                  <span>{isEn ? "Submit Skill" : "Kirim Skill"}</span>
+                </Link>
+                <Link
+                  href={`/${locale}/prompts/submit`}
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-medium ${
+                    isSubmitPrompt
+                      ? "bg-foreground text-background font-semibold"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                  <span>{isEn ? "Submit Prompt" : "Kirim Prompt"}</span>
+                </Link>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="pt-3 border-t border-border space-y-2">
             <div className="flex items-center justify-between text-xs">

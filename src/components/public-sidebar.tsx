@@ -73,13 +73,17 @@ export function PublicSidebar({
       icon: FileCode,
       active: isPrompts && !isSubmitPrompt,
     },
-    {
-      href: `/${locale}/favorites`,
-      label: isEn ? "Favorites" : "Favorit",
-      icon: Star,
-      active: isFavorites,
-      count: favCount,
-    },
+    ...(user
+      ? [
+          {
+            href: `/${locale}/favorites`,
+            label: isEn ? "Favorites" : "Favorit",
+            icon: Star,
+            active: isFavorites,
+            count: favCount,
+          },
+        ]
+      : []),
   ];
 
   const contributeItems = [
@@ -192,39 +196,41 @@ export function PublicSidebar({
             </nav>
           </div>
 
-          <div>
-            {!collapsed && (
-              <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
-                {isEn ? "Contribute" : "Kontribusi"}
-              </span>
-            )}
-            <nav className="space-y-0.5" aria-label="Contribute navigation">
-              {contributeItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    title={collapsed ? item.label : undefined}
-                    className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
-                      collapsed ? "justify-center px-0" : "justify-between px-3"
-                    } ${
-                      item.active
-                        ? "bg-foreground text-background font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    }`}
-                  >
-                    <span
-                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-2"}`}
+          {user && (
+            <div>
+              {!collapsed && (
+                <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
+                  {isEn ? "Contribute" : "Kontribusi"}
+                </span>
+              )}
+              <nav className="space-y-0.5" aria-label="Contribute navigation">
+                {contributeItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      title={collapsed ? item.label : undefined}
+                      className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
+                        collapsed ? "justify-center px-0" : "justify-between px-3"
+                      } ${
+                        item.active
+                          ? "bg-foreground text-background font-semibold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      }`}
                     >
-                      <Icon className="w-3.5 h-3.5 shrink-0" />
-                      {!collapsed && <span className="truncate">{item.label}</span>}
-                    </span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+                      <span
+                        className={`flex items-center min-w-0 ${collapsed ? "" : "gap-2"}`}
+                      >
+                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                        {!collapsed && <span className="truncate">{item.label}</span>}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
         </div>
       </div>
 

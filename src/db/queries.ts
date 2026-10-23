@@ -148,20 +148,36 @@ export async function getPublishedPromptBySlug(slug: string): Promise<{
   prompt: Prompt;
   category: Category | null;
   skill: Skill | null;
+  author: { id: string; name: string; role: string; email: string } | null;
 } | null> {
   const result = await db
     .select({
       prompt: prompts,
       category: categories,
       skill: skills,
+      author: {
+        id: users.id,
+        name: users.name,
+        role: users.role,
+        email: users.email,
+      },
     })
     .from(prompts)
     .leftJoin(categories, eq(prompts.categoryId, categories.id))
     .leftJoin(skills, eq(prompts.relatedSkillId, skills.id))
+    .leftJoin(users, eq(prompts.createdBy, users.id))
     .where(and(eq(prompts.slug, slug), eq(prompts.status, "published")))
     .limit(1);
 
-  return result[0] || null;
+  const raw = result[0];
+  if (!raw) return null;
+
+  return {
+    prompt: raw.prompt,
+    category: raw.category,
+    skill: raw.skill,
+    author: raw.author?.id ? (raw.author as { id: string; name: string; role: string; email: string }) : null,
+  };
 }
 
 export async function getAllCategories(type?: string): Promise<Category[]> {

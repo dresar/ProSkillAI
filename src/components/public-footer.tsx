@@ -144,11 +144,6 @@ export async function PublicFooter({ locale }: { locale: string }) {
             <span>&copy; {new Date().getFullYear()} ProSkillAI.</span>
             <span>{t("rights")}</span>
           </div>
-          <div className="flex items-center gap-3 font-mono text-[10px]">
-            <span>ByNara AI Gateway</span>
-            <span>•</span>
-            <span>Next.js 16</span>
-          </div>
         </div>
       </div>
     </footer>

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -13,6 +14,22 @@ interface ImageGalleryProps {
 export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps) {
   const validImages = images.filter(Boolean);
   const [active, setActive] = React.useState<number | null>(null);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (active !== null) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [active]);
 
   React.useEffect(() => {
     if (active === null) return;
@@ -70,9 +87,9 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
         ))}
       </div>
 
-      {active !== null && (
+      {active !== null && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-150"
           role="dialog"
           aria-modal="true"
           aria-label={`Galeri ${alt}`}
@@ -81,7 +98,7 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
           <button
             type="button"
             onClick={close}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+            className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
             aria-label="Tutup galeri"
           >
             <X className="w-5 h-5" />
@@ -94,7 +111,7 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
                 event.stopPropagation();
                 goPrev();
               }}
-              className="absolute left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
               aria-label="Gambar sebelumnya"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -102,7 +119,7 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
           )}
 
           <div
-            className="relative w-full max-w-4xl aspect-video"
+            className="relative w-full max-w-5xl h-[80vh] flex items-center justify-center"
             onClick={(event) => event.stopPropagation()}
           >
             <Image
@@ -122,17 +139,18 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
                 event.stopPropagation();
                 goNext();
               }}
-              className="absolute right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
               aria-label="Gambar berikutnya"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           )}
 
-          <div className="absolute bottom-4 text-white/80 text-xs font-mono">
+          <div className="absolute bottom-4 px-3 py-1 rounded-full bg-black/70 border border-white/15 text-white/90 text-xs font-mono tabular-nums">
             {active + 1} / {validImages.length}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
