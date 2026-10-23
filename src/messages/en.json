@@ -10,9 +10,10 @@
     "skipToContent": "Skip to main content"
   },
   "home": {
-    "title": "Open Catalogue of AI Agent Skills & Prompt Library",
-    "subtitle": "UX, visual, brand, design systems, and code automation for Cursor, Claude Code, and autonomous AI agents.",
-    "searchPlaceholder": "Search skills, prompts, or engineering topics...",
+    "title": "AI Agent Skills & Prompts",
+    "subtitle": "Curated coding skills, system instructions, and verified prompts.",
+    "searchPlaceholder": "Search skills, prompts, or topics...",
+    "allCategories": "All Categories",
     "featuredSkills": "Featured Agent Skills",
     "skillsSubtitle": "Frontend design, design systems, terminal workflows, and agent execution.",
     "latestPrompts": "Curated Prompts",

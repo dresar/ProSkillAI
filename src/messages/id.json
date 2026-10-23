@@ -10,9 +10,10 @@
     "skipToContent": "Lewati ke konten utama"
   },
   "home": {
-    "title": "Katalog Terbuka Skill Agent & Kumpulan Prompt AI",
-    "subtitle": "UX, visual, brand, sistem desain, dan otomasi kode untuk Cursor, Claude Code, serta AI agent mandiri.",
-    "searchPlaceholder": "Cari skill, prompt, atau topik rekayasa...",
+    "title": "Katalog Skill & Prompt AI",
+    "subtitle": "Koleksi skill koding, aturan sistem, dan templat prompt terverifikasi.",
+    "searchPlaceholder": "Cari skill, prompt, atau topik...",
+    "allCategories": "Semua Kategori",
     "featuredSkills": "Skill Agent Unggulan",
     "skillsSubtitle": "Desain frontend, sistem desain, alur terminal, dan eksekusi agent otonom.",
     "latestPrompts": "Koleksi Prompt Terpilih",
