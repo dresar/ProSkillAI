@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { LogIn, LogOut, Shield, Star } from "lucide-react";
+import { LogIn, LogOut, Shield, Settings } from "lucide-react";
 import { logoutAction } from "@/app/login/actions";
 
 export interface PublicUser {
@@ -45,7 +45,11 @@ export function PublicUserNav({
 
   return (
     <div className="flex items-center gap-1.5 shrink-0">
-      <div className="hidden sm:flex items-center gap-2 pl-2 pr-1.5 h-8 rounded-[6px] border border-border bg-surface text-foreground text-xs font-medium">
+      <Link
+        href={`/${locale}/profile`}
+        className="hidden sm:flex items-center gap-2 pl-2 pr-1.5 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted/70 text-foreground text-xs font-medium transition-colors"
+        title={isEn ? "Account Settings & Profile" : "Pengaturan Akun & Profil"}
+      >
         <div className="w-5 h-5 rounded-[4px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
           {initials}
         </div>
@@ -53,7 +57,15 @@ export function PublicUserNav({
         <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-[4px] bg-muted text-foreground border border-border/80">
           {user.role}
         </span>
-      </div>
+      </Link>
+
+      <Link
+        href={`/${locale}/profile`}
+        className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer shrink-0"
+        title={isEn ? "Profile Settings" : "Pengaturan Profil"}
+      >
+        <Settings className="w-3.5 h-3.5" />
+      </Link>
 
       {(user.role === "admin" || user.role === "editor") && (
         <Link

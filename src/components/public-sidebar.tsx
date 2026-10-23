@@ -16,6 +16,7 @@ import {
   Shield,
   Sparkles,
   Star,
+  Settings,
 } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { BrandLogo } from "./brand-logo";
@@ -267,12 +268,20 @@ export function PublicSidebar({
           {user ? (
             collapsed ? (
               <div className="flex flex-col items-center gap-1.5">
-                <div
-                  className="w-8 h-8 rounded-[6px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0"
-                  title={`${user.name} · ${user.email} (${user.role})`}
+                <Link
+                  href={`/${locale}/profile`}
+                  className="w-8 h-8 rounded-[6px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0 hover:opacity-85 transition-opacity"
+                  title={`${user.name} (${user.role}) — ${isEn ? "Account Settings" : "Pengaturan Akun"}`}
                 >
                   {user.name.slice(0, 2).toUpperCase()}
-                </div>
+                </Link>
+                <Link
+                  href={`/${locale}/profile`}
+                  title={isEn ? "Profile Settings" : "Pengaturan Profil"}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border text-foreground hover:bg-muted transition-all active:scale-95"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                </Link>
                 {(user.role === "admin" || user.role === "editor") && (
                   <Link
                     href="/admin"
@@ -295,20 +304,24 @@ export function PublicSidebar({
               </div>
             ) : (
               <div className="p-2.5 rounded-lg border border-border bg-surface/90 space-y-2">
-                <div className="flex items-center justify-between gap-2">
+                <Link
+                  href={`/${locale}/profile`}
+                  className="flex items-center justify-between gap-2 group hover:opacity-85 transition-opacity"
+                  title={isEn ? "Open Profile Settings" : "Buka Pengaturan Profil"}
+                >
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-[5px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                    <div className="w-6 h-6 rounded-[5px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                       {user.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
+                      <p className="text-xs font-semibold text-foreground truncate group-hover:underline">{user.name}</p>
                       <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
                     </div>
                   </div>
                   <span className="text-[10px] font-mono uppercase px-1.5 py-0.2 rounded bg-muted text-foreground border border-border">
                     {user.role}
                   </span>
-                </div>
+                </Link>
 
                 <div className="flex items-center gap-1.5 pt-1 border-t border-border">
                   {user.role === "admin" || user.role === "editor" ? (
@@ -320,9 +333,22 @@ export function PublicSidebar({
                       <span>{tNav("admin")}</span>
                     </Link>
                   ) : (
-                    <div className="flex-1 text-[11px] font-mono text-muted-foreground truncate">
-                      {typeof user.aiCredits === "number" ? `${user.aiCredits}/5 kredit AI` : "Member"}
-                    </div>
+                    <Link
+                      href={`/${locale}/profile`}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
+                    >
+                      <Settings className="w-3 h-3" />
+                      <span>{isEn ? "Settings" : "Profil & Akun"}</span>
+                    </Link>
+                  )}
+                  {(user.role === "admin" || user.role === "editor") && (
+                    <Link
+                      href={`/${locale}/profile`}
+                      className="inline-flex items-center justify-center w-7 h-7 rounded-[5px] border border-border text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
+                      title={isEn ? "Profile Settings" : "Pengaturan Profil"}
+                    >
+                      <Settings className="w-3 h-3" />
+                    </Link>
                   )}
                   <form action={logoutAction}>
                     <button

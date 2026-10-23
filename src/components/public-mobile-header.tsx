@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Menu, X, Shield, LogOut, Star, Plus, Sparkles, LogIn, FileCode, Layers, Bot } from "lucide-react";
+import { Menu, X, Shield, LogOut, Star, Plus, Sparkles, LogIn, FileCode, Layers, Bot, Settings } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
@@ -61,23 +61,40 @@ export function PublicMobileHeader({
       {isOpen && (
         <div className="border-b border-border bg-background px-4 py-4 space-y-4 animate-in fade-in slide-in-from-top-2">
           {user ? (
-            <div className="p-3 rounded-lg border border-border bg-surface flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-7 h-7 rounded-md bg-foreground text-background font-mono text-xs font-bold flex items-center justify-center shrink-0">
-                  {user.name.slice(0, 2).toUpperCase()}
+            <div className="p-3 rounded-lg border border-border bg-surface space-y-2.5">
+              <Link
+                href={`/${locale}/profile`}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between gap-3 hover:opacity-85 transition-opacity"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-md bg-foreground text-background font-mono text-xs font-bold flex items-center justify-center shrink-0">
+                    {user.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
+                    <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
-                  <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-muted text-foreground border border-border">
+                    {user.role}
+                  </span>
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    {typeof user.aiCredits === "number" ? `${user.aiCredits}/5 AI` : ""}
+                  </span>
                 </div>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-muted text-foreground border border-border">
-                  {user.role}
-                </span>
-                <span className="text-[10px] font-mono text-muted-foreground">
-                  {typeof user.aiCredits === "number" ? `${user.aiCredits}/5 AI` : ""}
-                </span>
+              </Link>
+
+              <div className="pt-2 border-t border-border/60">
+                <Link
+                  href={`/${locale}/profile`}
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center justify-center gap-1.5 h-7 px-2.5 rounded-[5px] border border-border bg-muted/50 text-foreground text-xs font-medium hover:bg-muted active:scale-95 transition-all"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Account Settings & Profile" : "Pengaturan Akun & Profil"}</span>
+                </Link>
               </div>
             </div>
           ) : (

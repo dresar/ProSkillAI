@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
-import { ExternalLink, LogOut } from "lucide-react";
+import { ExternalLink, LogOut, User } from "lucide-react";
 import { destroySession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
@@ -34,10 +34,15 @@ export function AdminHeader({ userEmail, title }: { userEmail: string; title?: s
 
         <div className="h-4 w-px bg-border" />
 
-        <div className="hidden md:inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[6px] border border-border/80 bg-muted/30 font-mono text-[11px] text-muted-foreground">
-          <span className="w-1.5 h-1.5 rounded-full bg-foreground/60" />
+        <Link
+          href="/id/profile"
+          target="_blank"
+          className="hidden md:inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[6px] border border-border/80 bg-muted/30 hover:bg-muted font-mono text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          title="Pengaturan Profil Akun"
+        >
+          <User className="w-3 h-3 text-foreground" />
           <span className="truncate max-w-[180px]">{userEmail}</span>
-        </div>
+        </Link>
 
         <form action={handleLogout}>
           <button
