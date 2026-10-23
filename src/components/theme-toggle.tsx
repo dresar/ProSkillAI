@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useTheme, COLOR_THEMES } from "./theme-provider";
-import { Sun, Moon, Palette, Check, ChevronDown } from "lucide-react";
+import { Sun, Moon, Palette, Check } from "lucide-react";
 
 export function ThemeToggle({
   label = "Ganti tema",
@@ -91,15 +91,10 @@ export function ThemeToggle({
         title={`${label} (${activeDef.name})`}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 h-8 px-2 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer text-xs font-medium shrink-0"
+        className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95 cursor-pointer shrink-0 shadow-2xs"
       >
-        <span
-          className="w-3.5 h-3.5 rounded-full shrink-0 border border-white/20 shadow-2xs flex items-center justify-center"
-          style={{ backgroundColor: activeDef.accent }}
-        />
-        <Moon className="w-3.5 h-3.5 text-foreground shrink-0 hidden dark:block" aria-hidden="true" />
-        <Sun className="w-3.5 h-3.5 text-foreground shrink-0 block dark:hidden" aria-hidden="true" />
-        <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+        <Moon className="w-3.5 h-3.5 text-foreground hidden dark:block" aria-hidden="true" />
+        <Sun className="w-3.5 h-3.5 text-foreground block dark:hidden" aria-hidden="true" />
       </button>
 
       {open && (

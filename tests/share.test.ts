@@ -189,6 +189,10 @@ describe("Universal Share Feature & QR Code Engine", () => {
       "src/app/[locale]/favorites/favorites-client.tsx",
       "src/app/api/auth/me/route.ts",
       "src/components/download-skill-button.tsx",
+      "src/components/skill-files-viewer.tsx",
+      "src/components/public-header.tsx",
+      "src/components/public-user-nav.tsx",
+      "src/components/theme-toggle.tsx",
     ];
 
     for (const relPath of filesToCheck) {
