@@ -111,13 +111,13 @@ export default async function PromptDetailPage({ params }: PageProps) {
 
   return (
     <article className="w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
-      <div className="mb-1">
+      <div className="mb-1 lg:hidden">
         <Link
           href={`/${locale}/prompts`}
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>{isEn ? "Back to Prompts" : "Kembali ke Pustaka Prompt"}</span>
+          <span>{isEn ? "Back" : "Kembali"}</span>
         </Link>
       </div>
       <script

@@ -41,13 +41,13 @@ export function FavoritesClient({ locale }: { locale: string }) {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="mb-2 lg:hidden">
         <Link
           href={`/${locale}`}
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mb-1"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          <span>{isEn ? "Back to Home" : "Kembali ke Beranda"}</span>
+          <span>{isEn ? "Back" : "Kembali"}</span>
         </Link>
       </div>
 
