@@ -15,7 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { deleteSkillAction, approveSkillAction } from "./actions";
-import { getCoverImage } from "@/lib/images";
+import { getSkillCoverImage } from "@/lib/images";
 import type { Skill, Category } from "@/db/schema";
 
 const COLUMNS = [
@@ -298,7 +298,7 @@ export function SkillsTable({
       ) : view === "grid" ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
           {skillsList.map((skill) => {
-            const cover = getCoverImage(skill.images, skill.previewImageUrl);
+            const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
             return (
               <article
                 key={skill.id}
@@ -386,7 +386,7 @@ export function SkillsTable({
             </thead>
             <tbody className="divide-y divide-border">
               {skillsList.map((skill) => {
-                const cover = getCoverImage(skill.images, skill.previewImageUrl);
+                const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
                 return (
                   <tr key={skill.id} className="hover:bg-muted/40 transition-colors">
                     {isColumnVisible("title") && (

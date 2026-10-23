@@ -13,7 +13,7 @@ import { SkillStatsCard } from "@/components/skill-stats-card";
 import { CliInstallBox } from "@/components/cli-install-box";
 import { ProviderBadge, type ProviderId } from "@/components/provider-logos";
 import { ImageGallery } from "@/components/admin/image-gallery";
-import { getCoverImage, getImageList } from "@/lib/images";
+import { getSkillCoverImage, getImageList } from "@/lib/images";
 
 interface PageProps {
   params: Promise<{
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { skill } = item;
   const title = isEn ? skill.titleEn : skill.titleId;
   const description = isEn ? skill.summaryEn : skill.summaryId;
-  const cover = getCoverImage(skill.images, skill.previewImageUrl);
+  const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
 
   return {
     title,

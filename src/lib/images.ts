@@ -1,6 +1,8 @@
 export const MAX_GALLERY_IMAGES = 5;
+export const DEFAULT_SKILL_COVER = "/images/default-skill.png";
 
 function isValidImageUrl(value: string): boolean {
+  if (value.startsWith("/")) return true;
   try {
     const url = new URL(value);
     return url.protocol === "http:" || url.protocol === "https:";
@@ -28,6 +30,14 @@ export function getImageList(value: unknown, fallback?: string | null): string[]
   return result;
 }
 
-export function getCoverImage(value: unknown, fallback?: string | null): string | null {
-  return getImageList(value, fallback)[0] ?? null;
+export function getCoverImage(
+  value: unknown,
+  fallback?: string | null,
+  defaultCover: string | null = null
+): string | null {
+  return getImageList(value, fallback)[0] ?? defaultCover;
+}
+
+export function getSkillCoverImage(value: unknown, fallback?: string | null): string {
+  return getCoverImage(value, fallback, DEFAULT_SKILL_COVER) ?? DEFAULT_SKILL_COVER;
 }

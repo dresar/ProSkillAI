@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star } from "lucide-react";
 import type { Skill, Category } from "@/db/schema";
-import { getCoverImage } from "@/lib/images";
+import { getSkillCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
 
 interface SkillCardProps {
@@ -30,7 +30,7 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
   const colorClass = getCategoryColor(category?.slug || categoryName);
 
   const starCount = skill.copyCount > 0 ? formatCount(skill.copyCount) : "4.8k";
-  const cover = getCoverImage(skill.images, skill.previewImageUrl);
+  const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
 
   return (
     <Link
