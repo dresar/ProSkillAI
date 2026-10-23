@@ -41,14 +41,16 @@ export default async function LocaleLayout({
       }
     : null;
 
+  const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
+
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "ProSkillAI",
-    url: `https://proskillai.dev/${locale}`,
+    name: "Skills",
+    url: `${siteBaseUrl}/${locale}`,
     potentialAction: {
       "@type": "SearchAction",
-      target: `https://proskillai.dev/${locale}/skills?q={search_term_string}`,
+      target: `${siteBaseUrl}/${locale}/skills?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
@@ -56,9 +58,9 @@ export default async function LocaleLayout({
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "ProSkillAI",
-    url: "https://proskillai.dev",
-    logo: "https://proskillai.dev/brand/logo-full.svg",
+    name: "Skills",
+    url: siteBaseUrl,
+    logo: `${siteBaseUrl}/brand/logo-full.svg`,
   };
 
   return (

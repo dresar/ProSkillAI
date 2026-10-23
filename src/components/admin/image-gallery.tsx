@@ -3,17 +3,25 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
 
 interface ImageGalleryProps {
   images: string[];
   alt: string;
   className?: string;
+  autoSlideInterval?: number;
 }
 
-export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps) {
+export function ImageGallery({
+  images,
+  alt,
+  className = "",
+  autoSlideInterval = 3500,
+}: ImageGalleryProps) {
   const validImages = images.filter(Boolean);
-  const [active, setActive] = React.useState<number | null>(null);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
+  const [isPaused, setIsPaused] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -21,7 +29,17 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
   }, []);
 
   React.useEffect(() => {
-    if (active !== null) {
+    if (validImages.length <= 1 || isPaused || lightboxIndex !== null) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % validImages.length);
+    }, autoSlideInterval);
+
+    return () => clearInterval(timer);
+  }, [validImages.length, isPaused, lightboxIndex, autoSlideInterval]);
+
+  React.useEffect(() => {
+    if (lightboxIndex !== null) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -29,75 +47,160 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
     return () => {
       document.body.style.overflow = "";
     };
-  }, [active]);
+  }, [lightboxIndex]);
 
   React.useEffect(() => {
-    if (active === null) return;
+    if (lightboxIndex === null) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setActive(null);
+        setLightboxIndex(null);
         return;
       }
       if (validImages.length < 2) return;
       if (event.key === "ArrowRight") {
-        setActive((prev) => (prev === null ? prev : (prev + 1) % validImages.length));
+        setLightboxIndex((prev) =>
+          prev === null ? prev : (prev + 1) % validImages.length
+        );
       }
       if (event.key === "ArrowLeft") {
-        setActive((prev) =>
-          prev === null ? prev : (prev - 1 + validImages.length) % validImages.length
+        setLightboxIndex((prev) =>
+          prev === null
+            ? prev
+            : (prev - 1 + validImages.length) % validImages.length
         );
       }
     };
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [active, validImages.length]);
+  }, [lightboxIndex, validImages.length]);
 
   if (validImages.length === 0) return null;
 
-  const close = () => setActive(null);
-  const goPrev = () =>
-    setActive((prev) =>
+  const goPrev = () => {
+    setCurrentIndex(
+      (prev) => (prev - 1 + validImages.length) % validImages.length
+    );
+  };
+
+  const goNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % validImages.length);
+  };
+
+  const goLightboxPrev = () => {
+    setLightboxIndex((prev) =>
       prev === null ? prev : (prev - 1 + validImages.length) % validImages.length
     );
-  const goNext = () =>
-    setActive((prev) => (prev === null ? prev : (prev + 1) % validImages.length));
+  };
+
+  const goLightboxNext = () => {
+    setLightboxIndex((prev) =>
+      prev === null ? prev : (prev + 1) % validImages.length
+    );
+  };
 
   return (
-    <>
-      <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2.5 ${className}`}>
-        {validImages.map((src, index) => (
+    <div
+      className={`space-y-3 ${className}`}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
+      <div className="relative aspect-video sm:aspect-[21/9] w-full rounded-2xl border border-border bg-muted/40 overflow-hidden shadow-sm group">
+        <Image
+          src={validImages[currentIndex]}
+          alt={`${alt} slide ${currentIndex + 1}`}
+          fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, 900px"
+          priority
+          className="object-cover transition-all duration-500"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+
+        <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+          <div className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-xs text-[11px] font-mono text-white/90 border border-white/10 shadow-xs tabular-nums">
+            {currentIndex + 1} / {validImages.length}
+          </div>
+
           <button
-            key={`${src}-${index}`}
             type="button"
-            onClick={() => setActive(index)}
-            className="relative aspect-video rounded-lg border border-border bg-muted overflow-hidden group cursor-zoom-in"
-            aria-label={`Buka gambar ${index + 1}`}
+            onClick={() => setLightboxIndex(currentIndex)}
+            aria-label="Expand image"
+            title="Expand image"
+            className="w-7 h-7 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xs text-white border border-white/10 flex items-center justify-center transition-all cursor-pointer active:scale-95 shadow-xs"
           >
-            <Image
-              src={src}
-              alt={`${alt} ${index + 1}`}
-              fill
-              unoptimized
-              sizes="(max-width: 768px) 50vw, 300px"
-              className="object-cover transition-transform duration-200 group-hover:scale-105"
-            />
+            <Maximize2 className="w-3.5 h-3.5" />
           </button>
-        ))}
+        </div>
+
+        {validImages.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Previous slide"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-xs text-white border border-white/15 flex items-center justify-center transition-all cursor-pointer opacity-0 group-hover:opacity-100 active:scale-95 shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Next slide"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/75 backdrop-blur-xs text-white border border-white/15 flex items-center justify-center transition-all cursor-pointer opacity-0 group-hover:opacity-100 active:scale-95 shadow-sm"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </>
+        )}
       </div>
 
-      {active !== null && mounted && createPortal(
+      {validImages.length > 1 && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {validImages.map((src, idx) => {
+            const isActive = idx === currentIndex;
+            return (
+              <button
+                key={`${src}-${idx}`}
+                type="button"
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`relative w-16 h-10 sm:w-20 sm:h-12 rounded-lg border overflow-hidden shrink-0 transition-all cursor-pointer ${
+                  isActive
+                    ? "border-blue-500 ring-2 ring-blue-500/40 shadow-xs"
+                    : "border-border/70 opacity-60 hover:opacity-100"
+                }`}
+              >
+                <Image
+                  src={src}
+                  alt={`Thumbnail ${idx + 1}`}
+                  fill
+                  unoptimized
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {lightboxIndex !== null && mounted && createPortal(
         <div
           className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-150"
           role="dialog"
           aria-modal="true"
           aria-label={`Galeri ${alt}`}
-          onClick={close}
+          onClick={() => setLightboxIndex(null)}
         >
           <button
             type="button"
-            onClick={close}
+            onClick={() => setLightboxIndex(null)}
             className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
             aria-label="Tutup galeri"
           >
@@ -109,7 +212,7 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
-                goPrev();
+                goLightboxPrev();
               }}
               className="absolute left-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
               aria-label="Gambar sebelumnya"
@@ -123,8 +226,8 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
             onClick={(event) => event.stopPropagation()}
           >
             <Image
-              src={validImages[active]}
-              alt={`${alt} ${active + 1}`}
+              src={validImages[lightboxIndex]}
+              alt={`${alt} ${lightboxIndex + 1}`}
               fill
               unoptimized
               sizes="100vw"
@@ -137,7 +240,7 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
-                goNext();
+                goLightboxNext();
               }}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer z-10 border border-white/10 active:scale-95"
               aria-label="Gambar berikutnya"
@@ -147,11 +250,11 @@ export function ImageGallery({ images, alt, className = "" }: ImageGalleryProps)
           )}
 
           <div className="absolute bottom-4 px-3 py-1 rounded-full bg-black/70 border border-white/15 text-white/90 text-xs font-mono tabular-nums">
-            {active + 1} / {validImages.length}
+            {lightboxIndex + 1} / {validImages.length}
           </div>
         </div>,
         document.body
       )}
-    </>
+    </div>
   );
 }

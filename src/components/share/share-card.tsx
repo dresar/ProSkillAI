@@ -105,7 +105,7 @@ export function ShareCard({
           <div className="w-7 h-7 sm:w-8 sm:h-8 relative shrink-0">
             <Image
               src={isDark ? "/brand/logo-mark-white.png" : "/brand/logo-mark-black.png"}
-              alt="ProSkillAI Logo"
+              alt="Skills Logo"
               width={32}
               height={32}
               className="w-full h-full object-contain"
@@ -114,7 +114,7 @@ export function ShareCard({
           </div>
           <div className="leading-tight">
             <span className="text-xs sm:text-sm font-bold tracking-tight block">
-              ProSkillAI
+              Skills
             </span>
             <span
               className={`text-[9px] sm:text-[10px] font-mono block ${

@@ -13,7 +13,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale } = await params;
   const isEn = locale === "en";
 
-  const title = isEn ? "AI Prompt Library | ProSkillAI" : "Kumpulan Prompt Rekayasa AI | ProSkillAI";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
+  const title = isEn ? "AI Prompt Library | Skills (skills.biz.id)" : "Kumpulan Prompt Rekayasa AI | Skills (skills.biz.id)";
   const description = isEn
     ? "Verified software engineering, architecture, and anti-slop prompts with interactive variable substitution."
     : "Koleksi prompt rekayasa perangkat lunak, arsitektur, dan UI anti-slop dengan dukungan variabel dinamis siap pakai.";
@@ -22,18 +23,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `https://proskillai.dev/${locale}/prompts`,
+      canonical: `${baseUrl}/${locale}/prompts`,
       languages: {
-        id: "https://proskillai.dev/id/prompts",
-        en: "https://proskillai.dev/en/prompts",
-        "x-default": "https://proskillai.dev/id/prompts",
+        id: `${baseUrl}/id/prompts`,
+        en: `${baseUrl}/en/prompts`,
+        "x-default": `${baseUrl}/id/prompts`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `https://proskillai.dev/${locale}/prompts`,
-      siteName: "ProSkillAI",
+      url: `${baseUrl}/${locale}/prompts`,
+      siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
       type: "website",
     },

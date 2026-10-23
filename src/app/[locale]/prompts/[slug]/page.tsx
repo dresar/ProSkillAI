@@ -18,7 +18,7 @@ interface PageProps {
   }>;
 }
 
-const SITE_URL = "https://proskillai.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
 function limitToThreeSentences(text: string): string {
   const matches = text.match(/[^.!?]+[.!?]+(\s|$)/g);
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: `${SITE_URL}/${locale}/prompts/${slug}`,
-      siteName: "ProSkillAI",
+      siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
       images: cover ? [cover] : undefined,
@@ -81,7 +81,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   const rawDescription = isEn ? prompt.descriptionEn : prompt.descriptionId;
   const description = limitToThreeSentences(rawDescription);
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
-  const authorName = author?.name || "ProSkillAI Team";
+  const authorName = author?.name || "Skills Team";
   const authorInitial = authorName.slice(0, 2).toUpperCase();
   const demoOutputText = isEn
     ? (prompt.demoOutputEn || prompt.demoOutput)
@@ -124,7 +124,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
     programmingLanguage: "Markdown",
     url: canonical,
     dateModified,
-    author: { "@type": "Organization", name: "ProSkillAI", url: SITE_URL },
+    author: { "@type": "Organization", name: "Skills", url: SITE_URL },
   };
 
   return (

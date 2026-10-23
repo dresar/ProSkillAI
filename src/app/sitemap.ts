@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getSitemapData } from "@/db/queries";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { publishedSkills, publishedPrompts } = await getSitemapData();

@@ -1284,3 +1284,26 @@ The governing rule is simple:
 3. **Component Tabs vs. Route Navigation**:
    - Component-level tabs (e.g., `Tabs` for switching cURL / JavaScript / Python / PHP snippets) are for switching internal views or data modes within a single component.
    - Application route navigation belongs exclusively in the main sidebar.
+
+---
+
+## 33. Compact File Pickers, Tight Action Toolbars, Mobile Drawers, and Responsive Carousels
+
+1. **Multi-Resource & File Pickers**:
+   - When presenting auxiliary files, code assets, or multi-option filters (>3 items), **MUST NOT** render wide horizontally scrolling button rows that cause layout overflow or clutter.
+   - Provide a compact dropdown selector showing active file name, file size/type badge, `<Check />` state, and keyboard support.
+
+2. **Tight Action Toolbars & Icon-Only Secondary Controls**:
+   - Action buttons in header and detail views **MUST** be packed closely together (`gap-1.5` to `gap-2`). **MUST NOT** apply `flex-1` or auto margins that push action buttons to opposite edges of the screen.
+   - Secondary actions (e.g. Download, Share, Copy Link, Bookmark) **MUST** default to compact icon buttons (`w-8 h-8 rounded-[6px]`) with accessible tooltips (`title` and `aria-label`), keeping text only on the primary CTA.
+
+3. **Mobile Header & Slide-Over Drawer**:
+   - Mobile headers **MUST NOT** pack 6-8 tool icons horizontally into the top bar. Keep header minimal: logo on the left, single theme toggle icon (`w-8 h-8`), and hamburger trigger.
+   - All secondary tools (submit buttons, navigation links, locale selector, shortcuts) **MUST** reside cleanly inside a right-side slide-over drawer (`slide-in-from-right duration-200`) with backdrop blur.
+
+4. **Fullscreen Mobile Modals**:
+   - Rich dialogs with live card previews, QR codes, or canvases **MUST** expand to fullscreen on mobile devices (`h-[100dvh] sm:h-auto rounded-none sm:rounded-2xl border-0 sm:border`) to guarantee zero clipping.
+
+5. **Responsive Auto-Advancing Media Sliders**:
+   - When multiple showcase slides or screenshots exist (>1), provide an auto-sliding carousel (3.5s interval) with smooth transition, pause on hover/touch, slide counter badge (`N / Total`), thumbnail navigation strip, and full-screen lightbox zoom.
+

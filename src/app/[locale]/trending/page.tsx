@@ -17,14 +17,14 @@ export async function generateMetadata({
   const isEn = locale === "en";
 
   const title = isEn
-    ? "Top 100 Trending GitHub Repositories | ProSkillAI"
-    : "100 Repositori GitHub Paling Trending | ProSkillAI";
+    ? "Top 100 Trending GitHub Repositories | Skills"
+    : "100 Repositori GitHub Paling Trending | Skills";
 
   const description = isEn
     ? "Explore the top 100 trending open-source GitHub repositories, agent frameworks, and developer libraries with full README previews and clone instructions."
     : "Jelajahi 100 repositori GitHub open-source, framework agen AI, dan pustaka developer paling trending lengkap dengan pratinjau README dan panduan clone.";
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
   const canonicalUrl = `${baseUrl}/${locale}/trending`;
 
   return {
@@ -41,7 +41,7 @@ export async function generateMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: "ProSkillAI",
+      siteName: "Skills",
       type: "website",
     },
     twitter: {

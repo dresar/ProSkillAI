@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" fill="none">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1215" />
+      <stop offset="100%" stop-color="#0f1c24" />
+    </linearGradient>
+    <radialGradient id="glow5" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.16" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg5)" />
+  <rect width="1200" height="675" fill="url(#glow5)" />
+
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <line x1="80" y1="0" x2="80" y2="675" />
+    <line x1="360" y1="0" x2="360" y2="675" />
+    <line x1="640" y1="0" x2="640" y2="675" />
+    <line x1="920" y1="0" x2="920" y2="675" />
+    <line x1="0" y1="140" x2="1200" y2="140" />
+    <line x1="0" y1="535" x2="1200" y2="535" />
+  </g>
+
+  <g transform="translate(80, 70)">
+    <rect width="112" height="28" rx="6" fill="#083344" stroke="#0e7490" stroke-width="1" />
+    <text x="56" y="18" fill="#22d3ee" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">STEP 05</text>
+
+    <text x="0" y="70" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.5">Execution Plans &amp; Checkpoints</text>
+    <text x="0" y="102" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15">Disciplined milestone execution with review gates and verified assertions</text>
+  </g>
+
+  <g transform="translate(80, 220)">
+    <g transform="translate(0, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#1e293b" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#164e63" />
+      <text x="40" y="47" fill="#22d3ee" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">A</text>
+      <text x="70" y="47" fill="#f1f5f9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Phase 1: Foundation</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+        <tspan x="24" dy="0">Set up schema, typed contracts,</tspan>
+        <tspan x="24" dy="22">and baseline test suites.</tspan>
+        <tspan x="24" dy="22">Establish zero-comment standards.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#164e63" stroke-width="1" />
+      <text x="36" y="211" fill="#22d3ee" font-family="monospace" font-size="12">&#10003; Verification Passed</text>
+    </g>
+
+    <g transform="translate(360, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#1e293b" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#164e63" />
+      <text x="40" y="47" fill="#22d3ee" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">B</text>
+      <text x="70" y="47" fill="#f1f5f9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Phase 2: Implementation</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+        <tspan x="24" dy="0">Implement components and endpoints.</tspan>
+        <tspan x="24" dy="22">Respect mobile layouts, fast click</tspan>
+        <tspan x="24" dy="22">states, and precise button tokens.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#164e63" stroke-width="1" />
+      <text x="36" y="211" fill="#22d3ee" font-family="monospace" font-size="12">&#10003; Verification Passed</text>
+    </g>
+
+    <g transform="translate(720, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#10b981" stroke-opacity="0.5" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#064e3b" />
+      <text x="40" y="47" fill="#34d399" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">C</text>
+      <text x="70" y="47" fill="#34d399" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Phase 3: Production Ready</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+        <tspan x="24" dy="0">Strict audit: zero lint errors,</tspan>
+        <tspan x="24" dy="22">all tests passing, PageSpeed 90+,</tspan>
+        <tspan x="24" dy="22">clean conventional git commit.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#10b981" stroke-opacity="0.4" stroke-width="1" />
+      <text x="36" y="211" fill="#34d399" font-family="monospace" font-size="12">&#10003; 100% Complete &amp; Deployed</text>
+    </g>
+  </g>
+
+  <g transform="translate(80, 580)">
+    <text x="0" y="22" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">Skills Framework &#8226; Software Engineering Methodology &#8226; skills.biz.id</text>
+  </g>
+</svg>

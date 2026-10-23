@@ -6,13 +6,13 @@ import type {
   ShareTheme,
 } from "@/types/share";
 
-export const SITE_URL = "https://proskillai.dev";
+export const SITE_URL = "https://skills.biz.id";
 
 export function getCurrentDomain(): string {
   if (typeof window !== "undefined" && window.location && window.location.host) {
     return window.location.host;
   }
-  return "proskillai.dev";
+  return "skills.biz.id";
 }
 
 export interface PaletteConfig {
@@ -224,8 +224,8 @@ export function buildSocialShareUrls(item: ShareItemData, canonicalUrl: string) 
     ? `${rawDesc.slice(0, 117)}...`
     : rawDesc;
   const shareText = shortDesc
-    ? `${item.title} — ${shortDesc} via @ProSkillAI`
-    : `${item.title} via @ProSkillAI`;
+    ? `${item.title} — ${shortDesc} via @Skills`
+    : `${item.title} via @Skills`;
 
   return {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(canonicalUrl)}`,

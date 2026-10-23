@@ -155,14 +155,14 @@ export async function generateShareCardBlob(
     ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("P", brandMarkX + brandMarkSize / 2, brandMarkY + brandMarkSize / 2 + 1);
+    ctx.fillText("S", brandMarkX + brandMarkSize / 2, brandMarkY + brandMarkSize / 2 + 1);
   }
 
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.font = "bold 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
   ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
-  ctx.fillText("ProSkillAI", brandMarkX + brandMarkSize + 14, brandMarkY + 4);
+  ctx.fillText("Skills", brandMarkX + brandMarkSize + 14, brandMarkY + 4);
 
   ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
   ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
@@ -516,7 +516,7 @@ export async function downloadShareCardImage(
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
   const ratioLabel = aspectRatio.replace(":", "x");
-  anchor.download = `proskillai-${safeSlug}-${ratioLabel}-${theme}.png`;
+  anchor.download = `skills-${safeSlug}-${ratioLabel}-${theme}.png`;
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);

@@ -14,30 +14,31 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const isEn = locale === "en";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
   const title = isEn
-    ? "ProSkillAI | Curated Directory of AI Agent Skills"
-    : "ProSkillAI | Direktori Terkurasi Skill AI Agent";
+    ? "Skills | Curated Directory of AI Agent Skills (skills.biz.id)"
+    : "Skills | Direktori Terkurasi Skill AI Agent (skills.biz.id)";
   const description = isEn
-    ? "Discover the best AI agent skills for Claude Code, Cursor, and Codex. Verified S-rank art direction, system architecture, and 1-click CLI commands."
-    : "Temukan koleksi skill AI agent terbaik untuk Claude Code, Cursor, dan Codex. Standar S-rank, arsitektur sistem, dan instalasi 1-klik.";
+    ? "Discover the best AI agent skills for Claude Code, Antigravity, Cursor, and Codex. Verified S-rank art direction, system architecture, and 1-click CLI commands."
+    : "Temukan koleksi skill AI agent terbaik untuk Claude Code, Antigravity, Cursor, dan Codex. Standar S-rank, arsitektur sistem, dan instalasi 1-klik.";
 
   return {
     title,
     description,
     alternates: {
-      canonical: `https://proskillai.dev/${locale}`,
+      canonical: `${baseUrl}/${locale}`,
       languages: {
-        id: "https://proskillai.dev/id",
-        en: "https://proskillai.dev/en",
-        "x-default": "https://proskillai.dev/id",
+        id: `${baseUrl}/id`,
+        en: `${baseUrl}/en`,
+        "x-default": `${baseUrl}/id`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `https://proskillai.dev/${locale}`,
-      siteName: "ProSkillAI",
+      url: `${baseUrl}/${locale}`,
+      siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
       type: "website",
     },

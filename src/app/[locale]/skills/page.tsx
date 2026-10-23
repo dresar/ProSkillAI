@@ -12,8 +12,11 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const isEn = locale === "en";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
-  const title = isEn ? "Agent Skills Directory | ProSkillAI" : "Katalog Skill AI Agent | ProSkillAI";
+  const title = isEn
+    ? "Agent Skills Directory | Skills (skills.biz.id)"
+    : "Katalog Skill AI Agent | Skills (skills.biz.id)";
   const description = isEn
     ? "Browse verified instructions, visual designs, and design tokens for AI coding agents."
     : "Telusuri kumpulan instruksi skill, desain visual, dan token terverifikasi untuk AI coding agent.";
@@ -22,18 +25,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `https://proskillai.dev/${locale}/skills`,
+      canonical: `${baseUrl}/${locale}/skills`,
       languages: {
-        id: "https://proskillai.dev/id/skills",
-        en: "https://proskillai.dev/en/skills",
-        "x-default": "https://proskillai.dev/id/skills",
+        id: `${baseUrl}/id/skills`,
+        en: `${baseUrl}/en/skills`,
+        "x-default": `${baseUrl}/id/skills`,
       },
     },
     openGraph: {
       title,
       description,
-      url: `https://proskillai.dev/${locale}/skills`,
-      siteName: "ProSkillAI",
+      url: `${baseUrl}/${locale}/skills`,
+      siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
       type: "website",
     },

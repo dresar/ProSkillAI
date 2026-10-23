@@ -126,11 +126,11 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
             <Link
               href={`/${locale}`}
               className="flex items-center gap-2.5 text-foreground hover:opacity-85 transition-opacity shrink-0"
-              aria-label="ProSkillAI Home"
+              aria-label="Skills Home"
             >
               <BrandLogo className="w-6 h-6" size={24} />
               <span className="font-bold text-sm sm:text-base tracking-tight text-foreground flex items-center">
-                ProSkillAI<span className="text-[9px] font-mono ml-0.5 text-muted-foreground">™</span>
+                Skills
               </span>
             </Link>
 
@@ -226,7 +226,7 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
                   className="flex items-center gap-2 text-foreground font-bold text-sm tracking-tight"
                 >
                   <BrandLogo className="w-5 h-5" size={20} />
-                  <span>ProSkillAI</span>
+                  <span>Skills</span>
                 </Link>
 
                 <button

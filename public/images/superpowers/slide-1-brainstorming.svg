@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0d13" />
+      <stop offset="100%" stop-color="#0f1420" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)" />
+  <rect width="1200" height="675" fill="url(#glow)" />
+
+  <g stroke="#ffffff" stroke-opacity="0.04" stroke-width="1">
+    <line x1="80" y1="0" x2="80" y2="675" />
+    <line x1="360" y1="0" x2="360" y2="675" />
+    <line x1="640" y1="0" x2="640" y2="675" />
+    <line x1="920" y1="0" x2="920" y2="675" />
+    <line x1="0" y1="140" x2="1200" y2="140" />
+    <line x1="0" y1="535" x2="1200" y2="535" />
+  </g>
+
+  <g transform="translate(80, 70)">
+    <rect width="112" height="28" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="56" y="18" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">STEP 01</text>
+
+    <text x="0" y="70" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="34" font-weight="700" letter-spacing="-0.5">Brainstorming &amp; User Intent</text>
+    <text x="0" y="102" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15">Explore user intent, design tradeoffs, and architecture before writing code</text>
+  </g>
+
+  <g transform="translate(80, 220)">
+    <g transform="translate(0, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#1e293b" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#1e293b" />
+      <text x="40" y="47" fill="#60a5fa" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">1</text>
+      <text x="70" y="47" fill="#f1f5f9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Intent Exploration</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" width="270">
+        <tspan x="24" dy="0">Interrogate root requirements</tspan>
+        <tspan x="24" dy="22">and clarify underspecified scope</tspan>
+        <tspan x="24" dy="22">before touching any project code.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#1e293b" stroke-width="1" />
+      <text x="36" y="211" fill="#38bdf8" font-family="monospace" font-size="12">ask_question(clarifications)</text>
+    </g>
+
+    <g transform="translate(360, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#1e293b" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#1e293b" />
+      <text x="40" y="47" fill="#818cf8" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">2</text>
+      <text x="70" y="47" fill="#f1f5f9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Architecture Tradeoffs</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+        <tspan x="24" dy="0">Evaluate 2-3 architectural approaches,</tspan>
+        <tspan x="24" dy="22">weighing performance, security,</tspan>
+        <tspan x="24" dy="22">and long-term maintainability.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#1e293b" stroke-width="1" />
+      <text x="36" y="211" fill="#a78bfa" font-family="monospace" font-size="12">weighTradeoffs(approaches)</text>
+    </g>
+
+    <g transform="translate(720, 0)">
+      <rect width="320" height="260" rx="14" fill="#131722" stroke="#1e293b" stroke-width="1.5" />
+      <circle cx="40" cy="42" r="16" fill="#1e293b" />
+      <text x="40" y="47" fill="#34d399" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">3</text>
+      <text x="70" y="47" fill="#f1f5f9" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="600">Implementation Plan</text>
+      <text x="24" y="90" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">
+        <tspan x="24" dy="0">Generate bite-sized, verifiable</tspan>
+        <tspan x="24" dy="22">milestones with clear automated</tspan>
+        <tspan x="24" dy="22">test assertions for each phase.</tspan>
+      </text>
+      <rect x="24" y="180" width="272" height="52" rx="8" fill="#0b0f19" stroke="#1e293b" stroke-width="1" />
+      <text x="36" y="211" fill="#34d399" font-family="monospace" font-size="12">writeArtifact("plan.md")</text>
+    </g>
+  </g>
+
+  <g transform="translate(80, 580)">
+    <text x="0" y="22" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13">Skills Framework &#8226; Software Engineering Methodology &#8226; skills.biz.id</text>
+  </g>
+</svg>

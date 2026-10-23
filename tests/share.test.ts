@@ -103,7 +103,7 @@ describe("Universal Share Feature & QR Code Engine", () => {
       url: "https://proskillai.dev/en/trending",
     };
     const emptyDescUrls = buildSocialShareUrls(itemEmptyDesc, itemEmptyDesc.url);
-    assert.ok(emptyDescUrls.twitter.includes(encodeURIComponent("FastRepo via @ProSkillAI")));
+    assert.ok(emptyDescUrls.twitter.includes(encodeURIComponent("FastRepo via @Skills")));
     assert.ok(!emptyDescUrls.twitter.includes(encodeURIComponent("FastRepo —")));
 
     const itemNullDesc: ShareItemData = {
@@ -113,7 +113,7 @@ describe("Universal Share Feature & QR Code Engine", () => {
       url: "https://proskillai.dev/en/trending",
     };
     const nullDescUrls = buildSocialShareUrls(itemNullDesc, itemNullDesc.url);
-    assert.ok(nullDescUrls.twitter.includes(encodeURIComponent("NullRepo via @ProSkillAI")));
+    assert.ok(nullDescUrls.twitter.includes(encodeURIComponent("NullRepo via @Skills")));
 
     const longDesc = "a".repeat(200);
     const itemLongDesc: ShareItemData = {
@@ -123,7 +123,7 @@ describe("Universal Share Feature & QR Code Engine", () => {
       url: "https://proskillai.dev/en/mcp",
     };
     const longUrls = buildSocialShareUrls(itemLongDesc, itemLongDesc.url);
-    assert.ok(decodeURIComponent(longUrls.twitter).includes("... via @ProSkillAI"));
+    assert.ok(decodeURIComponent(longUrls.twitter).includes("... via @Skills"));
   });
 
   test("generateQrCodeDataUrl generates valid base64 PNG data URL", async () => {

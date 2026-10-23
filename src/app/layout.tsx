@@ -20,10 +20,10 @@ const newsreader = Newsreader({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id"),
   title: {
-    template: "%s | ProSkillAI",
-    default: "ProSkillAI — Katalog Skill Agent & Kumpulan Prompt AI",
+    template: "%s | Skills",
+    default: "Skills — Katalog Skill Agent & Kumpulan Prompt AI (skills.biz.id)",
   },
   description: "Katalog terbuka skill terverifikasi untuk AI coding agent dan pustaka prompt rekayasa dengan variabel dinamis.",
   icons: {

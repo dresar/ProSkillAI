@@ -29,7 +29,15 @@ interface PageProps {
   }>;
 }
 
-const SITE_URL = "https://proskillai.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
+
+const SUPERPOWERS_DEFAULT_SLIDES = [
+  "/images/superpowers/slide-1-brainstorming.svg",
+  "/images/superpowers/slide-2-tdd.svg",
+  "/images/superpowers/slide-3-subagents.svg",
+  "/images/superpowers/slide-4-debugging.svg",
+  "/images/superpowers/slide-5-executing-plans.svg",
+];
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -43,7 +51,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { skill } = item;
   const title = isEn ? skill.titleEn : skill.titleId;
   const description = isEn ? skill.summaryEn : skill.summaryId;
-  const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
+  const rawCover = getSkillCoverImage(skill.images, skill.previewImageUrl);
+  const cover =
+    rawCover || (slug === "superpowers" ? SUPERPOWERS_DEFAULT_SLIDES[0] : undefined);
 
   return {
     title,
@@ -60,7 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       url: `${SITE_URL}/${locale}/skills/${slug}`,
-      siteName: "ProSkillAI",
+      siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
       type: "article",
       images: cover ? [cover] : undefined,
@@ -93,7 +103,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   const canonical = `${SITE_URL}/${locale}/skills/${slug}`;
   const dateModified = skill.updatedAt ? new Date(skill.updatedAt).toISOString() : undefined;
-  const authorName = skill.authorName || "ProSkillAI";
+  const authorName = skill.authorName || "Skills";
   const authorUrl = skill.authorUrl || SITE_URL;
 
   const breadcrumbJsonLd = {
@@ -297,22 +307,39 @@ export default async function SkillDetailPage({ params }: PageProps) {
               />
             </div>
 
-            <CliInstallBox slug={skill.slug} locale={locale} />
+            <CliInstallBox
+              slug={skill.slug}
+              locale={locale}
+              repoUrl={skill.repoUrl || undefined}
+              content={content}
+            />
 
-            {getImageList(skill.images, skill.previewImageUrl).length > 0 && (
-              <section aria-labelledby="gallery-heading" className="space-y-2.5">
-                <h2
-                  id="gallery-heading"
-                  className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-                >
-                  {isEn ? "Gallery" : "Galeri"}
-                </h2>
-                <ImageGallery
-                  images={getImageList(skill.images, skill.previewImageUrl)}
-                  alt={title}
-                />
-              </section>
-            )}
+            {(() => {
+              const rawImages = getImageList(skill.images, skill.previewImageUrl);
+              const galleryImages =
+                rawImages.length > 0
+                  ? rawImages
+                  : slug === "superpowers"
+                  ? SUPERPOWERS_DEFAULT_SLIDES
+                  : [];
+
+              if (galleryImages.length === 0) return null;
+
+              return (
+                <section aria-labelledby="gallery-heading" className="space-y-2.5">
+                  <h2
+                    id="gallery-heading"
+                    className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
+                    {isEn ? "Gallery" : "Galeri"}
+                  </h2>
+                  <ImageGallery
+                    images={galleryImages}
+                    alt={title}
+                  />
+                </section>
+              );
+            })()}
 
             <SkillDetailTabs
               hasPreview={hasPreview}

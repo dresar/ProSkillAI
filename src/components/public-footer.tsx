@@ -26,8 +26,8 @@ export async function PublicFooter({
             >
               <BrandLogo className="w-7 h-7" size={28} />
               <div className="flex flex-col">
-                <span className="text-xs font-bold tracking-wider uppercase">ProSkillAI</span>
-                <span className="text-[10px] text-muted-foreground font-mono">Agent Ecosystem</span>
+                <span className="text-xs font-bold tracking-wider uppercase">Skills</span>
+                <span className="text-[10px] text-muted-foreground font-mono">skills.biz.id</span>
               </div>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
@@ -170,7 +170,7 @@ export async function PublicFooter({
 
         <div className="pt-6 border-t border-border/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span>&copy; {new Date().getFullYear()} ProSkillAI.</span>
+            <span>&copy; {new Date().getFullYear()} Skills.biz.id.</span>
             <span>{t("rights")}</span>
           </div>
           <div className="flex items-center gap-4">

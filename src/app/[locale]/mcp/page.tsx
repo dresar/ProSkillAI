@@ -24,7 +24,7 @@ export async function generateMetadata({
     ? "Explore 139 MCP servers across 11 categories. Discover frameworks, execution sandboxes, memory layers, and observability tooling for Claude Code, Cursor, and autonomous agents."
     : "Jelajahi 139 server MCP di 11 kategori. Temukan framework, sandbox eksekusi, memori persisten, dan perkakas observabilitas untuk Claude Code, Cursor, dan agen otonom.";
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
   const canonicalUrl = `${baseUrl}/${locale}/mcp`;
 
   return {
@@ -41,7 +41,7 @@ export async function generateMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: "ProSkillAI",
+      siteName: "Skills",
       type: "website",
     },
     twitter: {
