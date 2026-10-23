@@ -15,6 +15,7 @@
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
   --color-line: var(--line-color);
+  --font-serif: var(--font-serif), Georgia, serif;
 }
 
 :root {
