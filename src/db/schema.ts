@@ -99,6 +99,8 @@ export const prompts = pgTable("prompts", {
   contentEn: text("content_en").notNull(),
   variables: jsonb("variables").default([]),
   images: jsonb("images").$type<string[]>().default([]),
+  demoOutput: text("demo_output"),
+  demoOutputEn: text("demo_output_en"),
   categoryId: text("category_id").references(() => categories.id, { onDelete: "set null" }),
   tags: jsonb("tags").default([]),
   relatedSkillId: text("related_skill_id").references(() => skills.id, { onDelete: "set null" }),

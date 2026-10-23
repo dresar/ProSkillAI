@@ -11,8 +11,10 @@ import {
   ArrowRight,
   Variable,
   ArrowLeft,
+  Terminal,
 } from "lucide-react";
 import { submitPromptAction } from "./actions";
+import { ImageUploader } from "@/components/admin/image-uploader";
 import type { Category } from "@/db/schema";
 import type { PublicUser } from "@/components/public-user-nav";
 
@@ -34,6 +36,8 @@ export function SubmitPromptClient({
   const [slug, setSlug] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [content, setContent] = React.useState("");
+  const [demoOutput, setDemoOutput] = React.useState("");
+  const [images, setImages] = React.useState<string[]>([]);
   const [detectedVars, setDetectedVars] = React.useState<string[]>([]);
 
   React.useEffect(() => {
@@ -278,6 +282,58 @@ Hasilkan laporan berformat markdown dengan tabel rekomendasi prioritas.`}
               className="w-full p-3.5 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
             />
           </div>
+        </div>
+
+        <div className="p-4 sm:p-5 rounded-xl border border-border bg-surface space-y-3 shadow-2xs">
+          <div>
+            <h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-foreground" />
+              <span>{isEn ? "Sample Output / Demo Result (Optional)" : "Contoh Hasil / Output Demo Prompt (Opsional)"}</span>
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {isEn
+                ? "Provide a realistic response or snippet demonstrating the prompt in action."
+                : "Berikan contoh respons nyata atau potongan hasil yang dihasilkan saat prompt ini dijalankan."}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <textarea
+              id="demoOutput"
+              name="demoOutput"
+              rows={6}
+              value={demoOutput}
+              onChange={(e) => setDemoOutput(e.target.value)}
+              placeholder={isEn
+                ? "### Audit Result Example\n\n- [High] CSRF protection missing in /api/checkout\n- [Medium] Insecure CORS policy detected\n\nRemediation Plan:\n1. Apply CSRF validation middleware..."
+                : "### Contoh Hasil Analisis Keamanan\n\n- [Tinggi] Endpoint /api/checkout tidak memiliki validasi CSRF\n- [Sedang] Kebijakan CORS wildcard ditemukan\n\nRekomendasi Perbaikan:\n1. Terapkan csrf-token middleware..."}
+              className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
+            />
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-5 rounded-xl border border-border bg-surface space-y-3 shadow-2xs">
+          <input type="hidden" name="imagesJson" value={JSON.stringify(images)} />
+          <div className="space-y-0.5">
+            <h2 className="text-sm font-semibold text-foreground tracking-tight">
+              {isEn ? "Preview Images (Max 5)" : "Unggah Gambar Pratinjau (Maksimal 5)"}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {isEn
+                ? "Upload screenshots, diagrams, or visual workflows to showcase this prompt."
+                : "Unggah tangkapan layar, diagram alur, atau contoh hasil visual untuk melengkapi prompt."}
+            </p>
+          </div>
+
+          <ImageUploader
+            value={images}
+            onChange={setImages}
+            folder="prompts"
+            slug={slug || "misc"}
+            max={5}
+            label={isEn ? "Upload Preview Images" : "Unggah Gambar Pratinjau"}
+            endpoint="/api/upload"
+          />
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">

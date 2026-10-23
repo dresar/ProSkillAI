@@ -18,7 +18,21 @@ const submitPromptSchema = z.object({
   slug: z.string().min(2).max(100),
   categoryId: z.string().nullable().optional(),
   variables: z.array(z.string()).default([]),
+  images: z.array(z.string()).max(5).default([]),
+  demoOutput: z.string().nullable().optional(),
+  demoOutputEn: z.string().nullable().optional(),
 });
+
+function parseStringArray(value: unknown): string[] {
+  if (typeof value !== "string" || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === "string" && Boolean(item.trim()));
+    }
+  } catch {}
+  return [];
+}
 
 export async function submitPromptAction(prevState: unknown, formData: FormData) {
   try {
@@ -53,6 +67,12 @@ export async function submitPromptAction(prevState: unknown, formData: FormData)
       variables = rawVars.split(",").map((v) => v.trim()).filter(Boolean);
     }
 
+    const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
+    const rawDemoOutput = ((formData.get("demoOutput") || formData.get("demo_output")) as string || "").trim();
+    const demoOutput = rawDemoOutput.length > 0 ? rawDemoOutput : null;
+    const rawDemoOutputEn = ((formData.get("demoOutputEn") || formData.get("demo_output_en")) as string || "").trim();
+    const demoOutputEn = rawDemoOutputEn.length > 0 ? rawDemoOutputEn : demoOutput;
+
     if (!slug) {
       slug = (titleEn || titleId)
         .toLowerCase()
@@ -70,6 +90,9 @@ export async function submitPromptAction(prevState: unknown, formData: FormData)
       slug,
       categoryId,
       variables,
+      images,
+      demoOutput,
+      demoOutputEn,
     });
 
     if (!parsed.success) {
@@ -110,6 +133,9 @@ export async function submitPromptAction(prevState: unknown, formData: FormData)
       contentEn: parsed.data.contentEn,
       categoryId: parsed.data.categoryId || null,
       variables: parsed.data.variables,
+      images: parsed.data.images,
+      demoOutput: parsed.data.demoOutput || null,
+      demoOutputEn: parsed.data.demoOutputEn || null,
       copyCount: 0,
       status,
       createdBy: currentUser.id,

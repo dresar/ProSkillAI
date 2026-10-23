@@ -5,6 +5,7 @@ import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
+import { PromptDemoOutput } from "@/components/prompt-demo-output";
 import { ImageGallery } from "@/components/admin/image-gallery";
 import { FavoriteButton } from "@/components/favorite-button";
 import { getCoverImage, getImageList, DEFAULT_PROMPT_COVER } from "@/lib/images";
@@ -81,6 +82,9 @@ export default async function PromptDetailPage({ params }: PageProps) {
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
   const authorName = author?.name || "ProSkillAI Team";
   const authorInitial = authorName.slice(0, 2).toUpperCase();
+  const demoOutputText = isEn
+    ? (prompt.demoOutputEn || prompt.demoOutput)
+    : (prompt.demoOutput || prompt.demoOutputEn);
 
   const promptImages = getImageList(prompt.images, DEFAULT_PROMPT_COVER).slice(0, 5);
   const canonical = `${SITE_URL}/${locale}/prompts/${slug}`;
@@ -215,6 +219,10 @@ export default async function PromptDetailPage({ params }: PageProps) {
       <section aria-labelledby="interactive-engine">
         <PromptVariableEngine prompt={prompt} locale={locale} />
       </section>
+
+      {demoOutputText && (
+        <PromptDemoOutput demoOutput={demoOutputText} isEn={isEn} />
+      )}
     </article>
   );
 }

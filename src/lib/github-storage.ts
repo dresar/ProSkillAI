@@ -1,4 +1,6 @@
 import { randomBytes } from "node:crypto";
+import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
@@ -107,5 +109,48 @@ export async function uploadImageToGitHub({
     path,
     rawUrl: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`,
     cdnUrl: `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${path}`,
+  };
+}
+
+export async function uploadImageToStorage({
+  file,
+  folder,
+  slug,
+}: {
+  file: File;
+  folder: "skills" | "prompts";
+  slug: string;
+}): Promise<UploadedImage> {
+  const extension = MIME_EXTENSIONS[file.type];
+  if (!extension) {
+    throw new Error("Format gambar harus PNG, JPG, WEBP, atau GIF.");
+  }
+  if (file.size > MAX_BYTES) {
+    throw new Error("Ukuran setiap gambar maksimal 5 MB.");
+  }
+
+  if (isStorageConfigured()) {
+    return uploadImageToGitHub({ file, folder, slug });
+  }
+
+  const safeFolder = folder === "prompts" ? "prompts" : "skills";
+  const safeSlug =
+    slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-")
+      .replace(/(^-|-$)/g, "") || "misc";
+  const fileName = `${Date.now()}-${randomBytes(4).toString("hex")}.${extension}`;
+
+  const uploadDir = join(process.cwd(), "public", "images", "uploads", safeFolder, safeSlug);
+  await mkdir(uploadDir, { recursive: true });
+  const filePath = join(uploadDir, fileName);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(filePath, buffer);
+
+  const localUrl = `/images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
+  return {
+    path: `assets/${safeFolder}/${safeSlug}/${fileName}`,
+    rawUrl: localUrl,
+    cdnUrl: localUrl,
   };
 }

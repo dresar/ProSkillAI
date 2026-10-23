@@ -64,6 +64,8 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
   const [descriptionEn, setDescriptionEn] = React.useState(initialPrompt?.descriptionEn || "");
   const [contentId, setContentId] = React.useState(initialPrompt?.contentId || "");
   const [contentEn, setContentEn] = React.useState(initialPrompt?.contentEn || "");
+  const [demoOutput, setDemoOutput] = React.useState(initialPrompt?.demoOutput || "");
+  const [demoOutputEn, setDemoOutputEn] = React.useState(initialPrompt?.demoOutputEn || "");
   const [previewMode, setPreviewMode] = React.useState(false);
   const [previewDialogOpen, setPreviewDialogOpen] = React.useState(false);
   const [auditModalOpen, setAuditModalOpen] = React.useState(false);
@@ -92,7 +94,7 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
 
   const [translatingField, setTranslatingField] = React.useState<string | null>(null);
 
-  const handleTranslate = async (field: "title" | "description" | "content" | "all") => {
+  const handleTranslate = async (field: "title" | "description" | "content" | "demo" | "all") => {
     try {
       setTranslatingField(field);
 
@@ -134,6 +136,20 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
           const data = await res.json();
           if (data?.success && data?.translatedText) {
             setContentEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "demo" || field === "all") {
+        if (demoOutput.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: demoOutput.trim(), type: "content" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setDemoOutputEn(data.translatedText);
           }
         }
       }
@@ -258,6 +274,7 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
 
       <input type="hidden" name="variablesJson" value={JSON.stringify(variables)} />
       <input type="hidden" name="tagsJson" value={JSON.stringify(tags)} />
+      <input type="hidden" name="imagesJson" value={JSON.stringify(images)} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
@@ -369,6 +386,22 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
                   </pre>
                 )}
               </div>
+
+              <div className="space-y-1">
+                <label htmlFor="demoOutput" className="block text-xs font-semibold text-foreground">
+                  Contoh Hasil / Output Demo Prompt (ID)
+                  <span className="font-normal text-neutral-400 ml-2">(Opsional)</span>
+                </label>
+                <textarea
+                  id="demoOutput"
+                  name="demoOutput"
+                  rows={6}
+                  value={demoOutput}
+                  onChange={(e) => setDemoOutput(e.target.value)}
+                  placeholder="Contoh respons atau output yang dihasilkan AI saat prompt ini dieksekusi..."
+                  className="w-full p-2.5 font-mono text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground leading-relaxed focus:outline-2 focus:outline-foreground"
+                />
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -471,6 +504,37 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
                   </pre>
                 )}
               </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="demoOutputEn" className="block text-xs font-semibold text-foreground">
+                    Sample Output / Demo Result (EN)
+                    <span className="font-normal text-neutral-400 ml-2">(Optional)</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate("demo")}
+                    disabled={!demoOutput.trim() || translatingField !== null}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-surface hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                  >
+                    {translatingField === "demo" || translatingField === "all" ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                    )}
+                    <span>Auto AI</span>
+                  </button>
+                </div>
+                <textarea
+                  id="demoOutputEn"
+                  name="demoOutputEn"
+                  rows={6}
+                  value={demoOutputEn}
+                  onChange={(e) => setDemoOutputEn(e.target.value)}
+                  placeholder="Sample AI response or output result when this prompt is executed..."
+                  className="w-full p-2.5 font-mono text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground leading-relaxed focus:outline-2 focus:outline-foreground"
+                />
+              </div>
             </div>
           )}
 
@@ -479,12 +543,14 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
               <input type="hidden" name="titleEn" value={titleEn} />
               <input type="hidden" name="descriptionEn" value={descriptionEn} />
               <input type="hidden" name="contentEn" value={contentEn} />
+              <input type="hidden" name="demoOutputEn" value={demoOutputEn} />
             </>
           ) : (
             <>
               <input type="hidden" name="titleId" value={titleId} />
               <input type="hidden" name="descriptionId" value={descriptionId} />
               <input type="hidden" name="contentId" value={contentId} />
+              <input type="hidden" name="demoOutput" value={demoOutput} />
             </>
           )}
 

@@ -11,6 +11,7 @@ interface ImageUploaderProps {
   folder: "skills" | "prompts";
   slug: string;
   label?: string;
+  endpoint?: string;
 }
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
@@ -23,6 +24,7 @@ export function ImageUploader({
   folder,
   slug,
   label = "Galeri Gambar",
+  endpoint = "/api/upload",
 }: ImageUploaderProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = React.useState(false);
@@ -66,7 +68,7 @@ export function ImageUploader({
 
     setUploading(true);
     try {
-      const response = await fetch("/api/admin/upload", { method: "POST", body: formData });
+      const response = await fetch(endpoint, { method: "POST", body: formData });
       const data = (await response.json()) as {
         images?: Array<{ url: string }>;
         error?: string;

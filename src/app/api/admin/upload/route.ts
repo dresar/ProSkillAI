@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isStorageConfigured, uploadImageToGitHub } from "@/lib/github-storage";
+import { uploadImageToStorage } from "@/lib/github-storage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,15 +14,6 @@ export async function POST(request: Request) {
   }
   if (user.role !== "admin" && user.role !== "editor") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-  if (!isStorageConfigured()) {
-    return NextResponse.json(
-      {
-        error:
-          "Konfigurasi GITHUB_STORAGE_OWNER, GITHUB_STORAGE_REPO, GITHUB_STORAGE_BRANCH, dan GITHUB_TOKEN belum lengkap.",
-      },
-      { status: 500 }
-    );
   }
 
   let formData: FormData;
@@ -46,7 +37,7 @@ export async function POST(request: Request) {
   try {
     const images: Array<{ url: string; path: string }> = [];
     for (const file of files) {
-      const uploaded = await uploadImageToGitHub({ file, folder, slug });
+      const uploaded = await uploadImageToStorage({ file, folder, slug });
       images.push({ url: uploaded.cdnUrl, path: uploaded.path });
     }
     return NextResponse.json({ images });

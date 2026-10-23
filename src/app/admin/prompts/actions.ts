@@ -42,6 +42,8 @@ const promptFormSchema = z.object({
   categoryId: z.string().nullable().optional(),
   variables: z.any().optional(),
   images: z.array(imageUrlSchema).max(5, "Maksimal 5 gambar").optional(),
+  demoOutput: z.string().nullable().optional(),
+  demoOutputEn: z.string().nullable().optional(),
   tags: z.array(z.string()).optional(),
   relatedSkillId: z.string().nullable().optional(),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
@@ -80,6 +82,11 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
   }
 
+  const rawDemoOutput = ((formData.get("demoOutput") || formData.get("demo_output")) as string || "").trim();
+  const demoOutput = rawDemoOutput.length > 0 ? rawDemoOutput : null;
+  const rawDemoOutputEn = ((formData.get("demoOutputEn") || formData.get("demo_output_en")) as string || "").trim();
+  const demoOutputEn = rawDemoOutputEn.length > 0 ? rawDemoOutputEn : demoOutput;
+
   const raw = {
     slug: formData.get("slug") as string,
     titleId,
@@ -91,6 +98,8 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
     images,
+    demoOutput,
+    demoOutputEn,
     tags,
     relatedSkillId: (formData.get("relatedSkillId") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
@@ -168,6 +177,11 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
   }
 
+  const rawDemoOutput = ((formData.get("demoOutput") || formData.get("demo_output")) as string || "").trim();
+  const demoOutput = rawDemoOutput.length > 0 ? rawDemoOutput : null;
+  const rawDemoOutputEn = ((formData.get("demoOutputEn") || formData.get("demo_output_en")) as string || "").trim();
+  const demoOutputEn = rawDemoOutputEn.length > 0 ? rawDemoOutputEn : demoOutput;
+
   const raw = {
     slug: formData.get("slug") as string,
     titleId,
@@ -179,6 +193,8 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
     images,
+    demoOutput,
+    demoOutputEn,
     tags,
     relatedSkillId: (formData.get("relatedSkillId") as string) || null,
     status: (formData.get("status") as "draft" | "published" | "archived") || "draft",
