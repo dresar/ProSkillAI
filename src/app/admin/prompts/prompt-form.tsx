@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Eye, Code, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Eye, Code, ExternalLink, Sparkles, Loader2 } from "lucide-react";
 import { createPromptAction, updatePromptAction } from "./actions";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { PromptPreviewDialog } from "@/components/admin/prompt-preview-dialog";
@@ -87,6 +87,63 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
     }
     return [];
   });
+
+  const [translatingField, setTranslatingField] = React.useState<string | null>(null);
+
+  const handleTranslate = async (field: "title" | "description" | "content" | "all") => {
+    try {
+      setTranslatingField(field);
+
+      if (field === "title" || field === "all") {
+        if (titleId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: titleId.trim(), type: "title" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setTitleEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "description" || field === "all") {
+        if (descriptionId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: descriptionId.trim(), type: "description" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setDescriptionEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "content" || field === "all") {
+        if (contentId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: contentId.trim(), type: "content" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setContentEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "all") {
+        setActiveTab("en");
+      }
+    } catch {
+    } finally {
+      setTranslatingField(null);
+    }
+  };
 
   const handleTitleChange = (val: string, lang: "id" | "en") => {
     if (lang === "id") {
@@ -193,29 +250,45 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
-          <div className="flex items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2">
-            <div className="inline-flex rounded border border-neutral-200 dark:border-neutral-800 p-0.5 bg-neutral-50 dark:bg-neutral-900">
+          <div className="flex items-center justify-between gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className="inline-flex rounded border border-neutral-200 dark:border-neutral-800 p-0.5 bg-neutral-50 dark:bg-neutral-900">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("id")}
+                  className={`px-3 py-1 text-xs rounded transition-colors ${
+                    activeTab === "id"
+                      ? "bg-foreground text-background font-medium"
+                      : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  Bahasa Indonesia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("en")}
+                  className={`px-3 py-1 text-xs rounded transition-colors ${
+                    activeTab === "en"
+                      ? "bg-foreground text-background font-medium"
+                      : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  English
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setActiveTab("id")}
-                className={`px-3 py-1 text-xs rounded transition-colors ${
-                  activeTab === "id"
-                    ? "bg-foreground text-background font-medium"
-                    : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
-                }`}
+                onClick={() => handleTranslate("all")}
+                disabled={(!titleId.trim() && !descriptionId.trim() && !contentId.trim()) || translatingField !== null}
+                className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] border border-border bg-surface hover:bg-muted text-[11px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
               >
-                Bahasa Indonesia
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("en")}
-                className={`px-3 py-1 text-xs rounded transition-colors ${
-                  activeTab === "en"
-                    ? "bg-foreground text-background font-medium"
-                    : "text-foreground hover:bg-neutral-200 dark:hover:bg-neutral-800"
-                }`}
-              >
-                English
+                {translatingField === "all" ? (
+                  <Loader2 className="w-3 h-3 animate-spin text-foreground" />
+                ) : (
+                  <Sparkles className="w-3 h-3 text-indigo-500" />
+                )}
+                <span>Auto-Translate ke EN (AI)</span>
               </button>
             </div>
 
@@ -289,9 +362,24 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
           ) : (
             <div className="space-y-4">
               <div className="space-y-1">
-                <label htmlFor="titleEn" className="block text-xs font-semibold text-foreground">
-                  Prompt Title (EN) *
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="titleEn" className="block text-xs font-semibold text-foreground">
+                    Prompt Title (EN) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate("title")}
+                    disabled={!titleId.trim() || translatingField !== null}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-surface hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                  >
+                    {translatingField === "title" || translatingField === "all" ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                    )}
+                    <span>Auto AI</span>
+                  </button>
+                </div>
                 <input
                   id="titleEn"
                   name="titleEn"
@@ -304,9 +392,24 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="descriptionEn" className="block text-xs font-semibold text-foreground">
-                  Description (EN) *
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="descriptionEn" className="block text-xs font-semibold text-foreground">
+                    Description (EN) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate("description")}
+                    disabled={!descriptionId.trim() || translatingField !== null}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-surface hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                  >
+                    {translatingField === "description" || translatingField === "all" ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                    )}
+                    <span>Auto AI</span>
+                  </button>
+                </div>
                 <textarea
                   id="descriptionEn"
                   name="descriptionEn"
@@ -319,12 +422,27 @@ export function PromptForm({ initialPrompt, categories, skillOptions }: PromptFo
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="contentEn" className="block text-xs font-semibold text-foreground">
-                  Raw Prompt Content (EN) *
-                  <span className="font-normal text-neutral-400 ml-2">
-                    (Use format {`{{variable_name}}`})
-                  </span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="contentEn" className="block text-xs font-semibold text-foreground">
+                    Raw Prompt Content (EN) *
+                    <span className="font-normal text-neutral-400 ml-2">
+                      (Use format {`{{variable_name}}`})
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate("content")}
+                    disabled={!contentId.trim() || translatingField !== null}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-surface hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                  >
+                    {translatingField === "content" || translatingField === "all" ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                    )}
+                    <span>Auto AI</span>
+                  </button>
+                </div>
                 <div className={previewMode ? "hidden" : ""}>
                   <textarea
                     id="contentEn"

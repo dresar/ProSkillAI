@@ -12,6 +12,7 @@ import {
   Variable,
   Layers,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { submitPromptAction } from "./actions";
 import type { Category } from "@/db/schema";
@@ -32,10 +33,14 @@ export function SubmitPromptClient({
   const isEn = locale === "en";
 
   const [title, setTitle] = React.useState("");
+  const [titleEn, setTitleEn] = React.useState("");
   const [slug, setSlug] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [descriptionEn, setDescriptionEn] = React.useState("");
   const [content, setContent] = React.useState("");
+  const [contentEn, setContentEn] = React.useState("");
   const [detectedVars, setDetectedVars] = React.useState<string[]>([]);
+  const [translatingField, setTranslatingField] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const matches = content.match(/\[([a-zA-Z0-9_\-\s]+)\]/g) || [];
@@ -56,6 +61,69 @@ export function SubmitPromptClient({
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
     setSlug(s);
+  };
+
+  const handleTitleBlur = () => {
+    if (!titleEn.trim() && title.trim().length >= 3) {
+      handleTranslate("title");
+    }
+  };
+
+  const handleDescriptionBlur = () => {
+    if (!descriptionEn.trim() && description.trim().length >= 10) {
+      handleTranslate("description");
+    }
+  };
+
+  const handleTranslate = async (field: "title" | "description" | "content" | "all") => {
+    try {
+      setTranslatingField(field);
+
+      if (field === "title" || field === "all") {
+        if (title.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: title.trim(), type: "title" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setTitleEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "description" || field === "all") {
+        if (description.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: description.trim(), type: "description" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setDescriptionEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "content" || field === "all") {
+        if (content.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: content.trim(), type: "content" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setContentEn(data.translatedText);
+          }
+        }
+      }
+    } catch {
+    } finally {
+      setTranslatingField(null);
+    }
   };
 
   if (state?.success) {
@@ -152,9 +220,27 @@ export function SubmitPromptClient({
         )}
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
-          <h2 className="text-sm font-semibold text-foreground tracking-tight">
-            {isEn ? "Prompt Metadata" : "Informasi Prompt"}
-          </h2>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-sm font-semibold text-foreground tracking-tight">
+              {isEn ? "Prompt Metadata" : "Informasi Prompt"}
+            </h2>
+            <button
+              type="button"
+              onClick={() => handleTranslate("all")}
+              disabled={
+                (!title.trim() && !description.trim() && !content.trim()) ||
+                translatingField !== null
+              }
+              className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs"
+            >
+              {translatingField === "all" ? (
+                <Loader2 className="w-3 h-3 animate-spin text-foreground" />
+              ) : (
+                <Sparkles className="w-3 h-3 text-indigo-500" />
+              )}
+              <span>{isEn ? "AI Auto-Translate All to English" : "✨ Auto Terjemahkan Semua ke English"}</span>
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -168,20 +254,37 @@ export function SubmitPromptClient({
                 required
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
+                onBlur={handleTitleBlur}
                 placeholder="mis. Master Prompt Audit Keamanan Codebase"
                 className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="titleEn" className="block text-xs font-medium text-foreground">
-                {isEn ? "Title (English)" : "Judul (Bahasa Inggris)"}
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="titleEn" className="block text-xs font-medium text-foreground">
+                  {isEn ? "Title (English)" : "Judul (Bahasa Inggris)"}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleTranslate("title")}
+                  disabled={!title.trim() || translatingField !== null}
+                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                >
+                  {translatingField === "title" || translatingField === "all" ? (
+                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                  )}
+                  <span>{isEn ? "AI Translate" : "Auto AI"}</span>
+                </button>
+              </div>
               <input
                 id="titleEn"
                 name="titleEn"
                 type="text"
-                defaultValue=""
+                value={titleEn}
+                onChange={(e) => setTitleEn(e.target.value)}
                 placeholder="e.g. Master Codebase Security Audit Prompt"
                 className="w-full h-9 px-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground"
               />
@@ -237,19 +340,37 @@ export function SubmitPromptClient({
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                onBlur={handleDescriptionBlur}
                 placeholder="Deskripsi singkat tujuan, output yang dihasilkan, dan cara penggunaannya..."
                 className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="descriptionEn" className="block text-xs font-medium text-foreground">
-                {isEn ? "Description (English)" : "Deskripsi Singkat (Bahasa Inggris)"}
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="descriptionEn" className="block text-xs font-medium text-foreground">
+                  {isEn ? "Description (English)" : "Deskripsi Singkat (Bahasa Inggris)"}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleTranslate("description")}
+                  disabled={!description.trim() || translatingField !== null}
+                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                >
+                  {translatingField === "description" || translatingField === "all" ? (
+                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                  )}
+                  <span>{isEn ? "AI Translate" : "Auto AI"}</span>
+                </button>
+              </div>
               <textarea
                 id="descriptionEn"
                 name="descriptionEn"
                 rows={2}
+                value={descriptionEn}
+                onChange={(e) => setDescriptionEn(e.target.value)}
                 placeholder="Brief summary of intent, expected output, and execution steps..."
                 className="w-full p-2.5 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground resize-y leading-relaxed"
               />
@@ -312,13 +433,30 @@ Hasilkan laporan berformat markdown dengan tabel rekomendasi prioritas.`}
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="contentEn" className="block text-xs font-medium text-muted-foreground">
-              {isEn ? "English Template (Optional)" : "Templat Versi Bahasa Inggris (Opsional)"}
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="contentEn" className="block text-xs font-medium text-muted-foreground">
+                {isEn ? "English Template (Optional)" : "Templat Versi Bahasa Inggris (Opsional)"}
+              </label>
+              <button
+                type="button"
+                onClick={() => handleTranslate("content")}
+                disabled={!content.trim() || translatingField !== null}
+                className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+              >
+                {translatingField === "content" || translatingField === "all" ? (
+                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                )}
+                <span>{isEn ? "AI Translate" : "Auto AI"}</span>
+              </button>
+            </div>
             <textarea
               id="contentEn"
               name="contentEn"
               rows={6}
+              value={contentEn}
+              onChange={(e) => setContentEn(e.target.value)}
               placeholder="Act as a Senior Security Engineer. Audit the codebase..."
               className="w-full p-3 rounded-[6px] border border-border bg-background text-foreground text-xs font-mono focus:outline-2 focus:outline-foreground resize-y leading-relaxed text-muted-foreground/90"
             />

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { skills, auditLog } from "@/db/schema";
 import { requireAdminOrEditor } from "@/lib/auth";
+import { translateIdToEn } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -62,14 +63,31 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
+  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleEn = ((formData.get("titleEn") as string) || "").trim();
+  const summaryId = ((formData.get("summaryId") as string) || "").trim();
+  let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
+  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+
+  if (!titleEn && titleId) {
+    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  }
+  if (!summaryEn && summaryId) {
+    summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+  }
+  if (!contentEn && contentId) {
+    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  }
+
   const raw = {
     slug: formData.get("slug") as string,
-    titleId: formData.get("titleId") as string,
-    titleEn: formData.get("titleEn") as string,
-    summaryId: formData.get("summaryId") as string,
-    summaryEn: formData.get("summaryEn") as string,
-    contentId: formData.get("contentId") as string,
-    contentEn: formData.get("contentEn") as string,
+    titleId,
+    titleEn,
+    summaryId,
+    summaryEn,
+    contentId,
+    contentEn,
     categoryId: (formData.get("categoryId") as string) || null,
     sourceType: (formData.get("sourceType") as "original" | "github") || "original",
     repoUrl: (formData.get("repoUrl") as string) || null,
@@ -134,14 +152,31 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
+  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleEn = ((formData.get("titleEn") as string) || "").trim();
+  const summaryId = ((formData.get("summaryId") as string) || "").trim();
+  let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
+  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+
+  if (!titleEn && titleId) {
+    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  }
+  if (!summaryEn && summaryId) {
+    summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+  }
+  if (!contentEn && contentId) {
+    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  }
+
   const raw = {
     slug: formData.get("slug") as string,
-    titleId: formData.get("titleId") as string,
-    titleEn: formData.get("titleEn") as string,
-    summaryId: formData.get("summaryId") as string,
-    summaryEn: formData.get("summaryEn") as string,
-    contentId: formData.get("contentId") as string,
-    contentEn: formData.get("contentEn") as string,
+    titleId,
+    titleEn,
+    summaryId,
+    summaryEn,
+    contentId,
+    contentEn,
     categoryId: (formData.get("categoryId") as string) || null,
     sourceType: (formData.get("sourceType") as "original" | "github") || "original",
     repoUrl: (formData.get("repoUrl") as string) || null,

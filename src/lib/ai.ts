@@ -235,6 +235,88 @@ ${skillContent.slice(0, 8000)}`;
   };
 }
 
+export async function translateIdToEn({
+  text,
+  type = "title",
+  config,
+}: {
+  text: string;
+  type?: "title" | "description" | "content";
+  config?: AiConfig;
+}): Promise<string> {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+
+  const activeConfig = config || (await getStoredAiConfig());
+
+  const systemPrompt =
+    type === "title"
+      ? "You are an expert AI prompt engineer and translator. Translate this Indonesian title to concise, high-impact, professional English (title case or natural sentence case). Keep bracket variables intact like [variable]. Output ONLY the direct English translation without quotes or conversational filler."
+      : type === "description"
+      ? "You are an expert AI prompt engineer and translator. Translate this Indonesian description to concise, natural, professional English (1-3 sentences max). Keep bracket variables intact. Output ONLY the English translation without quotes or conversational filler."
+      : "You are an expert AI prompt engineer and translator. Translate this Indonesian AI prompt template or skill instructions into professional English. CRITICAL: Preserve all variables like [variable_name] or {{variable_name}} exactly as they are without translating the variable names inside brackets or braces. Keep all markdown formatting, code fences, and structure intact. Output ONLY the translated template content without conversational filler or wrapping quotes.";
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch(`${activeConfig.endpoint}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${activeConfig.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: activeConfig.defaultModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: trimmed },
+        ],
+        temperature: 0.3,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (content && typeof content === "string" && content.trim().length > 0) {
+        return content.trim();
+      }
+    }
+  } catch {}
+
+  const fallbackRes = await fetch(`${activeConfig.fallbackEndpoint}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${activeConfig.fallbackApiKey}`,
+    },
+    body: JSON.stringify({
+      model: activeConfig.fallbackModel,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: trimmed },
+      ],
+      temperature: 0.3,
+    }),
+  });
+
+  if (!fallbackRes.ok) {
+    throw new Error("Translation service currently unavailable");
+  }
+
+  const fallbackData = await fallbackRes.json();
+  const fallbackContent = fallbackData?.choices?.[0]?.message?.content;
+  if (!fallbackContent || typeof fallbackContent !== "string") {
+    throw new Error("No response received from translation AI model");
+  }
+
+  return fallbackContent.trim();
+}
+
 export async function testAiModel(
   modelId: string,
   config?: AiConfig

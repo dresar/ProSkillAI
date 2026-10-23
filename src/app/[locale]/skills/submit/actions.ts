@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { skills, auditLog } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import { parseGitHubUrl, parseSkillCandidate, fetchFileContent } from "@/lib/github";
+import { translateIdToEn } from "@/lib/ai";
 import matter from "gray-matter";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -140,13 +141,24 @@ export async function submitUserSkillAction(
   _prevState: unknown,
   formData: FormData
 ) {
-  const titleId = (formData.get("titleId") as string) || "";
-  const titleEn = (formData.get("titleEn") as string) || titleId;
-  const summaryId = (formData.get("summaryId") as string) || "";
-  const summaryEn = (formData.get("summaryEn") as string) || summaryId;
-  const contentId = (formData.get("contentId") as string) || "";
-  const contentEn = (formData.get("contentEn") as string) || contentId;
-  let slug = (formData.get("slug") as string) || "";
+  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleEn = ((formData.get("titleEn") as string) || "").trim();
+  const summaryId = ((formData.get("summaryId") as string) || "").trim();
+  let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
+  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+
+  if (!titleEn && titleId) {
+    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  }
+  if (!summaryEn && summaryId) {
+    summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+  }
+  if (!contentEn && contentId) {
+    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  }
+
+  let slug = ((formData.get("slug") as string) || "").trim();
   const categoryId = (formData.get("categoryId") as string) || null;
   const license = (formData.get("license") as string) || "MIT";
   const authorName = (formData.get("authorName") as string) || "";
@@ -161,7 +173,7 @@ export async function submitUserSkillAction(
   }
 
   if (!slug) {
-    slug = titleId
+    slug = (titleEn || titleId)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");

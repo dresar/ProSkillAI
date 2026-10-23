@@ -7,6 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { prompts, auditLog } from "@/db/schema";
 import { requireAdminOrEditor } from "@/lib/auth";
+import { translateIdToEn } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -62,14 +63,31 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
+  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleEn = ((formData.get("titleEn") as string) || "").trim();
+  const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
+  let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
+  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+
+  if (!titleEn && titleId) {
+    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  }
+  if (!descriptionEn && descriptionId) {
+    descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+  }
+  if (!contentEn && contentId) {
+    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  }
+
   const raw = {
     slug: formData.get("slug") as string,
-    titleId: formData.get("titleId") as string,
-    titleEn: formData.get("titleEn") as string,
-    descriptionId: formData.get("descriptionId") as string,
-    descriptionEn: formData.get("descriptionEn") as string,
-    contentId: formData.get("contentId") as string,
-    contentEn: formData.get("contentEn") as string,
+    titleId,
+    titleEn,
+    descriptionId,
+    descriptionEn,
+    contentId,
+    contentEn,
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
     images,
@@ -133,14 +151,31 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
+  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleEn = ((formData.get("titleEn") as string) || "").trim();
+  const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
+  let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
+  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentEn = ((formData.get("contentEn") as string) || "").trim();
+
+  if (!titleEn && titleId) {
+    titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  }
+  if (!descriptionEn && descriptionId) {
+    descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+  }
+  if (!contentEn && contentId) {
+    contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  }
+
   const raw = {
     slug: formData.get("slug") as string,
-    titleId: formData.get("titleId") as string,
-    titleEn: formData.get("titleEn") as string,
-    descriptionId: formData.get("descriptionId") as string,
-    descriptionEn: formData.get("descriptionEn") as string,
-    contentId: formData.get("contentId") as string,
-    contentEn: formData.get("contentEn") as string,
+    titleId,
+    titleEn,
+    descriptionId,
+    descriptionEn,
+    contentId,
+    contentEn,
     categoryId: (formData.get("categoryId") as string) || null,
     variables: variablesData,
     images,

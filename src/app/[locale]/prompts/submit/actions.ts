@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { prompts, auditLog } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
+import { translateIdToEn } from "@/lib/ai";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -21,14 +22,24 @@ const submitPromptSchema = z.object({
 
 export async function submitPromptAction(prevState: unknown, formData: FormData) {
   try {
-    const titleId = (formData.get("titleId") as string) || "";
-    const titleEn = (formData.get("titleEn") as string) || titleId;
-    const descriptionId = (formData.get("descriptionId") as string) || "";
-    const descriptionEn = (formData.get("descriptionEn") as string) || descriptionId;
-    const contentId = (formData.get("contentId") as string) || "";
-    const contentEn = (formData.get("contentEn") as string) || contentId;
-    let slug = (formData.get("slug") as string) || "";
+    const titleId = ((formData.get("titleId") as string) || "").trim();
+    let titleEn = ((formData.get("titleEn") as string) || "").trim();
+    const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
+    let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
+    const contentId = ((formData.get("contentId") as string) || "").trim();
+    let contentEn = ((formData.get("contentEn") as string) || "").trim();
+    let slug = ((formData.get("slug") as string) || "").trim();
     const categoryId = (formData.get("categoryId") as string) || null;
+
+    if (!titleEn && titleId) {
+      titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+    }
+    if (!descriptionEn && descriptionId) {
+      descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+    }
+    if (!contentEn && contentId) {
+      contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+    }
 
     let variables: string[] = [];
     const rawVars = formData.get("variables");
@@ -37,7 +48,7 @@ export async function submitPromptAction(prevState: unknown, formData: FormData)
     }
 
     if (!slug) {
-      slug = titleId
+      slug = (titleEn || titleId)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");

@@ -78,6 +78,58 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   const [authorUrl, setAuthorUrl] = React.useState("");
   const [repoUrl, setRepoUrl] = React.useState("");
   const [sourceType, setSourceType] = React.useState<"original" | "github">("original");
+  const [translatingField, setTranslatingField] = React.useState<string | null>(null);
+
+  const handleTranslate = async (field: "title" | "summary" | "content" | "all") => {
+    try {
+      setTranslatingField(field);
+
+      if (field === "title" || field === "all") {
+        if (titleId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: titleId.trim(), type: "title" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setTitleEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "summary" || field === "all") {
+        if (summaryId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: summaryId.trim(), type: "description" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setSummaryEn(data.translatedText);
+          }
+        }
+      }
+
+      if (field === "content" || field === "all") {
+        if (contentId.trim()) {
+          const res = await fetch("/api/ai/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: contentId.trim(), type: "content" }),
+          });
+          const data = await res.json();
+          if (data?.success && data?.translatedText) {
+            setContentEn(data.translatedText);
+          }
+        }
+      }
+    } catch {
+    } finally {
+      setTranslatingField(null);
+    }
+  };
 
   const handleSmartParse = async () => {
     if (!rawText.trim()) return;
@@ -417,33 +469,49 @@ Instruksi skill lengkap...`}
         )}
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
-          <div className="flex items-center justify-between pb-3 border-b border-border/80">
+          <div className="flex items-center justify-between pb-3 border-b border-border/80 flex-wrap gap-2">
             <h3 className="text-sm font-semibold text-foreground">
               {isEn ? "1. General Information" : "1. Informasi Utama Skill"}
             </h3>
-            <div className="inline-flex rounded-[5px] border border-border p-0.5 bg-muted/40">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setActiveLang("id")}
-                className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                  activeLang === "id"
-                    ? "bg-surface text-foreground font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => handleTranslate("all")}
+                disabled={(!titleId.trim() && !summaryId.trim() && !contentId.trim()) || translatingField !== null}
+                className="inline-flex items-center gap-1.5 h-6 px-2.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer shadow-2xs"
               >
-                Indonesia
+                {translatingField === "all" ? (
+                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                )}
+                <span>{isEn ? "AI Translate All" : "✨ Auto Terjemahkan Semua (AI)"}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setActiveLang("en")}
-                className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
-                  activeLang === "en"
-                    ? "bg-surface text-foreground font-semibold shadow-2xs"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                English
-              </button>
+
+              <div className="inline-flex rounded-[5px] border border-border p-0.5 bg-muted/40">
+                <button
+                  type="button"
+                  onClick={() => setActiveLang("id")}
+                  className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                    activeLang === "id"
+                      ? "bg-surface text-foreground font-semibold shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Indonesia
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveLang("en")}
+                  className={`h-6 px-2 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                    activeLang === "en"
+                      ? "bg-surface text-foreground font-semibold shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  English
+                </button>
+              </div>
             </div>
           </div>
 
@@ -471,12 +539,27 @@ Instruksi skill lengkap...`}
             </div>
 
             <div>
-              <label
-                htmlFor="submit-title-en"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
-                Skill Title (English) *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label
+                  htmlFor="submit-title-en"
+                  className="block text-xs font-medium text-foreground"
+                >
+                  Skill Title (English) *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleTranslate("title")}
+                  disabled={!titleId.trim() || translatingField !== null}
+                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                >
+                  {translatingField === "title" || translatingField === "all" ? (
+                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                  )}
+                  <span>Auto AI</span>
+                </button>
+              </div>
               <input
                 id="submit-title-en"
                 name="titleEn"
@@ -511,12 +594,27 @@ Instruksi skill lengkap...`}
             </div>
 
             <div>
-              <label
-                htmlFor="submit-summary-en"
-                className="block text-xs font-medium text-foreground mb-1.5"
-              >
-                Summary (English) *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label
+                  htmlFor="submit-summary-en"
+                  className="block text-xs font-medium text-foreground"
+                >
+                  Summary (English) *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleTranslate("summary")}
+                  disabled={!summaryId.trim() || translatingField !== null}
+                  className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                >
+                  {translatingField === "summary" || translatingField === "all" ? (
+                    <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                  )}
+                  <span>Auto AI</span>
+                </button>
+              </div>
               <textarea
                 id="submit-summary-en"
                 name="summaryEn"
@@ -654,12 +752,27 @@ Instruksi skill lengkap...`}
               </div>
             ) : (
               <div>
-                <label
-                  htmlFor="submit-content-en"
-                  className="block text-xs font-medium text-foreground mb-1.5"
-                >
-                  Markdown Content (English) *
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label
+                    htmlFor="submit-content-en"
+                    className="block text-xs font-medium text-foreground"
+                  >
+                    Markdown Content (English) *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleTranslate("content")}
+                    disabled={!contentId.trim() || translatingField !== null}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-medium text-foreground transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+                  >
+                    {translatingField === "content" || translatingField === "all" ? (
+                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-2.5 h-2.5 text-indigo-500" />
+                    )}
+                    <span>Auto AI</span>
+                  </button>
+                </div>
                 {previewTab === "edit" ? (
                   <textarea
                     id="submit-content-en"
