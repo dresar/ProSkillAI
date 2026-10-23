@@ -24,6 +24,7 @@ import {
 import type { TrendingRepo, TrendingTimeRange } from "@/lib/github-trending";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
+import { ShareButton } from "@/components/share";
 
 interface TrendingClientProps {
   initialRepos: TrendingRepo[];
@@ -381,24 +382,45 @@ export function TrendingClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <div className="grid grid-cols-3 gap-1.5 pt-1">
                   <button
                     type="button"
                     onClick={() => handleOpenReadme(repo)}
-                    className="h-7 px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                   >
                     <BookOpen className="w-3 h-3" />
-                    <span>{isEn ? "View README" : "Baca README"}</span>
+                    <span>{isEn ? "README" : "README"}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleCopyClone(repo.fullName)}
-                    className="h-7 px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>{isEn ? "Copy Clone" : "Salin Clone"}</span>
+                    <span>{isEn ? "Clone" : "Clone"}</span>
                   </button>
+
+                  <ShareButton
+                    item={{
+                      type: "repo",
+                      slug: repo.name,
+                      title: repo.fullName,
+                      description: repo.description,
+                      url: repo.htmlUrl,
+                      category: repo.language || "Open Source",
+                      author: repo.owner.login,
+                      stats: [
+                        { label: "Stars", value: formatCompactNumber(repo.stars) },
+                        { label: "Forks", value: formatCompactNumber(repo.forks) },
+                        { label: "Rank", value: `#${repo.rank}` },
+                      ],
+                    }}
+                    locale={locale}
+                    showLabel
+                    label={isEn ? "Share" : "Bagi"}
+                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                  />
                 </div>
               </div>
             </div>
@@ -476,6 +498,24 @@ export function TrendingClient({
                           <BookOpen className="w-3 h-3" />
                           <span>README</span>
                         </button>
+                        <ShareButton
+                          item={{
+                            type: "repo",
+                            slug: repo.name,
+                            title: repo.fullName,
+                            description: repo.description,
+                            url: repo.htmlUrl,
+                            category: repo.language || "Open Source",
+                            author: repo.owner.login,
+                            stats: [
+                              { label: "Stars", value: formatCompactNumber(repo.stars) },
+                              { label: "Forks", value: formatCompactNumber(repo.forks) },
+                              { label: "Rank", value: `#${repo.rank}` },
+                            ],
+                          }}
+                          locale={locale}
+                          className="h-7 w-7 rounded-[5px] border border-border bg-background hover:bg-muted inline-flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground"
+                        />
                         <a
                           href={repo.htmlUrl}
                           target="_blank"
@@ -561,6 +601,25 @@ export function TrendingClient({
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">GitHub</span>
                 </a>
+
+                <ShareButton
+                  item={{
+                    type: "repo",
+                    slug: activeReadmeRepo.name,
+                    title: activeReadmeRepo.fullName,
+                    description: activeReadmeRepo.description,
+                    url: activeReadmeRepo.htmlUrl,
+                    category: activeReadmeRepo.language || "Open Source",
+                    author: activeReadmeRepo.owner.login,
+                    stats: [
+                      { label: "Stars", value: formatCompactNumber(activeReadmeRepo.stars) },
+                      { label: "Forks", value: formatCompactNumber(activeReadmeRepo.forks) },
+                      { label: "Rank", value: `#${activeReadmeRepo.rank}` },
+                    ],
+                  }}
+                  locale={locale}
+                  className="w-8 h-8 rounded-[6px] border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+                />
 
                 <button
                   type="button"

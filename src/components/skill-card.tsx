@@ -8,6 +8,7 @@ import type { Skill, Category } from "@/db/schema";
 import { getSkillCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor } from "@/lib/format";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ShareButton } from "@/components/share";
 
 interface SkillCardProps {
   skill: Skill;
@@ -75,7 +76,24 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               className="object-cover group-hover:scale-103 transition-transform duration-300"
             />
-            <div className="absolute top-2 right-2 z-10">
+            <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+              <ShareButton
+                item={{
+                  type: "skill",
+                  slug: skill.slug,
+                  title,
+                  description: summary,
+                  url: `/${locale}/skills/${skill.slug}`,
+                  category: categoryName,
+                  author: authorName,
+                  stats: [
+                    { label: "Stars", value: starCount },
+                    ...(fm?.rank ? [{ label: "Rank", value: fm.rank }] : []),
+                  ],
+                }}
+                locale={locale}
+                className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background text-muted-foreground hover:text-foreground transition-all shadow-2xs"
+              />
               <FavoriteButton
                 item={{
                   id: skill.id,

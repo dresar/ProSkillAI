@@ -28,6 +28,7 @@ import {
 import type { McpServerItem, McpCategoryKey } from "@/data/mcp-catalog";
 import { MCP_CATEGORIES, MCP_CATALOG_STATS } from "@/data/mcp-catalog";
 import { formatCompactNumber } from "@/lib/github-trending";
+import { ShareButton } from "@/components/share";
 
 interface McpClientProps {
   servers: McpServerItem[];
@@ -336,11 +337,11 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <div className="grid grid-cols-3 gap-1.5">
                     <button
                       type="button"
                       onClick={() => handleCopy(server.installSnippet, server.id)}
-                      className="h-7 px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     >
                       {copiedId === server.id ? (
                         <>
@@ -350,7 +351,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       ) : (
                         <>
                           <Copy className="w-3 h-3" />
-                          <span>{isEn ? "Copy npx" : "Salin npx"}</span>
+                          <span>{isEn ? "npx" : "npx"}</span>
                         </>
                       )}
                     </button>
@@ -358,11 +359,32 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     <button
                       type="button"
                       onClick={() => setActiveModalServer(server)}
-                      className="h-7 px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity cursor-pointer"
+                      className="h-7 px-1.5 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity cursor-pointer"
                     >
                       <SlidersHorizontal className="w-3 h-3" />
-                      <span>{isEn ? "Config JSON" : "Lihat JSON"}</span>
+                      <span>{isEn ? "JSON" : "JSON"}</span>
                     </button>
+
+                    <ShareButton
+                      item={{
+                        type: "mcp",
+                        slug: server.id,
+                        title: server.name,
+                        description: server.description,
+                        url: `/${locale}/mcp#${server.id}`,
+                        category: server.categoryLabel,
+                        author: server.vendor,
+                        stats: [
+                          { label: "Tools", value: server.tools.length },
+                          { label: "Stars", value: formatCompactNumber(server.stars) },
+                          { label: "License", value: server.isOpenSource ? "OSS" : "Commercial" },
+                        ],
+                      }}
+                      locale={locale}
+                      showLabel
+                      label={isEn ? "Share" : "Bagi"}
+                      className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
@@ -402,14 +424,35 @@ export function McpClient({ servers, locale }: McpClientProps) {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setActiveModalServer(null)}
-                className="w-8 h-8 rounded-[6px] border border-border hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
-                aria-label="Close dialog"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <ShareButton
+                  item={{
+                    type: "mcp",
+                    slug: activeModalServer.id,
+                    title: activeModalServer.name,
+                    description: activeModalServer.description,
+                    url: `/${locale}/mcp#${activeModalServer.id}`,
+                    category: activeModalServer.categoryLabel,
+                    author: activeModalServer.vendor,
+                    stats: [
+                      { label: "Tools", value: activeModalServer.tools.length },
+                      { label: "Stars", value: formatCompactNumber(activeModalServer.stars) },
+                      { label: "License", value: activeModalServer.isOpenSource ? "OSS" : "Commercial" },
+                    ],
+                  }}
+                  locale={locale}
+                  className="w-8 h-8 rounded-[6px] border border-border hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setActiveModalServer(null)}
+                  className="w-8 h-8 rounded-[6px] border border-border hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="Close dialog"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="p-5 sm:p-6 space-y-5 overflow-y-auto max-h-[75vh]">

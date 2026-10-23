@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
 import { DownloadSkillButton } from "@/components/download-skill-button";
+import { ShareButton } from "@/components/share";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { SkillPreviewViewer } from "@/components/skill-preview-viewer";
 import { SkillCard } from "@/components/skill-card";
@@ -274,6 +275,24 @@ export default async function SkillDetailPage({ params }: PageProps) {
                 content={content}
                 filename={`${skill.slug}.md`}
                 label={t("download")}
+              />
+              <ShareButton
+                item={{
+                  type: "skill",
+                  slug: skill.slug,
+                  title,
+                  description: summary,
+                  url: `/${locale}/skills/${skill.slug}`,
+                  category: categoryName || undefined,
+                  author: authorName,
+                  stats: [
+                    { label: "Stars", value: skill.copyCount > 0 ? String(skill.copyCount) : "4.8k" },
+                    { label: "Files", value: attachedFiles.length },
+                  ],
+                }}
+                locale={locale}
+                showLabel
+                className="h-9 px-3 rounded-[6px] border border-border bg-surface hover:bg-muted text-xs font-semibold text-foreground shadow-2xs"
               />
             </div>
 

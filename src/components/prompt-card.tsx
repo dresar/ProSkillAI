@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import type { Prompt, Category } from "@/db/schema";
 import { formatCount, getCategoryColor } from "@/lib/format";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ShareButton } from "@/components/share";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -54,7 +55,24 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface p-3.5 sm:p-4 hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-colors duration-200 shadow-xs relative"
       >
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+          <ShareButton
+            item={{
+              type: "prompt",
+              slug: prompt.slug,
+              title,
+              description,
+              url: `/${locale}/prompts/${prompt.slug}`,
+              category: categoryName,
+              author: authorName,
+              stats: [
+                { label: "Copies", value: starCount },
+                ...(variables.length > 0 ? [{ label: "Vars", value: variables.length }] : []),
+              ],
+            }}
+            locale={locale}
+            className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background text-muted-foreground hover:text-foreground transition-all shadow-2xs"
+          />
           <FavoriteButton
             item={{
               id: prompt.id,
@@ -69,7 +87,7 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
         </div>
 
         <div>
-          <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2 pr-8">
+          <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2 pr-18">
             <span className={`text-[11px] sm:text-xs font-medium tracking-tight truncate ${colorClass}`}>
               {categoryName}
             </span>

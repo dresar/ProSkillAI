@@ -8,6 +8,7 @@ import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 import { PromptDemoOutput } from "@/components/prompt-demo-output";
 import { ImageGallery } from "@/components/admin/image-gallery";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ShareButton } from "@/components/share";
 import { getCoverImage, getImageList, DEFAULT_PROMPT_COVER } from "@/lib/images";
 
 interface PageProps {
@@ -165,18 +166,38 @@ export default async function PromptDetailPage({ params }: PageProps) {
               </span>
             </div>
           </div>
-          <FavoriteButton
-            item={{
-              id: prompt.id,
-              type: "prompt",
-              slug: prompt.slug,
-              title,
-              summary: description,
-              category: categoryName || undefined,
-              cover: promptImages[0],
-            }}
-            className="w-7 h-7 rounded-[6px] border border-border bg-background hover:bg-muted flex items-center justify-center transition-all cursor-pointer"
-          />
+          <div className="flex items-center gap-1.5">
+            <ShareButton
+              item={{
+                type: "prompt",
+                slug: prompt.slug,
+                title,
+                description,
+                url: `/${locale}/prompts/${prompt.slug}`,
+                category: categoryName || undefined,
+                author: authorName,
+                stats: [
+                  { label: "Author", value: authorName },
+                  { label: "Length", value: `${(isEn ? prompt.contentEn : prompt.contentId)?.length || 0} ch` },
+                ],
+              }}
+              locale={locale}
+              showLabel
+              className="h-7 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-semibold text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+            />
+            <FavoriteButton
+              item={{
+                id: prompt.id,
+                type: "prompt",
+                slug: prompt.slug,
+                title,
+                summary: description,
+                category: categoryName || undefined,
+                cover: promptImages[0],
+              }}
+              className="w-7 h-7 rounded-[6px] border border-border bg-background hover:bg-muted flex items-center justify-center transition-all cursor-pointer"
+            />
+          </div>
         </div>
 
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
