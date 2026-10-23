@@ -268,7 +268,11 @@ export function AdminAiClient({ initialConfig, models, stats }: AdminAiClientPro
               </button>
             </div>
             <div className="flex items-center justify-between gap-2 text-foreground font-semibold">
-              <span className="truncate">sk-nry-fhA6_hkXV0...eaodT-_ORc</span>
+              <span className="truncate">
+                {config.apiKey
+                  ? `${config.apiKey.slice(0, 8)}...${config.apiKey.slice(-4)}`
+                  : "Terkonfigurasi via .env"}
+              </span>
               <span className="text-[10px] text-muted-foreground font-sans">Verified</span>
             </div>
           </div>

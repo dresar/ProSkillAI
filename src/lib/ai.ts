@@ -13,15 +13,17 @@ export interface AiConfig {
   fallbackModel: string;
 }
 
-export const HARDCODED_AI_CONFIG: AiConfig = {
-  endpoint: "https://router.bynara.id/v1",
-  apiKey: "sk-nry-fhA6_hkXV0V1FZRIg8MRpcEI5VnDiYjUIeaodT-_ORc",
-  defaultModel: "minimax-m3.1-flash:free",
-  defaultCredits: 5,
-  fallbackEndpoint: "https://ai.sumopod.com/v1",
-  fallbackApiKey: "sk-4itm0rxnVD9ng2dyPI3x3A",
-  fallbackModel: "deepseek-v4.1-flash:netra",
+export const DEFAULT_AI_CONFIG: AiConfig = {
+  endpoint: process.env.BYNARA_AI_ENDPOINT || "https://router.bynara.id/v1",
+  apiKey: process.env.BYNARA_AI_KEY || "",
+  defaultModel: process.env.BYNARA_DEFAULT_MODEL || "minimax-m3.1-flash:free",
+  defaultCredits: 10,
+  fallbackEndpoint: process.env.SUMOPOD_AI_ENDPOINT || "https://ai.sumopod.com/v1",
+  fallbackApiKey: process.env.SUMOPOD_AI_KEY || "",
+  fallbackModel: process.env.SUMOPOD_DEFAULT_MODEL || "deepseek-v4.1-flash:netra",
 };
+
+export const HARDCODED_AI_CONFIG = DEFAULT_AI_CONFIG;
 
 export interface AiModelItem {
   id: string;
@@ -39,12 +41,12 @@ export async function getStoredAiConfig(): Promise<AiConfig> {
     });
     if (row && typeof row.value === "object" && row.value !== null) {
       return {
-        ...HARDCODED_AI_CONFIG,
+        ...DEFAULT_AI_CONFIG,
         ...(row.value as Partial<AiConfig>),
       };
     }
   } catch {}
-  return { ...HARDCODED_AI_CONFIG };
+  return { ...DEFAULT_AI_CONFIG };
 }
 
 export async function saveAiConfig(newConfig: Partial<AiConfig>): Promise<AiConfig> {
@@ -79,9 +81,17 @@ export async function saveAiConfig(newConfig: Partial<AiConfig>): Promise<AiConf
 
 export async function fetchBynaraModels(): Promise<AiModelItem[]> {
   try {
-    const res = await fetch("https://router.bynara.id/v1/models", {
+    const config = await getStoredAiConfig();
+    const apiKey = config.apiKey || process.env.BYNARA_AI_KEY || "";
+    const endpoint = config.endpoint || process.env.BYNARA_AI_ENDPOINT || "https://router.bynara.id/v1";
+
+    if (!apiKey) {
+      return getFallbackModelList();
+    }
+
+    const res = await fetch(`${endpoint}/models`, {
       headers: {
-        Authorization: `Bearer ${HARDCODED_AI_CONFIG.apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
       },
       next: { revalidate: 3600 },
     });
