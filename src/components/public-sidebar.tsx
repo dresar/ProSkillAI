@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
+import { BrandLogo } from "./brand-logo";
 import { ThemeSidebarToggle } from "./theme-sidebar-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { type PublicUser } from "./public-user-nav";
@@ -73,19 +74,7 @@ export function PublicSidebar({
             aria-label="ProSkillAI Home"
             title={collapsed ? "ProSkillAI Home" : undefined}
           >
-            <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center shrink-0 shadow-xs">
-              <svg
-                className="w-4 h-4 text-background"
-                viewBox="0 0 32 32"
-                fill="none"
-                aria-hidden="true"
-              >
-                <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
-                <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
-                <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
-                <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
-              </svg>
-            </div>
+            <BrandLogo className="w-8 h-8" size={32} />
             {!collapsed && (
               <div className="flex flex-col min-w-0">
                 <span className="text-xs font-bold tracking-wider text-foreground uppercase">

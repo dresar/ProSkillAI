@@ -46,48 +46,48 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
               alt={title}
               fill
               unoptimized
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               className="object-cover group-hover:scale-103 transition-transform duration-300"
             />
           </div>
         )}
 
-        <div className="p-4 sm:p-5 flex flex-col justify-between flex-1">
+        <div className="p-3 sm:p-4 flex flex-col justify-between flex-1">
           <div>
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <span className={`text-xs font-medium tracking-tight ${colorClass}`}>
+            <div className="flex items-center justify-between gap-1.5 mb-1.5 sm:mb-2">
+              <span className={`text-[11px] sm:text-xs font-medium tracking-tight truncate ${colorClass}`}>
                 {categoryName}
               </span>
               {variableList.length > 0 && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/50">
+                <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-mono px-1 sm:px-1.5 py-0.2 rounded bg-muted text-muted-foreground border border-border/50 shrink-0">
                   <Variable className="w-2.5 h-2.5" />
                   <span>{variableList.length}</span>
                 </span>
               )}
             </div>
 
-            <h3 className="text-[15px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1">
+            <h3 className="text-xs sm:text-[14px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1">
               {title}
             </h3>
 
-            <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[34px]">
+            <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[30px] sm:min-h-[34px]">
               {description}
             </p>
           </div>
 
-          <div className="mt-4 pt-3 flex items-center justify-between border-t border-border/60 text-xs text-muted-foreground">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="w-5 h-5 rounded-full bg-muted border border-border/80 flex items-center justify-center text-[10px] font-semibold text-foreground shrink-0 overflow-hidden">
+          <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 flex items-center justify-between border-t border-border/60 text-[11px] sm:text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-muted border border-border/80 flex items-center justify-center text-[9px] sm:text-[10px] font-semibold text-foreground shrink-0 overflow-hidden">
                 {authorInitials}
               </span>
-              <span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors max-w-[130px]">
+              <span className="truncate font-medium text-muted-foreground group-hover:text-foreground transition-colors max-w-[70px] sm:max-w-[130px]">
                 {authorName}
               </span>
             </div>
 
             <div className="flex items-center gap-1 shrink-0 font-medium text-muted-foreground">
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 shrink-0" aria-hidden="true" />
-              <span className="text-[11px] font-mono">{starCount}</span>
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-400 text-amber-400 shrink-0" aria-hidden="true" />
+              <span className="text-[10px] sm:text-[11px] font-mono">{starCount}</span>
             </div>
           </div>
         </div>

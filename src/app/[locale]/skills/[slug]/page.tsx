@@ -348,7 +348,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
               {t("relatedSkills")}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {related.map(({ skill: rSkill, category: rCategory }) => (
                 <SkillCard key={rSkill.id} skill={rSkill} category={rCategory} locale={locale} />
               ))}

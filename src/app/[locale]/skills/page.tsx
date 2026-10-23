@@ -62,7 +62,7 @@ export default async function SkillsCatalogPage({
   ]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
           {t("title")}
@@ -85,7 +85,7 @@ export default async function SkillsCatalogPage({
             : "Tidak ada skill terbit yang cocok dengan kriteria filter Anda."}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {result.map(({ skill, category }) => (
             <SkillCard
               key={skill.id}

@@ -8,7 +8,8 @@ import { Menu, X, Shield, LogOut, ArrowLeft } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
-import { PublicUserNav, type PublicUser } from "./public-user-nav";
+import { BrandLogo } from "./brand-logo";
+import { type PublicUser } from "./public-user-nav";
 import { logoutAction } from "@/app/login/actions";
 
 export function PublicMobileHeader({
@@ -54,32 +55,16 @@ export function PublicMobileHeader({
           <Link
             href={`/${locale}`}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 text-foreground hover:opacity-85 transition-opacity"
+            className="flex items-center text-foreground hover:opacity-85 transition-opacity shrink-0"
             aria-label="ProSkillAI Home"
           >
-            <div className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center shrink-0">
-              <svg
-                className="w-3.5 h-3.5 text-background"
-                viewBox="0 0 32 32"
-                fill="none"
-                aria-hidden="true"
-              >
-                <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
-                <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
-                <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
-                <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
-              </svg>
-            </div>
-            <span className="text-xs font-bold tracking-wider uppercase text-foreground">
-              PROSKILL AI
-            </span>
+            <BrandLogo className="w-7 h-7" size={28} />
           </Link>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           <LanguageSwitcher currentLocale={locale} />
           <ThemeToggle label="Toggle theme" locale={locale} />
-          <PublicUserNav user={user ?? null} locale={locale} />
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}

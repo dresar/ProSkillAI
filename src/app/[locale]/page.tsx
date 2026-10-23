@@ -59,7 +59,7 @@ export default async function HomePage({ params }: PageProps) {
   ]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-8">
       <section className="space-y-3 max-w-2xl">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight">
@@ -136,7 +136,7 @@ export default async function HomePage({ params }: PageProps) {
             {t("emptySkills")}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {publishedSkills.map(({ skill, category }) => (
               <SkillCard
                 key={skill.id}
@@ -173,7 +173,7 @@ export default async function HomePage({ params }: PageProps) {
             {t("emptyPrompts")}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {publishedPrompts.map(({ prompt, category }) => (
               <PromptCard
                 key={prompt.id}

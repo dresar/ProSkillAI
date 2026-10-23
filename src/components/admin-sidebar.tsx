@@ -18,6 +18,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { BrandLogo } from "./brand-logo";
 
 interface AdminSidebarProps {
   userRole: string;
@@ -52,12 +53,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
     <>
       <div className="lg:hidden shrink-0 p-3 border-b border-border flex items-center justify-between bg-surface">
         <div className="flex items-center gap-2">
-          <svg className="w-5 h-5 text-foreground shrink-0" width="20" height="20" viewBox="0 0 32 32" fill="none">
-            <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
-            <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
-            <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
-            <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
-          </svg>
+          <BrandLogo className="w-5 h-5" size={20} />
           <span className="font-semibold text-sm text-foreground">ProSkillAI Admin</span>
         </div>
         <button
@@ -119,12 +115,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
         <div className="flex flex-col min-h-0 flex-1">
           <div className="h-14 shrink-0 border-b border-border flex items-center justify-between px-3.5">
             <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
-              <svg className="w-6 h-6 shrink-0 text-foreground" width="24" height="24" viewBox="0 0 32 32" fill="none">
-                <rect x="4" y="4" width="6" height="24" rx="2" fill="currentColor" />
-                <rect x="12" y="4" width="14" height="6" rx="2" fill="currentColor" />
-                <rect x="20" y="8" width="6" height="9" rx="2" fill="currentColor" />
-                <rect x="12" y="15" width="14" height="6" rx="2" fill="currentColor" />
-              </svg>
+              <BrandLogo className="w-6 h-6" size={24} />
               {!collapsed && (
                 <span className="font-semibold text-xs tracking-tight truncate text-foreground">
                   ProSkillAI
