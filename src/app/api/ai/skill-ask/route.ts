@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error: "NO_CREDITS",
-          message: "Kredit AI Anda telah habis (0/5). Hubungi administrator untuk penambahan kuota.",
+          message: "Kredit AI Anda telah habis (0/10). Hubungi administrator untuk penambahan kuota.",
         },
         { status: 403 }
       );
@@ -63,11 +63,16 @@ export async function POST(req: Request) {
     const content = isEn ? item.skill.contentEn : item.skill.contentId;
     const catName = item.category ? (isEn ? item.category.nameEn : item.category.nameId) : "";
 
+    const skillFiles = Array.isArray(item.skill.files)
+      ? (item.skill.files as Array<{ name: string; content?: string }>)
+      : [];
+
     const aiRes = await askSkillAi({
       skillTitle: title,
       skillSummary: summary,
       skillCategory: catName,
       skillContent: content,
+      skillFiles,
       question: question.trim(),
       locale,
     });

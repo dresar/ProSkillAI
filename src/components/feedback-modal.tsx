@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useActionState } from "react";
+import { createPortal } from "react-dom";
 import { MessageSquare, X, Check, AlertCircle, Loader2 } from "lucide-react";
 import { submitFeedbackAction } from "@/app/actions/feedback";
 
@@ -29,6 +30,21 @@ export function FeedbackModal({
   );
   const [category, setCategory] = React.useState("general");
   const [currentUrl, setCurrentUrl] = React.useState("");
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (open) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [open]);
 
   const handleOpen = () => {
     if (typeof window !== "undefined") {
@@ -66,12 +82,12 @@ export function FeedbackModal({
         </span>
       </button>
 
-      {open && (
+      {open && mounted && createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="feedback-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs animate-in fade-in duration-150"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
         >
           <div
             className="fixed inset-0"
@@ -256,7 +272,8 @@ export function FeedbackModal({
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

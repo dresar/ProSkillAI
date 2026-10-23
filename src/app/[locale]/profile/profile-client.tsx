@@ -147,7 +147,7 @@ export function ProfileClient({ user, stats, locale }: ProfileClientProps) {
               <div className="flex items-center gap-1.5 justify-end">
                 <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
                 <span className="text-xs font-mono font-bold text-foreground">
-                  {user.aiCredits} / 5
+                  {user.aiCredits} / 10
                 </span>
               </div>
             </div>

@@ -247,7 +247,7 @@ export function PublicSidebar({
                   {isEn ? "AI Skill Assistant" : "Asisten AI Cerdas"}
                 </p>
                 <p className="text-[10px] text-muted-foreground truncate">
-                  {isEn ? "5 Free credits for users" : "5 Kredit tanya skill gratis"}
+                  {isEn ? "10 Free credits for users" : "10 Kredit tanya skill gratis"}
                 </p>
               </div>
             </div>

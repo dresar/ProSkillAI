@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   const body = await req.json();
 
   if (body.action === "reset_credits") {
-    const amount = Number(body.amount ?? 5);
+    const amount = Number(body.amount ?? 10);
     await db.update(users).set({ aiCredits: amount, updatedAt: new Date() });
     return NextResponse.json({ success: true, message: `Semua kredit pengguna berhasil direset ke ${amount}` });
   }

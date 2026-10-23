@@ -117,7 +117,7 @@ export function AdminAiClient({ initialConfig, models, stats }: AdminAiClientPro
   };
 
   const handleResetCredits = async () => {
-    if (!confirm("Reset kuota kredit tanya AI untuk semua akun pengguna ke 5 kredit?")) {
+    if (!confirm("Reset kuota kredit tanya AI untuk semua akun pengguna ke 10 kredit?")) {
       return;
     }
 
@@ -128,11 +128,11 @@ export function AdminAiClient({ initialConfig, models, stats }: AdminAiClientPro
       const res = await fetch("/api/ai/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "reset_credits", amount: 5 }),
+        body: JSON.stringify({ action: "reset_credits", amount: 10 }),
       });
       const data = await res.json();
       if (res.ok) {
-        setResetMsg(data.message || "Semua kredit berhasil direset ke 5.");
+        setResetMsg(data.message || "Semua kredit berhasil direset ke 10.");
       } else {
         setResetMsg("Gagal mereset kredit.");
       }
@@ -174,7 +174,7 @@ export function AdminAiClient({ initialConfig, models, stats }: AdminAiClientPro
             className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             {isResetting ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3 text-amber-500" />}
-            <span>Reset Kuota User (5 Kredit)</span>
+            <span>Reset Kuota User (10 Kredit)</span>
           </button>
         </div>
       </div>

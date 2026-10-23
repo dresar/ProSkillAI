@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
-import { getFeatureFlags } from "@/db/queries";
+import { getFeatureFlags, getSidebarSelectedPromptIds, getAllPublishedPromptsList } from "@/db/queries";
 import { SettingsClient } from "./settings-client";
 
 export default async function AdminSettingsPage() {
@@ -9,7 +9,17 @@ export default async function AdminSettingsPage() {
     redirect("/admin");
   }
 
-  const initialFlags = await getFeatureFlags();
+  const [initialFlags, initialSidebarPromptIds, availablePrompts] = await Promise.all([
+    getFeatureFlags(),
+    getSidebarSelectedPromptIds(),
+    getAllPublishedPromptsList(),
+  ]);
 
-  return <SettingsClient initialFlags={initialFlags} />;
+  return (
+    <SettingsClient
+      initialFlags={initialFlags}
+      initialSidebarPromptIds={initialSidebarPromptIds}
+      availablePrompts={availablePrompts}
+    />
+  );
 }

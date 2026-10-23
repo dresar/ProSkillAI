@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { getPublishedSkillBySlug, getRelatedSkills } from "@/db/queries";
+import { getPublishedSkillBySlug, getRelatedSkills, getSidebarPrompts } from "@/db/queries";
 import { getCurrentUser } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { CopySkillDropdown } from "@/components/copy-skill-dropdown";
@@ -85,7 +85,10 @@ export default async function SkillDetailPage({ params }: PageProps) {
   const content = isEn ? skill.contentEn : skill.contentId;
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
 
-  const related = skill.categoryId ? await getRelatedSkills(skill.categoryId, skill.id, 3) : [];
+  const [related, sidebarPrompts] = await Promise.all([
+    skill.categoryId ? getRelatedSkills(skill.categoryId, skill.id, 4) : Promise.resolve([]),
+    getSidebarPrompts(3),
+  ]);
 
   const canonical = `${SITE_URL}/${locale}/skills/${slug}`;
   const dateModified = skill.updatedAt ? new Date(skill.updatedAt).toISOString() : undefined;
@@ -291,23 +294,6 @@ export default async function SkillDetailPage({ params }: PageProps) {
               </section>
             )}
 
-            <SkillAiChat
-              skillId={skill.id}
-              skillTitle={title}
-              locale={locale}
-              user={
-                user
-                  ? {
-                      id: user.id,
-                      email: user.email,
-                      name: user.name,
-                      role: user.role,
-                      aiCredits: user.aiCredits,
-                    }
-                  : null
-              }
-            />
-
             <SkillDetailTabs
               hasPreview={hasPreview}
               previewNode={previewNode}
@@ -335,7 +321,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
           <div className="space-y-5 lg:sticky lg:top-20 lg:self-start">
             <SkillStatsCard skill={skill} category={category} locale={locale} />
-            <PromptsSidebarBanner locale={locale} />
+            <PromptsSidebarBanner locale={locale} prompts={sidebarPrompts} />
           </div>
         </div>
 
@@ -344,7 +330,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
             <h2 id="related-heading" className="text-sm font-semibold text-foreground tracking-tight">
               {t("relatedSkills")}
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               {related.map(({ skill: rSkill, category: rCategory }) => (
                 <SkillCard key={rSkill.id} skill={rSkill} category={rCategory} locale={locale} />
               ))}
@@ -352,6 +338,24 @@ export default async function SkillDetailPage({ params }: PageProps) {
           </section>
         )}
       </div>
+
+      <SkillAiChat
+        skillId={skill.id}
+        skillTitle={title}
+        skillSummary={summary}
+        locale={locale}
+        user={
+          user
+            ? {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                aiCredits: user.aiCredits,
+              }
+            : null
+        }
+      />
     </article>
   );
 }

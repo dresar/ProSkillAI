@@ -133,6 +133,7 @@ export async function askSkillAi({
   skillSummary,
   skillCategory,
   skillContent,
+  skillFiles,
   question,
   locale,
   config,
@@ -141,6 +142,7 @@ export async function askSkillAi({
   skillSummary: string;
   skillCategory?: string | null;
   skillContent: string;
+  skillFiles?: Array<{ name: string; content?: string }>;
   question: string;
   locale?: string;
   config?: AiConfig;
@@ -148,27 +150,31 @@ export async function askSkillAi({
   const activeConfig = config || (await getStoredAiConfig());
   const isEn = locale === "en";
 
+  const filesSummary = skillFiles && skillFiles.length > 0
+    ? `\n- Auxiliary Files / Sub-Skills (${skillFiles.length}):\n` + skillFiles.map(f => `  * ${f.name}: ${(f.content || "").slice(0, 1000)}`).join("\n")
+    : "";
+
   const systemPrompt = isEn
     ? `You are ProSkillAI Intelligent Assistant specialized in the skill "${skillTitle}".
-Answer the user's question clearly, concisely, and practically based on the skill documentation provided.
+Answer the user's question clearly, concisely, and practically based on the skill documentation and auxiliary files provided.
 Use polite, helpful language and concise markdown formatting.
 
 Skill Reference:
 - Title: ${skillTitle}
 - Summary: ${skillSummary}
-- Category: ${skillCategory || "General"}
+- Category: ${skillCategory || "General"}${filesSummary}
 - Documentation / Code:
-${skillContent.slice(0, 8000)}`
+${skillContent.slice(0, 16000)}`
     : `Anda adalah Asisten Cerdas ProSkillAI khusus untuk skill "${skillTitle}".
-Jawab pertanyaan pengguna dengan jelas, ringkas, dan praktis berdasarkan dokumentasi skill yang disediakan.
+Jawab pertanyaan pengguna dengan jelas, ringkas, dan praktis berdasarkan dokumentasi skill dan berkas pendukung yang disediakan.
 Gunakan format markdown yang rapi, bahasa yang ramah dan solutif.
 
 Referensi Skill:
 - Judul: ${skillTitle}
 - Ringkasan: ${skillSummary}
-- Kategori: ${skillCategory || "Umum"}
+- Kategori: ${skillCategory || "Umum"}${filesSummary}
 - Dokumentasi / Konten Lengkap:
-${skillContent.slice(0, 8000)}`;
+${skillContent.slice(0, 16000)}`;
 
   try {
     const controller = new AbortController();

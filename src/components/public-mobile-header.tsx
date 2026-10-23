@@ -81,7 +81,7 @@ export function PublicMobileHeader({
                     {user.role}
                   </span>
                   <span className="text-[10px] font-mono text-muted-foreground">
-                    {typeof user.aiCredits === "number" ? `${user.aiCredits}/5 AI` : ""}
+                    {typeof user.aiCredits === "number" ? `${user.aiCredits}/10 AI` : ""}
                   </span>
                 </div>
               </Link>

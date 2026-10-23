@@ -35,3 +35,46 @@ export async function updateFeatureFlagsAction(flags: Record<string, boolean>) {
 
   return { success: true };
 }
+
+export async function updateSidebarPromptsAction(promptIds: string[]) {
+  const admin = await requireAdmin();
+
+  const existing = await db
+    .select()
+    .from(settings)
+    .where(eq(settings.key, "sidebar_prompts"))
+    .limit(1);
+
+  if (existing.length > 0) {
+    await db
+      .update(settings)
+      .set({
+        value: promptIds,
+        updatedAt: new Date(),
+      })
+      .where(eq(settings.key, "sidebar_prompts"));
+  } else {
+    await db.insert(settings).values({
+      id: "setting-sidebar-prompts",
+      key: "sidebar_prompts",
+      value: promptIds,
+      updatedAt: new Date(),
+    });
+  }
+
+  await db.insert(auditLog).values({
+    id: `audit-${Date.now()}`,
+    userId: admin.id,
+    userEmail: admin.email,
+    action: "UPDATE_SIDEBAR_PROMPTS",
+    entityType: "settings",
+    entityId: "sidebar_prompts",
+    details: { promptIds },
+    createdAt: new Date(),
+  });
+
+  revalidatePath("/admin/settings");
+  revalidatePath("/", "layout");
+
+  return { success: true };
+}

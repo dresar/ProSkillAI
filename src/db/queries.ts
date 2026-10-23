@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { skills, prompts, categories, settings, users, auditLog, type Skill, type Prompt, type Category, type User, type AuditLogEntry } from "@/db/schema";
-import { eq, and, sql, desc, asc, ne } from "drizzle-orm";
+import { eq, and, sql, desc, asc, ne, inArray } from "drizzle-orm";
 
 export async function getFeaturedSkills(limit = 6): Promise<Array<{ skill: Skill; category: Category | null }>> {
   return await db
@@ -199,6 +199,70 @@ export async function getFeatureFlags(): Promise<Record<string, boolean>> {
     .limit(1);
 
   return (found[0]?.value as Record<string, boolean>) || {};
+}
+
+export async function getSidebarSelectedPromptIds(): Promise<string[]> {
+  const found = await db
+    .select()
+    .from(settings)
+    .where(eq(settings.key, "sidebar_prompts"))
+    .limit(1);
+
+  if (found[0]?.value && Array.isArray(found[0].value)) {
+    return found[0].value as string[];
+  }
+  return [];
+}
+
+export async function getSidebarPrompts(
+  limit = 3
+): Promise<Array<{ prompt: Prompt; category: Category | null }>> {
+  const selectedIds = await getSidebarSelectedPromptIds();
+
+  if (selectedIds.length > 0) {
+    const list = await db
+      .select({
+        prompt: prompts,
+        category: categories,
+      })
+      .from(prompts)
+      .leftJoin(categories, eq(prompts.categoryId, categories.id))
+      .where(and(inArray(prompts.id, selectedIds), eq(prompts.status, "published")));
+
+    if (list.length > 0) {
+      const orderMap = new Map(selectedIds.map((id, index) => [id, index]));
+      list.sort((a, b) => (orderMap.get(a.prompt.id) ?? 99) - (orderMap.get(b.prompt.id) ?? 99));
+      return list.slice(0, limit);
+    }
+  }
+
+  return await db
+    .select({
+      prompt: prompts,
+      category: categories,
+    })
+    .from(prompts)
+    .leftJoin(categories, eq(prompts.categoryId, categories.id))
+    .where(eq(prompts.status, "published"))
+    .orderBy(desc(prompts.createdAt))
+    .limit(limit);
+}
+
+export async function getAllPublishedPromptsList(): Promise<Array<{ id: string; slug: string; titleId: string; titleEn: string; categoryName?: string | null }>> {
+  const rows = await db
+    .select({
+      id: prompts.id,
+      slug: prompts.slug,
+      titleId: prompts.titleId,
+      titleEn: prompts.titleEn,
+      categoryName: categories.nameId,
+    })
+    .from(prompts)
+    .leftJoin(categories, eq(prompts.categoryId, categories.id))
+    .where(eq(prompts.status, "published"))
+    .orderBy(desc(prompts.createdAt));
+
+  return rows;
 }
 
 export async function getAdminStats() {
