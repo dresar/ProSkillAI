@@ -6,6 +6,7 @@ import { Star, Variable } from "lucide-react";
 import type { Prompt, Category } from "@/db/schema";
 import { getPromptCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
+import { FavoriteButton } from "@/components/favorite-button";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -49,6 +50,20 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               className="object-cover group-hover:scale-103 transition-transform duration-300"
             />
+            <div className="absolute top-2 right-2 z-10">
+              <FavoriteButton
+                item={{
+                  id: prompt.id,
+                  type: "prompt",
+                  slug: prompt.slug,
+                  title,
+                  summary: description,
+                  category: categoryName,
+                  cover,
+                }}
+                className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background transition-all shadow-2xs"
+              />
+            </div>
           </div>
         )}
 

@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAction } from "./actions";
 import { AlertCircle, ArrowRight, Shield, User, ShieldCheck, UserCheck, Terminal } from "lucide-react";
+import { motion } from "motion/react";
 
 const showQuickLogin =
   process.env.NODE_ENV !== "production" ||
@@ -26,7 +27,17 @@ export function LoginForm() {
       const target = search.get("redirect");
       const isSafeTarget =
         typeof target === "string" && target.startsWith("/") && !target.startsWith("//");
-      router.push(isSafeTarget ? target : "/admin");
+      const isAdminOrEditor = state.role === "admin" || state.role === "editor";
+
+      if (isSafeTarget) {
+        if (!isAdminOrEditor && target.startsWith("/admin")) {
+          router.push("/id");
+        } else {
+          router.push(target);
+        }
+      } else {
+        router.push(isAdminOrEditor ? "/admin" : "/id");
+      }
       router.refresh();
     }
   }, [state, router]);
@@ -72,7 +83,12 @@ export function LoginForm() {
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="space-y-4"
+    >
       {showQuickLogin && (
         <div className="p-3 rounded-[6px] border border-border bg-surface space-y-2.5">
           <div className="flex items-center justify-between">
@@ -192,6 +208,6 @@ export function LoginForm() {
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 }

@@ -58,7 +58,7 @@ export async function loginAction(prevState: unknown, formData: FormData) {
   }
 
   await createSession(user.id);
-  return { success: true };
+  return { success: true, role: user.role };
 }
 
 export async function logoutAction() {

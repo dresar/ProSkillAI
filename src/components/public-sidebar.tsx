@@ -15,6 +15,7 @@ import {
   Plus,
   Shield,
   Sparkles,
+  Star,
 } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { BrandLogo } from "./brand-logo";
@@ -23,6 +24,7 @@ import { LanguageSwitcher } from "./language-switcher";
 import { type PublicUser } from "./public-user-nav";
 import { usePublicSidebar } from "./public-sidebar-context";
 import { logoutAction } from "@/app/login/actions";
+import { getFavorites, onFavoritesChange } from "@/lib/favorites";
 
 export function PublicSidebar({
   locale,
@@ -35,24 +37,69 @@ export function PublicSidebar({
   const tNav = useTranslations("nav");
   const { collapsed, toggleSidebar } = usePublicSidebar();
 
+  const [favCount, setFavCount] = React.useState(0);
+
+  React.useEffect(() => {
+    setFavCount(getFavorites().length);
+    const unsub = onFavoritesChange(() => {
+      setFavCount(getFavorites().length);
+    });
+    return unsub;
+  }, []);
+
   const isEn = locale === "en";
   const isSkills = pathname.startsWith(`/${locale}/skills`);
   const isPrompts = pathname.startsWith(`/${locale}/prompts`);
-  const isSubmit = pathname.startsWith(`/${locale}/skills/submit`);
+  const isFavorites = pathname.startsWith(`/${locale}/favorites`);
+  const isSubmitSkill = pathname.startsWith(`/${locale}/skills/submit`);
+  const isSubmitPrompt = pathname.startsWith(`/${locale}/prompts/submit`);
 
-  const submitHref = user
+  const submitSkillHref = user
     ? `/${locale}/skills/submit`
     : `/login?redirect=/${locale}/skills/submit`;
 
-  const navItems = [
-    { href: `/${locale}/skills`, label: tNav("skills"), icon: Layers, active: isSkills, badge: "Catalog" },
-    { href: `/${locale}/prompts`, label: tNav("prompts"), icon: FileCode, active: isPrompts, badge: "Library" },
+  const submitPromptHref = user
+    ? `/${locale}/prompts/submit`
+    : `/login?redirect=/${locale}/prompts/submit`;
+
+  const exploreItems = [
     {
-      href: submitHref,
+      href: `/${locale}/skills`,
+      label: tNav("skills"),
+      icon: Layers,
+      active: isSkills && !isSubmitSkill,
+      badge: "Catalog",
+    },
+    {
+      href: `/${locale}/prompts`,
+      label: tNav("prompts"),
+      icon: FileCode,
+      active: isPrompts && !isSubmitPrompt,
+      badge: "Library",
+    },
+    {
+      href: `/${locale}/favorites`,
+      label: isEn ? "Favorites" : "Favorit",
+      icon: Star,
+      active: isFavorites,
+      badge: favCount > 0 ? String(favCount) : "Star",
+    },
+  ];
+
+  const contributeItems = [
+    {
+      href: submitSkillHref,
       label: isEn ? "Submit Skill" : "Kirim Skill",
       icon: Plus,
-      active: isSubmit,
-      badge: "Community",
+      active: isSubmitSkill,
+      badge: "Skill",
+    },
+    {
+      href: submitPromptHref,
+      label: isEn ? "Submit Prompt" : "Kirim Prompt",
+      icon: Sparkles,
+      active: isSubmitPrompt,
+      badge: "Prompt",
     },
   ];
 
@@ -104,66 +151,115 @@ export function PublicSidebar({
           </button>
         </div>
 
-        <div>
-          {!collapsed && (
-            <span className="text-[11px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
-              {isEn ? "Build" : "Bangun"}
-            </span>
-          )}
-          <nav className="space-y-0.5" aria-label="Build navigation">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={collapsed ? item.label : undefined}
-                  className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
-                    collapsed ? "justify-center px-0" : "justify-between px-3"
-                  } ${
-                    item.active
-                      ? "bg-foreground text-background font-semibold shadow-xs"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  }`}
-                >
-                  <span
-                    className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
-                  </span>
-                  {!collapsed && (
-                    <span
-                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                        item.active
-                          ? "bg-background/20 text-background"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-
-            <div
-              title={collapsed ? "Agent Kits" : undefined}
-              className={`flex items-center py-2 rounded-lg text-xs font-medium text-muted-foreground/80 cursor-not-allowed select-none ${
-                collapsed ? "justify-center px-0" : "justify-between px-3"
-              }`}
-            >
-              <span className={`flex items-center ${collapsed ? "" : "gap-1.5"}`}>
-                <Package className="w-3.5 h-3.5 shrink-0" />
-                {!collapsed && <span>Agent Kits</span>}
+        <div className="space-y-4">
+          <div>
+            {!collapsed && (
+              <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
+                {isEn ? "Explore" : "Jelajah"}
               </span>
-              {!collapsed && (
-                <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
-                  New
+            )}
+            <nav className="space-y-0.5" aria-label="Explore navigation">
+              {exploreItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
+                      collapsed ? "justify-center px-0" : "justify-between px-3"
+                    } ${
+                      item.active
+                        ? "bg-foreground text-background font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
+                    >
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${item.href.includes("favorites") && favCount > 0 ? "text-amber-500 fill-amber-400" : ""}`} />
+                      {!collapsed && <span className="truncate">{item.label}</span>}
+                    </span>
+                    {!collapsed && (
+                      <span
+                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                          item.active
+                            ? "bg-background/20 text-background"
+                            : item.href.includes("favorites") && favCount > 0
+                            ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div>
+            {!collapsed && (
+              <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-3 block mb-1.5">
+                {isEn ? "Contribute" : "Kontribusi"}
+              </span>
+            )}
+            <nav className="space-y-0.5" aria-label="Contribute navigation">
+              {contributeItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    className={`flex items-center py-2 rounded-lg text-xs font-medium transition-colors ${
+                      collapsed ? "justify-center px-0" : "justify-between px-3"
+                    } ${
+                      item.active
+                        ? "bg-foreground text-background font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <span
+                      className={`flex items-center min-w-0 ${collapsed ? "" : "gap-1.5"}`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      {!collapsed && <span className="truncate">{item.label}</span>}
+                    </span>
+                    {!collapsed && (
+                      <span
+                        className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
+                          item.active
+                            ? "bg-background/20 text-background"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+
+              <div
+                title={collapsed ? "Agent Kits" : undefined}
+                className={`flex items-center py-2 rounded-lg text-xs font-medium text-muted-foreground/80 cursor-not-allowed select-none ${
+                  collapsed ? "justify-center px-0" : "justify-between px-3"
+                }`}
+              >
+                <span className={`flex items-center ${collapsed ? "" : "gap-1.5"}`}>
+                  <Package className="w-3.5 h-3.5 shrink-0" />
+                  {!collapsed && <span>Agent Kits</span>}
                 </span>
-              )}
-            </div>
-          </nav>
+                {!collapsed && (
+                  <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-500 dark:text-amber-400">
+                    Soon
+                  </span>
+                )}
+              </div>
+            </nav>
+          </div>
         </div>
       </div>
 
@@ -211,17 +307,27 @@ export function PublicSidebar({
               <div className="flex flex-col items-center gap-1.5">
                 <div
                   className="w-8 h-8 rounded-[6px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0"
-                  title={`${user.name} · ${user.email}`}
+                  title={`${user.name} · ${user.email} (${user.role})`}
                 >
                   {user.name.slice(0, 2).toUpperCase()}
                 </div>
-                <Link
-                  href="/admin"
-                  title={tNav("admin")}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-foreground/10 text-foreground hover:bg-muted transition-all active:scale-95"
-                >
-                  <Shield className="w-3.5 h-3.5" />
-                </Link>
+                {user.role === "admin" || user.role === "editor" ? (
+                  <Link
+                    href="/admin"
+                    title={tNav("admin")}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-foreground/10 text-foreground hover:bg-muted transition-all active:scale-95"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/${locale}/favorites`}
+                    title={isEn ? "Favorites" : "Favorit"}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all active:scale-95"
+                  >
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                  </Link>
+                )}
                 <form action={logoutAction} className="flex justify-center">
                   <button
                     type="submit"
@@ -251,13 +357,23 @@ export function PublicSidebar({
                 </div>
 
                 <div className="flex items-center gap-1.5 pt-1 border-t border-border">
-                  <Link
-                    href="/admin"
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
-                  >
-                    <Shield className="w-3 h-3" />
-                    <span>{tNav("admin")}</span>
-                  </Link>
+                  {user.role === "admin" || user.role === "editor" ? (
+                    <Link
+                      href="/admin"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
+                    >
+                      <Shield className="w-3 h-3" />
+                      <span>{tNav("admin")}</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/${locale}/favorites`}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-muted hover:bg-muted/80 text-foreground text-[11px] font-medium transition-all"
+                    >
+                      <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
+                      <span>{isEn ? "Favorites" : "Favorit"}</span>
+                    </Link>
+                  )}
                   <form action={logoutAction}>
                     <button
                       type="submit"
@@ -273,7 +389,7 @@ export function PublicSidebar({
           ) : collapsed ? (
             <Link
               href="/login"
-              title={isEn ? "Sign In to Panel" : "Masuk ke Panel"}
+              title={isEn ? "Sign In" : "Masuk"}
               className="w-full flex items-center justify-center h-8 rounded-[6px] bg-foreground text-background hover:opacity-90 transition-all active:scale-95 shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
@@ -284,7 +400,7 @@ export function PublicSidebar({
               className="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium bg-foreground text-background hover:opacity-90 rounded-[6px] transition-all active:scale-95 shadow-xs"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span>{isEn ? "Sign In to Panel" : "Masuk ke Panel"}</span>
+              <span>{isEn ? "Sign In" : "Masuk ke Akun"}</span>
             </Link>
           )}
         </div>

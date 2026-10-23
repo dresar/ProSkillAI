@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { LogIn, LogOut, Shield } from "lucide-react";
+import { LogIn, LogOut, Shield, Star } from "lucide-react";
 import { logoutAction } from "@/app/login/actions";
 
 export interface PublicUser {
@@ -54,14 +54,25 @@ export function PublicUserNav({
         </span>
       </div>
 
-      <Link
-        href="/admin"
-        className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 cursor-pointer shrink-0"
-        title={user.email}
-      >
-        <Shield className="w-3.5 h-3.5 text-foreground" />
-        <span className="hidden md:inline">Panel Admin</span>
-      </Link>
+      {user.role === "admin" || user.role === "editor" ? (
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 cursor-pointer shrink-0"
+          title={user.email}
+        >
+          <Shield className="w-3.5 h-3.5 text-foreground" />
+          <span className="hidden md:inline">Panel Admin</span>
+        </Link>
+      ) : (
+        <Link
+          href={`/${locale}/favorites`}
+          className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-medium transition-all active:scale-95 cursor-pointer shrink-0"
+          title={isEn ? "My Favorites" : "Favorit Saya"}
+        >
+          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+          <span className="hidden md:inline">{isEn ? "Favorites" : "Favorit"}</span>
+        </Link>
+      )}
 
       <form action={logoutAction} className="inline-flex">
         <button

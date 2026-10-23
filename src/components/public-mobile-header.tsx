@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Menu, X, Shield, LogOut, ArrowLeft } from "lucide-react";
+import { Menu, X, Shield, LogOut, ArrowLeft, Star, Plus, Sparkles, LogIn } from "lucide-react";
 import { FeedbackModal } from "./feedback-modal";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
@@ -125,19 +125,73 @@ export function PublicMobileHeader({
                 <span>{tNav("prompts")}</span>
                 <span className="text-[10px] font-mono">Library</span>
               </Link>
+              <Link
+                href={`/${locale}/favorites`}
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center justify-between px-3 py-2 rounded text-xs font-medium ${
+                  pathname.startsWith(`/${locale}/favorites`)
+                    ? "bg-foreground text-background font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                  <span>{locale === "en" ? "Favorites" : "Favorit"}</span>
+                </span>
+                <span className="text-[10px] font-mono">Starred</span>
+              </Link>
+              <Link
+                href={`/${locale}/skills/submit`}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>{locale === "en" ? "Submit Skill" : "Kirim Skill"}</span>
+                </span>
+                <span className="text-[10px] font-mono">Build</span>
+              </Link>
+              <Link
+                href={`/${locale}/prompts/submit`}
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{locale === "en" ? "Submit Prompt" : "Kirim Prompt"}</span>
+                </span>
+                <span className="text-[10px] font-mono">Create</span>
+              </Link>
             </div>
           </div>
 
           <div className="pt-3 border-t border-border space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <Link
-                href="/admin"
-                onClick={() => setIsOpen(false)}
-                className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium"
-              >
-                <Shield className="w-3.5 h-3.5" />
-                <span>{tNav("admin")}</span>
-              </Link>
+              {user ? (
+                user.role === "admin" || user.role === "editor" ? (
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium"
+                  >
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>{tNav("admin")}</span>
+                  </Link>
+                ) : (
+                  <div className="text-[11px] font-mono text-muted-foreground">
+                    Role: <span className="text-foreground font-semibold uppercase">{user.role}</span>
+                  </div>
+                )
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex items-center gap-1.5 text-foreground font-medium"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>{locale === "en" ? "Sign In" : "Masuk"}</span>
+                </Link>
+              )}
 
               {user && (
                 <form action={logoutAction}>

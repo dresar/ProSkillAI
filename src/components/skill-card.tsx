@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import type { Skill, Category } from "@/db/schema";
 import { getSkillCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor, getAuthorInitials } from "@/lib/format";
+import { FavoriteButton } from "@/components/favorite-button";
 
 interface SkillCardProps {
   skill: Skill;
@@ -48,6 +49,20 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               className="object-cover group-hover:scale-103 transition-transform duration-300"
             />
+            <div className="absolute top-2 right-2 z-10">
+              <FavoriteButton
+                item={{
+                  id: skill.id,
+                  type: "skill",
+                  slug: skill.slug,
+                  title,
+                  summary,
+                  category: categoryName,
+                  cover,
+                }}
+                className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background transition-all shadow-2xs"
+              />
+            </div>
           </div>
         )}
 
