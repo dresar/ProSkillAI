@@ -1,9 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Copy, Check } from "lucide-react";
 import type { Prompt } from "@/db/schema";
-import { trackPromptAction } from "@/app/actions/track";
+import { CopyPromptDropdown } from "./copy-prompt-dropdown";
 
 interface VariableDef {
   name: string;
@@ -30,12 +29,9 @@ function formatVariableLabel(name: string): string {
 }
 
 export function PromptVariableEngine({ prompt, locale }: PromptVariableEngineProps) {
-  const [selectedLang, setSelectedLang] = React.useState<"id" | "en">(
-    locale === "en" ? "en" : "id"
-  );
-  const [copied, setCopied] = React.useState(false);
-
-  const rawTemplate = selectedLang === "en" ? prompt.contentEn : prompt.contentId;
+  const isEn = locale === "en";
+  const rawTemplate = isEn ? prompt.contentEn : prompt.contentId;
+  const promptTitle = isEn ? prompt.titleEn : prompt.titleId;
 
   const definedVariables: VariableDef[] = React.useMemo(() => {
     return Array.isArray(prompt.variables)
@@ -84,94 +80,37 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
     return result;
   }, [rawTemplate, formValues]);
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(resolvedPrompt);
-    setCopied(true);
-    if (prompt.id) {
-      trackPromptAction(prompt.id).catch(() => {});
-    }
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-border">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">
-            {locale === "en" ? "Language:" : "Bahasa:"}
-          </span>
-          <div className="inline-flex rounded-[6px] border border-border p-0.5 bg-muted/40">
-            <button
-              type="button"
-              onClick={() => setSelectedLang("id")}
-              className={`px-2.5 py-1 text-xs rounded-[5px] transition-colors cursor-pointer ${
-                selectedLang === "id"
-                  ? "bg-surface text-foreground font-semibold shadow-2xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Indonesia
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedLang("en")}
-              className={`px-2.5 py-1 text-xs rounded-[5px] transition-colors cursor-pointer ${
-                selectedLang === "en"
-                  ? "bg-surface text-foreground font-semibold shadow-2xs"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              English
-            </button>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] text-xs font-medium bg-foreground text-background hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
-        >
-          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          <span>
-            {copied
-              ? locale === "en"
-                ? "Copied!"
-                : "Tersalin!"
-              : locale === "en"
-              ? "Copy Prompt"
-              : "Salin Prompt"}
-          </span>
-        </button>
-      </div>
-
+    <div className="space-y-4">
       {discoveredVariables.length > 0 && (
-        <div className="p-4 sm:p-5 rounded-xl border border-border bg-surface space-y-3.5 shadow-2xs">
-          <div className="space-y-0.5">
-            <h4 className="text-xs font-semibold text-foreground tracking-tight">
-              {locale === "en" ? "Customize Variables" : "Sesuaikan Variabel"}
-            </h4>
-            <p className="text-[11px] text-muted-foreground">
-              {locale === "en"
-                ? "Fill in the parameters below to personalize this prompt before copying."
-                : "Lengkapi parameter di bawah untuk menyesuaikan prompt sebelum disalin."}
-            </p>
+        <div className="p-3.5 sm:p-4 rounded-xl border border-border bg-surface space-y-3 shadow-2xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border/60">
+            <div>
+              <h3 className="text-xs font-semibold text-foreground tracking-tight">
+                {isEn ? "Customize Variables" : "Sesuaikan Variabel"}
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                {isEn
+                  ? "Adjust values below to tailor the prompt."
+                  : "Sesuaikan nilai variabel di bawah untuk menghasilkan prompt spesifik."}
+              </p>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+              {discoveredVariables.length} {isEn ? "params" : "parameter"}
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {discoveredVariables.map((v) => {
               const label =
-                (selectedLang === "en" ? v.labelEn : v.labelId) ||
-                (locale === "en" ? v.labelEn : v.labelId) ||
-                formatVariableLabel(v.name);
+                (isEn ? v.labelEn : v.labelId) || formatVariableLabel(v.name);
 
               const placeholder =
                 v.placeholder ||
-                (selectedLang === "en" || locale === "en"
-                  ? `e.g. ${label.toLowerCase()}`
-                  : `mis. ${label.toLowerCase()}`);
+                (isEn ? `e.g. ${label.toLowerCase()}` : `mis. ${label.toLowerCase()}`);
 
               return (
-                <div key={v.name} className="space-y-1.5">
+                <div key={v.name} className="space-y-1">
                   <label
                     htmlFor={`var-${v.name}`}
                     className="block text-xs font-medium text-foreground tracking-tight capitalize"
@@ -186,7 +125,7 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
                     onChange={(e) =>
                       setFormValues((prev) => ({ ...prev, [v.name]: e.target.value }))
                     }
-                    className="w-full h-8.5 px-3 text-xs rounded-[6px] border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:ring-1 focus:ring-foreground transition-all"
+                    className="w-full h-8 px-2.5 text-xs rounded-[6px] border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-hidden focus:ring-1 focus:ring-foreground transition-all"
                   />
                 </div>
               );
@@ -195,16 +134,26 @@ export function PromptVariableEngine({ prompt, locale }: PromptVariableEnginePro
         </div>
       )}
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-muted-foreground">
-            {locale === "en" ? "Ready-to-Use Prompt" : "Hasil Prompt Siap Pakai"}
-          </span>
-          <span className="text-[10px] font-mono text-muted-foreground">
-            {resolvedPrompt.length} {locale === "en" ? "characters" : "karakter"}
-          </span>
+      <div className="rounded-xl border border-border bg-surface overflow-hidden shadow-2xs">
+        <div className="p-3 sm:p-3.5 border-b border-border/70 bg-muted/20 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="text-xs font-semibold text-foreground tracking-tight">
+              {isEn ? "Ready Prompt Output" : "Hasil Prompt Siap Pakai"}
+            </h3>
+            <span className="text-[10px] font-mono text-muted-foreground">
+              {resolvedPrompt.length} {isEn ? "characters" : "karakter"}
+            </span>
+          </div>
+
+          <CopyPromptDropdown
+            promptId={prompt.id}
+            title={promptTitle}
+            promptText={resolvedPrompt}
+            locale={locale}
+          />
         </div>
-        <pre className="p-4 rounded-xl border border-border bg-surface text-foreground font-mono text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px]">
+
+        <pre className="p-4 bg-background/50 text-foreground font-mono text-xs whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-[500px] select-all">
           {resolvedPrompt}
         </pre>
       </div>

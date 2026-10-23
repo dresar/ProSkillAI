@@ -6,7 +6,8 @@ import Link from "next/link";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 import { ImageGallery } from "@/components/admin/image-gallery";
-import { getCoverImage, getImageList } from "@/lib/images";
+import { FavoriteButton } from "@/components/favorite-button";
+import { getCoverImage, getImageList, DEFAULT_PROMPT_COVER } from "@/lib/images";
 
 interface PageProps {
   params: Promise<{
@@ -16,6 +17,14 @@ interface PageProps {
 }
 
 const SITE_URL = "https://proskillai.dev";
+
+function limitToThreeSentences(text: string): string {
+  const matches = text.match(/[^.!?]+[.!?]+(\s|$)/g);
+  if (matches && matches.length > 3) {
+    return matches.slice(0, 3).join("").trim();
+  }
+  return text;
+}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -28,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { prompt } = item;
   const title = isEn ? prompt.titleEn : prompt.titleId;
-  const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
+  const description = limitToThreeSentences(isEn ? prompt.descriptionEn : prompt.descriptionId);
   const cover = getCoverImage(prompt.images);
 
   return {
@@ -67,9 +76,11 @@ export default async function PromptDetailPage({ params }: PageProps) {
   const { prompt, category, skill } = item;
   const isEn = locale === "en";
   const title = isEn ? prompt.titleEn : prompt.titleId;
-  const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
+  const rawDescription = isEn ? prompt.descriptionEn : prompt.descriptionId;
+  const description = limitToThreeSentences(rawDescription);
   const categoryName = category ? (isEn ? category.nameEn : category.nameId) : null;
 
+  const promptImages = getImageList(prompt.images, DEFAULT_PROMPT_COVER).slice(0, 5);
   const canonical = `${SITE_URL}/${locale}/prompts/${slug}`;
   const dateModified = prompt.updatedAt ? new Date(prompt.updatedAt).toISOString() : undefined;
 
@@ -110,7 +121,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
+    <article className="w-full max-w-5xl px-4 sm:px-6 py-3 sm:py-4 space-y-3.5">
       <div className="mb-1 lg:hidden">
         <Link
           href={`/${locale}/prompts`}
@@ -120,6 +131,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
           <span>{isEn ? "Back" : "Kembali"}</span>
         </Link>
       </div>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -129,29 +141,53 @@ export default async function PromptDetailPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(techArticleJsonLd) }}
       />
 
-      <div className="space-y-4">
-        <div className="space-y-2">
+      <div className="p-4 sm:p-5 rounded-xl border border-border bg-surface space-y-2.5 shadow-2xs">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           {categoryName && (
-            <div className="text-xs font-medium text-muted-foreground">{categoryName}</div>
+            <span className="text-[11px] font-medium text-muted-foreground px-2 py-0.5 rounded-[4px] bg-muted border border-border">
+              {categoryName}
+            </span>
           )}
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{description}</p>
-          {prompt.copyCount > 0 && (
-            <div className="text-xs font-mono text-muted-foreground pt-1">
-              {prompt.copyCount} {isEn ? "copies recorded" : "kali disalin"}
-            </div>
-          )}
+          <FavoriteButton
+            item={{
+              id: prompt.id,
+              type: "prompt",
+              slug: prompt.slug,
+              title,
+              summary: description,
+              category: categoryName || undefined,
+              cover: promptImages[0],
+            }}
+            className="w-7 h-7 rounded-[6px] border border-border bg-background hover:bg-muted flex items-center justify-center transition-all cursor-pointer"
+          />
         </div>
+
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+          {title}
+        </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-3xl">
+          {description}
+        </p>
       </div>
 
-      {getImageList(prompt.images).length > 0 && (
-        <ImageGallery images={getImageList(prompt.images)} alt={title} />
+      {promptImages.length > 0 && (
+        <div className="p-3.5 sm:p-4 rounded-xl border border-border bg-surface space-y-2.5 shadow-2xs">
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-border/60">
+            <span className="font-semibold text-foreground tracking-tight">
+              {isEn ? "Prompt Previews" : "Pratinjau Visual"}
+            </span>
+            <span className="text-[10px] font-mono text-muted-foreground">
+              {promptImages.length} {isEn ? "images (max 5)" : "gambar (maks 5)"}
+            </span>
+          </div>
+          <ImageGallery images={promptImages} alt={title} />
+        </div>
       )}
 
       {skill && (
-        <div className="p-3.5 rounded-xl border border-border bg-muted/30 flex items-center justify-between text-xs">
-          <div>
-            <span className="text-muted-foreground mr-2">{t("relatedSkill")}:</span>
+        <div className="p-3 sm:p-3.5 rounded-xl border border-border bg-muted/20 flex items-center justify-between text-xs shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">{t("relatedSkill")}:</span>
             <span className="font-semibold text-foreground">
               {isEn ? skill.titleEn : skill.titleId}
             </span>
