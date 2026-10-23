@@ -6,14 +6,9 @@ import {
   Check,
   ChevronDown,
   FileText,
-  Sparkles,
-  Terminal,
-  Compass,
-  Paperclip,
-  Box,
-  Code2,
   Download,
 } from "lucide-react";
+import { ProviderLogo } from "./provider-logos";
 import { trackSkillAction } from "@/app/actions/track";
 
 interface CopySkillDropdownProps {
@@ -230,7 +225,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Sparkles className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="openai" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground">
@@ -251,7 +246,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Terminal className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="claude" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground">
@@ -272,7 +267,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Compass className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="perplexity" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground">
@@ -295,7 +290,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Paperclip className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="mcp" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground flex items-center justify-between">
@@ -321,7 +316,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Box className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="cursor" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground flex items-center justify-between">
@@ -347,7 +342,7 @@ export function CopySkillDropdown({
             className="w-full flex items-start gap-3 p-2 rounded-lg text-left hover:bg-muted/70 transition-colors cursor-pointer group"
           >
             <div className="w-7 h-7 rounded-[6px] border border-border bg-muted/40 text-foreground flex items-center justify-center shrink-0 mt-0.5 group-hover:border-foreground/30">
-              <Code2 className="w-3.5 h-3.5 text-foreground" />
+              <ProviderLogo provider="vscode" className="w-3.5 h-3.5 text-foreground" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-xs font-semibold text-foreground flex items-center justify-between">

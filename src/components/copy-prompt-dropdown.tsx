@@ -243,7 +243,7 @@ export function CopyPromptDropdown({
               className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs rounded-lg text-foreground hover:bg-muted transition-colors text-left cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <ProviderLogo provider="anthropic" className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <ProviderLogo provider="claude" className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span>Claude (Anthropic)</span>
               </div>
               {copiedType === "claude" && <Check className="w-3.5 h-3.5 text-emerald-500" />}
@@ -323,7 +323,7 @@ export function CopyPromptDropdown({
               className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-left cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <ProviderLogo provider="anthropic" className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <ProviderLogo provider="claude" className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <span>{isEn ? "Open in Claude" : "Buka di Claude"}</span>
               </div>
               <ExternalLink className="w-3 h-3 text-muted-foreground" />

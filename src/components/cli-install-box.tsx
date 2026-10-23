@@ -30,7 +30,7 @@ export function CliInstallBox({ slug, locale }: CliInstallBoxProps) {
     },
     {
       id: "claude",
-      provider: "anthropic",
+      provider: "claude",
       label: "Claude Code",
       command: (s) => `claude --skill ${s}`,
     },
