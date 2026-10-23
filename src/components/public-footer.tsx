@@ -1,15 +1,23 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { BrandLogo } from "./brand-logo";
-import { Layers, FileCode, Star, Plus, Sparkles, ShieldCheck, LogIn, ExternalLink } from "lucide-react";
+import { FeedbackModal } from "./feedback-modal";
+import { Layers, FileCode, Star, Plus, Sparkles, LogIn, ExternalLink } from "lucide-react";
+import type { PublicUser } from "./public-user-nav";
 
-export async function PublicFooter({ locale }: { locale: string }) {
+export async function PublicFooter({
+  locale,
+  user,
+}: {
+  locale: string;
+  user?: PublicUser | null;
+}) {
   const t = await getTranslations("footer");
   const isEn = locale === "en";
 
   return (
-    <footer className="w-full border-t border-border bg-background/95 backdrop-blur-xs mt-auto">
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+    <footer className="w-full border-t border-border/80 bg-background/95 backdrop-blur-xs mt-auto">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           <div className="space-y-3 sm:col-span-2 lg:col-span-1">
             <Link
@@ -107,7 +115,7 @@ export async function PublicFooter({ locale }: { locale: string }) {
 
           <div className="space-y-2.5">
             <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-              {isEn ? "Account & Legal" : "Akun & Legal"}
+              {isEn ? "Account & Community" : "Akun & Komunitas"}
             </h3>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li>
@@ -135,14 +143,22 @@ export async function PublicFooter({ locale }: { locale: string }) {
                   {t("terms")}
                 </Link>
               </li>
+              <li className="pt-1">
+                <FeedbackModal locale={locale} user={user} />
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
+        <div className="pt-6 border-t border-border/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-2">
             <span>&copy; {new Date().getFullYear()} ProSkillAI.</span>
             <span>{t("rights")}</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-mono text-muted-foreground">
+              {isEn ? "Curated with anti-slop standards" : "Dicurasi dengan standar anti-slop"}
+            </span>
           </div>
         </div>
       </div>

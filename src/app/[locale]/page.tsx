@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { getFeaturedSkills, getLatestPrompts, getAllCategories } from "@/db/queries";
-import { SkillCard } from "@/components/skill-card";
-import { PromptCard } from "@/components/prompt-card";
+import { getPublishedSkills, getLatestPrompts, getAllCategories } from "@/db/queries";
+import { OnePageCatalog } from "@/components/one-page-catalog";
 import { BetaSections } from "@/components/beta-sections";
-import Link from "next/link";
-import { ArrowRight, Search, ChevronDown } from "lucide-react";
+import { Terminal, ShieldCheck, Sparkles, Star } from "lucide-react";
 
 interface PageProps {
   params: Promise<{
@@ -18,11 +16,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const isEn = locale === "en";
 
   const title = isEn
-    ? "AI Agent Skills & Prompts | ProSkillAI"
-    : "Katalog Skill & Prompt AI | ProSkillAI";
+    ? "ProSkillAI | AI Agent Skills Directory & Verified Prompts"
+    : "ProSkillAI | Direktori Skill Agen AI & Pustaka Prompt Terverifikasi";
   const description = isEn
-    ? "Curated coding skills, system instructions, and verified prompts for AI agents."
-    : "Koleksi skill koding, aturan sistem, dan templat prompt terverifikasi untuk AI agent.";
+    ? "Verified instructions, system rules, and design tokens for AI coding agents. S-rank frontend art direction, architecture, and optimization."
+    : "Kumpulan instruksi skill terverifikasi, aturan sistem, dan token untuk AI coding agent. Art direction frontend S-rank, arsitektur, dan optimasi.";
 
   return {
     title,
@@ -51,140 +49,62 @@ export default async function HomePage({ params }: PageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations("home");
+  const isEn = locale === "en";
 
   const [publishedSkills, publishedPrompts, allCategories] = await Promise.all([
-    getFeaturedSkills(9),
-    getLatestPrompts(6),
+    getPublishedSkills({}),
+    getLatestPrompts(24),
     getAllCategories("all"),
   ]);
 
   return (
-    <div className="w-full px-4 sm:px-6 py-3 sm:py-4 space-y-5 sm:space-y-6">
-      <section className="space-y-3 max-w-2xl">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight">
-            {t("title")}
-          </h1>
-          <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            {t("subtitle")}
-          </p>
+    <div className="w-full px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-12">
+      <section className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border/80 shadow-2xs text-[11px] text-muted-foreground">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="font-medium text-foreground">
+            {isEn ? "Curated Agent Skills Ecosystem" : "Ekosistem Skill AI Terverifikasi"}
+          </span>
+          <span className="text-border">|</span>
+          <span className="font-mono text-[10px]">
+            {publishedSkills.length} {isEn ? "skills live" : "skill aktif"}
+          </span>
         </div>
 
-        <form action={`/${locale}/skills`} method="GET" className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1 max-w-2xl">
-          <div className="relative flex-1">
-            <label htmlFor="home-search" className="sr-only">
-              {t("searchPlaceholder")}
-            </label>
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              id="home-search"
-              name="q"
-              type="search"
-              placeholder={t("searchPlaceholder")}
-              className="w-full h-9 pl-9 pr-3 text-xs sm:text-sm rounded-lg border border-border bg-surface text-foreground placeholder:text-muted-foreground focus:outline-2 focus:outline-foreground shadow-2xs"
-            />
-          </div>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+          {isEn
+            ? "Verified Agent Skills for Modern AI Engineering"
+            : "Direktori Skill Terverifikasi untuk AI Coding Agent"}
+        </h1>
 
-          {allCategories.length > 0 && (
-            <div className="relative shrink-0">
-              <label htmlFor="home-category" className="sr-only">
-                {t("allCategories")}
-              </label>
-              <select
-                id="home-category"
-                name="category"
-                defaultValue=""
-                className="w-full sm:w-auto h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-border bg-surface text-foreground appearance-none cursor-pointer hover:border-foreground/40 focus:outline-2 focus:outline-foreground shadow-2xs transition-colors"
-              >
-                <option value="">{t("allCategories")}</option>
-                {allCategories.map((cat) => (
-                  <option key={cat.id} value={cat.slug} className="bg-surface text-foreground">
-                    {locale === "en" ? cat.nameEn : cat.nameId}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-            </div>
-          )}
-        </form>
-      </section>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+          {isEn
+            ? "Eliminate generic defaults. Equip Claude Code, Cursor, and Codex agents with S-rank frontend taste, AST codebase intelligence, and scalable backend architecture."
+            : "Tinggalkan template generik AI. Lengkapi Claude Code, Cursor, dan Codex dengan skill S-rank frontend, knowledge graph AST, dan arsitektur backend terukur."}
+        </p>
 
-      <section className="space-y-4" aria-labelledby="skills-heading">
-        <div className="flex items-end justify-between pb-3 border-b border-border">
-          <div>
-            <h2 id="skills-heading" className="text-base sm:text-lg font-semibold text-foreground tracking-tight">
-              {t("featuredSkills")}
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {t("skillsSubtitle")}
-            </p>
-          </div>
-          <Link
-            href={`/${locale}/skills`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          >
-            <span>{t("viewAllSkills")}</span>
-            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-          </Link>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-1 text-[11px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[5px] bg-muted/60 border border-border/60">
+            <Terminal className="w-3 h-3 text-foreground" />
+            <span>npx skills add</span>
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[5px] bg-muted/60 border border-border/60">
+            <ShieldCheck className="w-3 h-3 text-emerald-500" />
+            <span>{isEn ? "GitHub S-Rank" : "Standar S-Rank"}</span>
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[5px] bg-muted/60 border border-border/60">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
+            <span>{isEn ? "1M+ GitHub Community Stars" : "1Jt+ Bintang Komunitas GitHub"}</span>
+          </span>
         </div>
-
-        {publishedSkills.length === 0 ? (
-          <div className="p-8 text-center border border-dashed border-border rounded-xl text-xs text-muted-foreground">
-            {t("emptySkills")}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {publishedSkills.map(({ skill, category }) => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                category={category}
-                locale={locale}
-              />
-            ))}
-          </div>
-        )}
       </section>
 
-      <section className="space-y-4" aria-labelledby="prompts-heading">
-        <div className="flex items-end justify-between pb-3 border-b border-border">
-          <div>
-            <h2 id="prompts-heading" className="text-base sm:text-lg font-semibold text-foreground tracking-tight">
-              {t("latestPrompts")}
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {t("promptsSubtitle")}
-            </p>
-          </div>
-          <Link
-            href={`/${locale}/prompts`}
-            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          >
-            <span>{t("viewAllPrompts")}</span>
-            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-          </Link>
-        </div>
-
-        {publishedPrompts.length === 0 ? (
-          <div className="p-8 text-center border border-dashed border-border rounded-xl text-xs text-muted-foreground">
-            {t("emptyPrompts")}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {publishedPrompts.map(({ prompt, category }) => (
-              <PromptCard
-                key={prompt.id}
-                prompt={prompt}
-                category={category}
-                locale={locale}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      <OnePageCatalog
+        skills={publishedSkills}
+        prompts={publishedPrompts}
+        categories={allCategories}
+        locale={locale}
+      />
 
       <BetaSections />
     </div>

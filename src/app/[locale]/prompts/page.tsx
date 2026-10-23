@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedPrompts, getAllCategories } from "@/db/queries";
-import { PromptCard } from "@/components/prompt-card";
-import { CatalogToolbar } from "@/components/catalog-toolbar";
+import { OnePageCatalog } from "@/components/one-page-catalog";
 
 interface PageProps {
   params: Promise<{
     locale: string;
-  }>;
-  searchParams: Promise<{
-    q?: string;
-    category?: string;
-    sort?: string;
   }>;
 }
 
@@ -19,7 +13,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale } = await params;
   const isEn = locale === "en";
 
-  const title = isEn ? "AI Prompt Library" : "Kumpulan Prompt Rekayasa AI";
+  const title = isEn ? "AI Prompt Library | ProSkillAI" : "Kumpulan Prompt Rekayasa AI | ProSkillAI";
   const description = isEn
     ? "Verified software engineering, architecture, and anti-slop prompts with interactive variable substitution."
     : "Koleksi prompt rekayasa perangkat lunak, arsitektur, dan UI anti-slop dengan dukungan variabel dinamis siap pakai.";
@@ -48,52 +42,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PromptsCatalogPage({
   params,
-  searchParams,
 }: PageProps) {
   const { locale } = await params;
-  const { q, category, sort } = await searchParams;
-
   setRequestLocale(locale);
   const t = await getTranslations("prompts");
 
-  const [allCategories, result] = await Promise.all([
+  const [allCategories, allPrompts] = await Promise.all([
     getAllCategories("all"),
-    getPublishedPrompts({ q, categorySlug: category, sort }),
+    getPublishedPrompts({}),
   ]);
 
   return (
-    <div className="w-full px-4 sm:px-6 py-3 sm:py-4 space-y-4 sm:space-y-5">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+    <div className="w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+      <div className="max-w-3xl">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           {t("title")}
         </h1>
-        <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+        <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed">
           {t("subtitle")}
         </p>
       </div>
 
-      <CatalogToolbar
+      <OnePageCatalog
+        skills={[]}
+        prompts={allPrompts}
         categories={allCategories}
         locale={locale}
-        totalCount={result.length}
       />
-
-      {result.length === 0 ? (
-        <div className="p-12 text-center border border-dashed border-border rounded-xl text-xs text-muted-foreground">
-          {t("emptyState")}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {result.map(({ prompt, category }) => (
-            <PromptCard
-              key={prompt.id}
-              prompt={prompt}
-              category={category}
-              locale={locale}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
