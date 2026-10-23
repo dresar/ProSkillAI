@@ -70,6 +70,16 @@ export function TrendingClient({
   const [isLoadingReadme, setIsLoadingReadme] = React.useState(false);
   const [copiedClone, setCopiedClone] = React.useState(false);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && activeReadmeRepo) {
+        setActiveReadmeRepo(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeReadmeRepo]);
+
   const fetchFilteredTrending = React.useCallback(
     async (range: TrendingTimeRange, language: string) => {
       setIsFetching(true);
@@ -108,7 +118,8 @@ export function TrendingClient({
     setReadmeContent(null);
     setIsLoadingReadme(true);
     try {
-      const [owner, name] = repo.fullName.split("/");
+      const owner = repo.owner?.login || repo.fullName.split("/")[0];
+      const name = repo.name || repo.fullName.split("/")[1];
       const res = await fetch(
         `/api/github/readme?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(name)}`
       );

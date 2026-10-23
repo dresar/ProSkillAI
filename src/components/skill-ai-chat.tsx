@@ -75,6 +75,20 @@ export function SkillAiChat({
   }, [isOpen, isMinimized]);
 
   React.useEffect(() => {
+    const handleGlobalKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        if (!isMinimized) {
+          setIsMinimized(true);
+        } else {
+          setIsOpen(false);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKey);
+    return () => window.removeEventListener("keydown", handleGlobalKey);
+  }, [isOpen, isMinimized]);
+
+  React.useEffect(() => {
     if (messages.length > 0 && !isMinimized) {
       endOfChatRef.current?.scrollIntoView({ behavior: "smooth" });
     }
@@ -179,7 +193,7 @@ export function SkillAiChat({
   return (
     <>
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8">
+        <div className="fixed bottom-4 right-4 z-40 sm:bottom-6 sm:right-6">
           <div className="relative group">
             <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-[6px] bg-foreground text-background text-xs font-semibold whitespace-nowrap shadow-lg hidden sm:flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-amber-400" />
@@ -193,7 +207,7 @@ export function SkillAiChat({
                 setIsMinimized(false);
               }}
               aria-label={isEn ? "Ask AI about this Skill" : "Tanya AI tentang Skill Ini"}
-              className="w-12 h-12 rounded-full border border-border/80 bg-foreground text-background shadow-xl hover:opacity-95 active:scale-95 transition-all flex items-center justify-center cursor-pointer relative"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-border/80 bg-foreground text-background shadow-xl hover:opacity-95 active:scale-95 transition-all flex items-center justify-center cursor-pointer relative"
             >
               <Bot className="w-5 h-5 text-background" />
               <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
@@ -207,10 +221,10 @@ export function SkillAiChat({
 
       {isOpen && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden transition-all duration-200 ${
+          className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden transition-all duration-200 ${
             isMinimized
-              ? "w-[300px] h-12"
-              : "w-[380px] sm:w-[420px] h-[540px] max-h-[calc(100vh-5rem)]"
+              ? "w-[calc(100vw-2rem)] sm:w-[320px] max-w-[320px] h-12"
+              : "w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[540px] max-h-[calc(100vh-5rem)]"
           }`}
         >
           <div className="p-3 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-2 shrink-0">

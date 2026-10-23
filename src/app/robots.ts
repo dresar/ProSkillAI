@@ -36,12 +36,27 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
+        userAgent: "OAI-SearchBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
         userAgent: "Applebot-Extended",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
         userAgent: "Google-Extended",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "CCBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "cohere-ai",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },

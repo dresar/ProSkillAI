@@ -56,6 +56,16 @@ export function McpClient({ servers, locale }: McpClientProps) {
   const [activeModalServer, setActiveModalServer] = React.useState<McpServerItem | null>(null);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && activeModalServer) {
+        setActiveModalServer(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeModalServer]);
+
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);

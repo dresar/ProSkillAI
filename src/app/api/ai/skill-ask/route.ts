@@ -4,19 +4,7 @@ import { db } from "@/db";
 import { skills, categories, users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { askSkillAi } from "@/lib/ai";
-
-const rateLimitMap = new Map<string, number[]>();
-
-function checkRateLimit(key: string, limit = 10, windowMs = 60000): boolean {
-  const now = Date.now();
-  const timestamps = (rateLimitMap.get(key) || []).filter((t) => now - t < windowMs);
-  if (timestamps.length >= limit) {
-    return false;
-  }
-  timestamps.push(now);
-  rateLimitMap.set(key, timestamps);
-  return true;
-}
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -31,13 +19,19 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!checkRateLimit(`ask_${user.id}`, 10, 60000)) {
+    const rateResult = checkRateLimit(`ask_${user.id}`, 10, 60000);
+    if (!rateResult.allowed) {
       return NextResponse.json(
         {
           error: "RATE_LIMITED",
           message: "Terlalu banyak permintaan dalam waktu singkat. Harap tunggu beberapa detik.",
         },
-        { status: 429 }
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(rateResult.resetMs / 1000).toString(),
+          },
+        }
       );
     }
 
