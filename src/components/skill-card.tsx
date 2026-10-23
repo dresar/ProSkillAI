@@ -37,7 +37,7 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
       href={`/${locale}/skills/${skill.slug}`}
       className="group block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground rounded-xl"
     >
-      <div className="flex flex-col justify-between h-full rounded-xl border border-border/80 bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-all duration-200 shadow-xs min-h-[44px]">
+      <div className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface p-4 sm:p-5 hover:border-foreground/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-all duration-200 shadow-xs min-h-[44px]">
         <div>
           {cover && (
             <div className="relative mb-3.5 aspect-video w-full overflow-hidden rounded-lg bg-muted border border-border/60">

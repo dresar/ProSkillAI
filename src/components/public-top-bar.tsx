@@ -17,12 +17,12 @@ export function PublicTopBar({
   const isEn = locale === "en";
 
   return (
-    <header className="hidden lg:flex h-14 shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-xs px-6 items-center justify-between gap-4 sticky top-0 z-30">
+    <header className="hidden lg:flex h-14 shrink-0 border-b border-border bg-background/95 backdrop-blur-xs px-6 items-center justify-between gap-4 sticky top-0 z-30">
       <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
           onClick={toggleSidebar}
-          className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border/80 bg-surface/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center w-8 h-8 rounded-[6px] border border-border bg-surface/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
           aria-label={isEn ? (collapsed ? "Expand sidebar" : "Collapse sidebar") : (collapsed ? "Perlebar sidebar" : "Ciutkan sidebar")}
           aria-expanded={!collapsed}
         >
@@ -37,7 +37,7 @@ export function PublicTopBar({
       <div className="flex items-center gap-2.5 shrink-0">
         <LanguageSwitcher currentLocale={locale} />
         <ThemeToggle label="Toggle theme" locale={locale} />
-        <div className="h-4 w-px bg-border/80" />
+        <div className="h-4 w-px bg-border" />
         <PublicUserNav user={user} locale={locale} />
       </div>
     </header>

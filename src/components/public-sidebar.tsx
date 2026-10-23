@@ -206,7 +206,7 @@ export function PublicSidebar({
         </div>
 
         {!collapsed && (
-          <div className="space-y-1.5 pt-2 border-t border-border/80">
+          <div className="space-y-1.5 pt-2 border-t border-border">
             <ThemeSidebarToggle locale={locale} />
 
             <div className="flex items-center justify-between px-3 py-1.5 text-xs text-muted-foreground">
@@ -216,7 +216,7 @@ export function PublicSidebar({
           </div>
         )}
 
-        <div className="pt-2 border-t border-border/80">
+        <div className="pt-2 border-t border-border">
           {user ? (
             collapsed ? (
               <div className="flex flex-col items-center gap-1.5">
@@ -245,7 +245,7 @@ export function PublicSidebar({
                 </form>
               </div>
             ) : (
-              <div className="p-2.5 rounded-lg border border-border/80 bg-surface/90 space-y-2">
+              <div className="p-2.5 rounded-lg border border-border bg-surface/90 space-y-2">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="w-6 h-6 rounded-[5px] bg-foreground text-background font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
@@ -261,7 +261,7 @@ export function PublicSidebar({
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 pt-1 border-t border-border/60">
+                <div className="flex items-center gap-1.5 pt-1 border-t border-border">
                   <Link
                     href="/admin"
                     className="flex-1 inline-flex items-center justify-center gap-1.5 h-7 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-medium hover:opacity-90 active:scale-95 transition-all"
