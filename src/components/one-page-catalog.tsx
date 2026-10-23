@@ -240,8 +240,8 @@ export function OnePageCatalog({
             spellCheck={false}
           />
 
-          <div className="absolute right-2 flex items-center gap-1">
-            {query ? (
+          {query && (
+            <div className="absolute right-2 flex items-center gap-1">
               <button
                 type="button"
                 onClick={clearSearch}
@@ -250,12 +250,8 @@ export function OnePageCatalog({
               >
                 <X className="w-3.5 h-3.5" />
               </button>
-            ) : (
-              <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.2 text-[10px] font-mono text-muted-foreground bg-muted border border-border/70 rounded">
-                /
-              </kbd>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {showRecommendations && recommendations.length > 0 && (

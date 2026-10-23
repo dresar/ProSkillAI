@@ -239,15 +239,11 @@ export function FeedbackModal({
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between border-t border-border/80">
-                  <span className="text-[11px] text-muted-foreground truncate max-w-[200px]">
-                    {currentUrl.replace(/^https?:\/\/[^/]+/, "") || "/"}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      className="h-8 px-3 rounded-[6px] border border-border text-foreground hover:bg-muted text-xs font-medium cursor-pointer"
+                <div className="pt-2 flex items-center justify-end gap-2 border-t border-border/80">
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="h-8 px-3 rounded-[6px] border border-border text-foreground hover:bg-muted text-xs font-medium cursor-pointer"
                     >
                       {isEn ? "Cancel" : "Batal"}
                     </button>
@@ -268,8 +264,7 @@ export function FeedbackModal({
                       </span>
                     </button>
                   </div>
-                </div>
-              </form>
+                </form>
             )}
           </div>
         </div>,

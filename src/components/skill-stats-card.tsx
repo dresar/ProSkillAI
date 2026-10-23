@@ -252,12 +252,23 @@ export function SkillStatsCard({ skill, category, locale }: SkillStatsCardProps)
           {author && (
             <div className="flex items-center justify-between py-1.5">
               <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <User className="w-3 h-3 text-muted-foreground" />
+                <GitHubIcon className="w-3 h-3 text-muted-foreground" />
                 <span>{isEn ? "Author" : "Pembuat"}</span>
               </span>
-              <span className="font-medium text-xs text-foreground truncate max-w-[60%] text-right">
-                {author}
-              </span>
+              <a
+                href={
+                  author.startsWith("http")
+                    ? author
+                    : `https://github.com/${author.replace(/^@/, "").split("/")[0]}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                title={isEn ? `Open @${author} on GitHub` : `Buka profil GitHub @${author}`}
+                className="inline-flex items-center gap-1 font-medium text-xs text-foreground hover:underline decoration-foreground/40 truncate max-w-[60%] text-right cursor-pointer"
+              >
+                <span>{author}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" />
+              </a>
             </div>
           )}
 

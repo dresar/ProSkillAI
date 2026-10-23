@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Copy, Terminal } from "lucide-react";
+import { ArrowRight, Check, Copy } from "lucide-react";
+import { motion } from "motion/react";
 
 interface AgenticHeroProps {
   locale: string;
@@ -39,15 +40,25 @@ export function AgenticHero({
   ];
 
   return (
-    <section className="w-full space-y-10 sm:space-y-14">
+    <section className="w-full space-y-10 sm:space-y-14 overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        <div className="lg:col-span-7 space-y-5 text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] border border-border/80 bg-surface/80 text-[10px] sm:text-[11px] font-mono text-muted-foreground uppercase tracking-widest shadow-2xs">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
+          className="lg:col-span-7 space-y-5 text-left"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-[6px] border border-border/80 bg-surface/80 text-[10px] sm:text-[11px] font-mono text-muted-foreground uppercase tracking-widest shadow-2xs"
+          >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>
               {totalSkills}+ {isEn ? "CURATED SKILLS FOR AI AGENTS" : "SKILL TERKURASI UNTUK AGEN AI"}
             </span>
-          </div>
+          </motion.div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.08]">
             {isEn ? (
@@ -70,24 +81,37 @@ export function AgenticHero({
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <a
+            <motion.a
               href="#catalog"
-              className="inline-flex items-center gap-2 h-9 px-4 rounded-[6px] bg-foreground text-background font-semibold text-xs hover:opacity-90 transition-all active:scale-95 shadow-xs cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 h-9 px-4 rounded-[6px] bg-foreground text-background font-semibold text-xs hover:opacity-90 transition-all shadow-xs cursor-pointer"
             >
               <span>{isEn ? "Browse Skills" : "Jelajahi Skill"}</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+            </motion.a>
 
-            <Link
-              href={`/${locale}/skills/submit`}
-              className="inline-flex items-center gap-2 h-9 px-4 rounded-[6px] border border-border bg-surface text-foreground font-semibold text-xs hover:bg-muted transition-all active:scale-95 shadow-2xs"
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <span>{isEn ? "Submit Your Skill" : "Kirimkan Skill"}</span>
-            </Link>
+              <Link
+                href={`/${locale}/skills/submit`}
+                className="inline-flex items-center gap-2 h-9 px-4 rounded-[6px] border border-border bg-surface text-foreground font-semibold text-xs hover:bg-muted transition-all shadow-2xs"
+              >
+                <span>{isEn ? "Submit Your Skill" : "Kirimkan Skill"}</span>
+              </Link>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="lg:col-span-5">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: 16 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
+          whileHover={{ y: -2 }}
+          className="lg:col-span-5"
+        >
           <div className="rounded-xl border border-white/10 bg-[#0d0e12] p-4 sm:p-5 text-xs font-mono shadow-2xl relative overflow-hidden text-zinc-300">
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10 text-[10px] text-zinc-400">
               <span className="tracking-widest uppercase font-semibold text-zinc-300">
@@ -127,10 +151,15 @@ export function AgenticHero({
               </ul>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="border-y border-border/80 divide-y sm:divide-y-0 sm:divide-x divide-border/80 grid grid-cols-2 sm:grid-cols-4 py-5 sm:py-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.25 }}
+        className="border-y border-border/80 divide-y sm:divide-y-0 sm:divide-x divide-border/80 grid grid-cols-2 sm:grid-cols-4 py-5 sm:py-6 text-center"
+      >
         <div className="py-2 sm:py-0 px-4 space-y-1">
           <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground font-mono">
             {totalSkills}+
@@ -166,9 +195,14 @@ export function AgenticHero({
             {isEn ? "OPEN SOURCE" : "OPEN SOURCE"}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono text-muted-foreground uppercase tracking-widest border-b border-border/80 pb-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.35 }}
+        className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono text-muted-foreground uppercase tracking-widest border-b border-border/80 pb-4"
+      >
         <span className="font-semibold text-foreground">
           {isEn ? "WORKS ACROSS 9 AGENT PLATFORMS" : "KOMPATIBEL DENGAN 9 PLATFORM AGENT"}
         </span>
@@ -179,7 +213,7 @@ export function AgenticHero({
             </span>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

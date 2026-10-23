@@ -4,6 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Sparkles, Send, Bot, User as UserIcon, X, Zap, LogIn, Copy, Check, Loader2 } from "lucide-react";
+import { motion } from "motion/react";
 import type { PublicUser } from "./public-user-nav";
 import { MarkdownRenderer } from "./markdown-renderer";
 
@@ -182,18 +183,21 @@ export function SkillAiChat({
             <span>{isEn ? "Ask AI about this Skill" : "Tanya AI tentang Skill Ini"}</span>
           </div>
 
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             onClick={() => setIsOpen(true)}
             aria-label={isEn ? "Ask AI about this Skill" : "Tanya AI tentang Skill Ini"}
-            className="w-12 h-12 rounded-full border border-border/80 bg-foreground text-background shadow-xl hover:opacity-95 hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer relative"
+            className="w-12 h-12 rounded-full border border-border/80 bg-foreground text-background shadow-xl hover:opacity-95 transition-shadow flex items-center justify-center cursor-pointer relative"
           >
             <Bot className="w-5 h-5 text-background" />
             <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
             </span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
