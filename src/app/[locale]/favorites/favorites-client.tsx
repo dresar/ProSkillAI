@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Star, Trash2, Layers, FileCode, ArrowRight, Bookmark, ArrowLeft } from "lucide-react";
 import { getFavorites, onFavoritesChange, toggleFavorite, type FavoriteItem } from "@/lib/favorites";
+import { ShareButton } from "@/components/share";
 
 export function FavoritesClient({ locale }: { locale: string }) {
   const [items, setItems] = React.useState<FavoriteItem[]>([]);
@@ -186,14 +187,28 @@ export function FavoritesClient({ locale }: { locale: string }) {
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => toggleFavorite(item)}
-                    title={isEn ? "Remove from favorites" : "Hapus dari favorit"}
-                    className="absolute top-2 right-2 z-10 w-7 h-7 rounded-[5px] bg-background/85 backdrop-blur-xs border border-border text-amber-500 hover:text-rose-500 hover:border-rose-500/40 flex items-center justify-center transition-colors cursor-pointer"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+                    <ShareButton
+                      item={{
+                        type: item.type as "skill" | "prompt",
+                        slug: item.slug,
+                        title: item.title,
+                        description: item.summary,
+                        url: item.type === "skill" ? `/${locale}/skills/${item.slug}` : `/${locale}/prompts/${item.slug}`,
+                        category: item.category || undefined,
+                      }}
+                      locale={locale}
+                      className="w-7 h-7 rounded-[5px] bg-background/85 backdrop-blur-xs border border-border text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => toggleFavorite(item)}
+                      title={isEn ? "Remove from favorites" : "Hapus dari favorit"}
+                      className="w-7 h-7 rounded-[5px] bg-background/85 backdrop-blur-xs border border-border text-amber-500 hover:text-rose-500 hover:border-rose-500/40 flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="p-3 sm:p-3.5 flex flex-col gap-1.5 flex-1">

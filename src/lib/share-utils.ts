@@ -1,5 +1,10 @@
 import QRCode from "qrcode";
-import type { ShareItemData, SharePalette, ShareTheme } from "@/types/share";
+import type {
+  ShareAspectRatio,
+  ShareItemData,
+  SharePalette,
+  ShareTheme,
+} from "@/types/share";
 
 export const SITE_URL = "https://proskillai.dev";
 
@@ -24,26 +29,70 @@ export interface PaletteConfig {
   canvasLightBorder: string;
 }
 
+export interface AspectRatioConfig {
+  id: ShareAspectRatio;
+  label: string;
+  sublabel: string;
+  width: number;
+  height: number;
+  aspectClass: string;
+}
+
+export const ASPECT_RATIO_CONFIGS: Record<ShareAspectRatio, AspectRatioConfig> = {
+  "16:9": {
+    id: "16:9",
+    label: "16:9",
+    sublabel: "Landscape",
+    width: 1200,
+    height: 675,
+    aspectClass: "aspect-16/9",
+  },
+  "1:1": {
+    id: "1:1",
+    label: "1:1",
+    sublabel: "Square",
+    width: 1080,
+    height: 1080,
+    aspectClass: "aspect-square",
+  },
+  "3:4": {
+    id: "3:4",
+    label: "3:4",
+    sublabel: "Portrait",
+    width: 900,
+    height: 1200,
+    aspectClass: "aspect-3/4",
+  },
+  "9:16": {
+    id: "9:16",
+    label: "9:16",
+    sublabel: "Story",
+    width: 1080,
+    height: 1920,
+    aspectClass: "aspect-9/16",
+  },
+};
+
 export const PALETTE_CONFIGS: Record<SharePalette, PaletteConfig> = {
   zinc: {
     id: "zinc",
-    nameEn: "Obsidian Zinc",
-    nameId: "Seng Obsidian",
-    dotColor: "#71717a",
-    darkGradient: "from-zinc-900 via-neutral-900 to-black",
-    lightGradient: "from-zinc-100 via-neutral-50 to-white",
-    darkBorder: "border-zinc-700/80",
-    lightBorder: "border-zinc-300",
-    darkBadge: "bg-zinc-800 text-zinc-100 border-zinc-700",
-    lightBadge: "bg-zinc-200 text-zinc-900 border-zinc-300",
-    canvasDarkBgStart: "#18181b",
-    canvasDarkBgEnd: "#09090b",
-    canvasDarkAccent: "#e4e4e7",
-    canvasDarkBorder: "#3f3f46",
-    canvasLightBgStart: "#f4f4f5",
-    canvasLightBgEnd: "#ffffff",
-    canvasLightAccent: "#18181b",
-    canvasLightBorder: "#e4e4e7",
+    nameEn: "Obsidian Blue",
+    nameId: "Obsidian Biru",
+    dotColor: "#3b82f6",
+    darkGradient: "from-zinc-950 via-slate-950 to-blue-950/40",
+    lightGradient: "from-white via-slate-50 to-blue-50/50",
+    darkBorder: "border-blue-500/30",
+    lightBorder: "border-blue-200/80",
+    darkBadge: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+    lightBadge: "bg-blue-50 text-blue-700 border-blue-200",
+    canvasDarkBgStart: "#090d16",
+    canvasDarkBgEnd: "#05070c",
+    canvasDarkAccent: "#60a5fa",
+    canvasDarkBorder: "rgba(59, 130, 246, 0.4)",
+    canvasLightBgStart: "#f8fafc",
+    canvasLightBgEnd: "#eff6ff",
+    canvasLightAccent: "#2563eb",
+    canvasLightBorder: "rgba(59, 130, 246, 0.3)",
   },
   emerald: {
     id: "emerald",
@@ -147,6 +196,12 @@ export const PALETTE_CONFIGS: Record<SharePalette, PaletteConfig> = {
   },
 };
 
+export function extractUsernameFromEmail(email?: string | null): string {
+  if (!email) return "";
+  const clean = email.trim().toLowerCase();
+  return clean.replace(/@.*$/, "");
+}
+
 export function buildShareUrl(rawUrl: string, origin?: string): string {
   if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
     return rawUrl;
@@ -157,10 +212,13 @@ export function buildShareUrl(rawUrl: string, origin?: string): string {
 }
 
 export function buildSocialShareUrls(item: ShareItemData, canonicalUrl: string) {
-  const shortDesc = item.description.length > 120
-    ? `${item.description.slice(0, 117)}...`
-    : item.description;
-  const shareText = `${item.title} — ${shortDesc} via @ProSkillAI`;
+  const rawDesc = (item.description || "").trim();
+  const shortDesc = rawDesc.length > 120
+    ? `${rawDesc.slice(0, 117)}...`
+    : rawDesc;
+  const shareText = shortDesc
+    ? `${item.title} — ${shortDesc} via @ProSkillAI`
+    : `${item.title} via @ProSkillAI`;
 
   return {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(canonicalUrl)}`,

@@ -4,9 +4,16 @@ export type SharePalette = "zinc" | "emerald" | "violet" | "cyan" | "amber" | "s
 
 export type ShareTheme = "dark" | "light";
 
+export type ShareAspectRatio = "1:1" | "3:4" | "9:16" | "16:9";
+
 export interface ShareStatItem {
   label: string;
   value: string | number;
+}
+
+export interface ShareUserAttribution {
+  username: string;
+  show: boolean;
 }
 
 export interface ShareItemData {

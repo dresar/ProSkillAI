@@ -3,16 +3,64 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  ASPECT_RATIO_CONFIGS,
   buildShareUrl,
   buildSocialShareUrls,
+  extractUsernameFromEmail,
   generateQrCodeDataUrl,
   generateQrCodeSvg,
   PALETTE_CONFIGS,
   SITE_URL,
 } from "../src/lib/share-utils";
-import type { ShareItemData, SharePalette } from "../src/types/share";
+import type { ShareAspectRatio, ShareItemData, SharePalette } from "../src/types/share";
 
 describe("Universal Share Feature & QR Code Engine", () => {
+  test("extractUsernameFromEmail strips domain correctly", () => {
+    assert.equal(extractUsernameFromEmail("eka.ckp16799@gmail.com"), "eka.ckp16799");
+    assert.equal(extractUsernameFromEmail("JOHNDOE@GMAIL.COM"), "johndoe");
+    assert.equal(extractUsernameFromEmail("developer.lead@company.ai"), "developer.lead");
+    assert.equal(extractUsernameFromEmail(""), "");
+    assert.equal(extractUsernameFromEmail(null), "");
+    assert.equal(extractUsernameFromEmail(undefined), "");
+  });
+
+  test("ASPECT_RATIO_CONFIGS provides all 4 required social formats", () => {
+    const requiredRatios: ShareAspectRatio[] = ["1:1", "3:4", "9:16", "16:9"];
+
+    for (const ratio of requiredRatios) {
+      const cfg = ASPECT_RATIO_CONFIGS[ratio];
+      assert.ok(cfg, `Missing aspect ratio config for ${ratio}`);
+      assert.equal(cfg.id, ratio);
+      assert.ok(cfg.width > 0);
+      assert.ok(cfg.height > 0);
+      assert.ok(cfg.aspectClass.length > 0);
+    }
+
+    assert.equal(ASPECT_RATIO_CONFIGS["1:1"].width, 1080);
+    assert.equal(ASPECT_RATIO_CONFIGS["1:1"].height, 1080);
+    assert.equal(ASPECT_RATIO_CONFIGS["3:4"].width, 900);
+    assert.equal(ASPECT_RATIO_CONFIGS["3:4"].height, 1200);
+    assert.equal(ASPECT_RATIO_CONFIGS["9:16"].width, 1080);
+    assert.equal(ASPECT_RATIO_CONFIGS["9:16"].height, 1920);
+    assert.equal(ASPECT_RATIO_CONFIGS["16:9"].width, 1200);
+    assert.equal(ASPECT_RATIO_CONFIGS["16:9"].height, 675);
+  });
+
+  test("share card files do not contain background dots or grid lines", () => {
+    const cardContent = fs.readFileSync(
+      path.resolve(process.cwd(), "src/components/share/share-card.tsx"),
+      "utf-8"
+    );
+    const canvasContent = fs.readFileSync(
+      path.resolve(process.cwd(), "src/components/share/share-canvas.ts"),
+      "utf-8"
+    );
+
+    assert.ok(!cardContent.includes("radial-gradient(circle at 1px 1px"));
+    assert.ok(!canvasContent.includes("gridSize"));
+    assert.ok(cardContent.includes("rootDomain = \"proskillai.dev\""));
+  });
+
   test("buildShareUrl normalizes paths and preserves absolute URLs", () => {
     assert.equal(
       buildShareUrl("https://example.com/item"),
@@ -45,6 +93,35 @@ describe("Universal Share Feature & QR Code Engine", () => {
     assert.ok(urls.whatsapp.startsWith("https://api.whatsapp.com/send?text="));
     assert.ok(urls.linkedin.startsWith("https://www.linkedin.com/sharing/share-offsite/?url="));
     assert.ok(urls.telegram.startsWith("https://t.me/share/url?url="));
+
+    const itemEmptyDesc: ShareItemData = {
+      type: "repo",
+      title: "FastRepo",
+      description: "",
+      url: "https://proskillai.dev/en/trending",
+    };
+    const emptyDescUrls = buildSocialShareUrls(itemEmptyDesc, itemEmptyDesc.url);
+    assert.ok(emptyDescUrls.twitter.includes(encodeURIComponent("FastRepo via @ProSkillAI")));
+    assert.ok(!emptyDescUrls.twitter.includes(encodeURIComponent("FastRepo —")));
+
+    const itemNullDesc: ShareItemData = {
+      type: "repo",
+      title: "NullRepo",
+      description: null as unknown as string,
+      url: "https://proskillai.dev/en/trending",
+    };
+    const nullDescUrls = buildSocialShareUrls(itemNullDesc, itemNullDesc.url);
+    assert.ok(nullDescUrls.twitter.includes(encodeURIComponent("NullRepo via @ProSkillAI")));
+
+    const longDesc = "a".repeat(200);
+    const itemLongDesc: ShareItemData = {
+      type: "mcp",
+      title: "LongMCP",
+      description: longDesc,
+      url: "https://proskillai.dev/en/mcp",
+    };
+    const longUrls = buildSocialShareUrls(itemLongDesc, itemLongDesc.url);
+    assert.ok(decodeURIComponent(longUrls.twitter).includes("... via @ProSkillAI"));
   });
 
   test("generateQrCodeDataUrl generates valid base64 PNG data URL", async () => {
@@ -107,6 +184,8 @@ describe("Universal Share Feature & QR Code Engine", () => {
       "src/app/[locale]/prompts/[slug]/page.tsx",
       "src/app/[locale]/trending/trending-client.tsx",
       "src/app/[locale]/mcp/mcp-client.tsx",
+      "src/app/[locale]/favorites/favorites-client.tsx",
+      "src/app/api/auth/me/route.ts",
     ];
 
     for (const relPath of filesToCheck) {

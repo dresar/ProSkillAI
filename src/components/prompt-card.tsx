@@ -98,7 +98,7 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
             )}
           </div>
 
-          <h3 className="text-xs sm:text-[14px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1 pr-6">
+          <h3 className="text-xs sm:text-[14px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1 pr-18">
             {title}
           </h3>
 

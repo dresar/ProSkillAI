@@ -12,10 +12,21 @@ import {
   Sun,
   ImageIcon,
   Loader2,
-  ExternalLink,
+  UserCheck,
+  UserX,
 } from "lucide-react";
-import type { ShareItemData, SharePalette, ShareTheme } from "@/types/share";
-import { PALETTE_CONFIGS, buildShareUrl, buildSocialShareUrls } from "@/lib/share-utils";
+import type {
+  ShareAspectRatio,
+  ShareItemData,
+  SharePalette,
+  ShareTheme,
+  ShareUserAttribution,
+} from "@/types/share";
+import {
+  ASPECT_RATIO_CONFIGS,
+  buildShareUrl,
+  buildSocialShareUrls,
+} from "@/lib/share-utils";
 import { ShareCard } from "./share-card";
 import { downloadShareCardImage, copyShareCardImage } from "./share-canvas";
 
@@ -65,7 +76,10 @@ export function ShareModal({
   const isEn = locale === "en";
   const [mounted, setMounted] = React.useState(false);
   const [theme, setTheme] = React.useState<ShareTheme>("dark");
-  const [palette, setPalette] = React.useState<SharePalette>("zinc");
+  const [palette] = React.useState<SharePalette>("zinc");
+  const [aspectRatio, setAspectRatio] = React.useState<ShareAspectRatio>("16:9");
+  const [currentUser, setCurrentUser] = React.useState<string | null>(null);
+  const [showUser, setShowUser] = React.useState(true);
   const [copiedLink, setCopiedLink] = React.useState(false);
   const [isExporting, setIsExporting] = React.useState(false);
   const [copiedImage, setCopiedImage] = React.useState(false);
@@ -79,6 +93,15 @@ export function ShareModal({
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       setCanWebShare(true);
     }
+
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.authenticated && data?.username) {
+          setCurrentUser(data.username);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   React.useEffect(() => {
@@ -99,16 +122,33 @@ export function ShareModal({
     };
   }, []);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(canonicalUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
+  const handleCopyLink = async () => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(canonicalUrl);
+      } else {
+        const input = document.createElement("input");
+        input.value = canonicalUrl;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
+      }
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch {
+      setCopiedLink(false);
+    }
   };
+
+  const userAttribution: ShareUserAttribution | undefined = currentUser
+    ? { username: currentUser, show: showUser }
+    : undefined;
 
   const handleDownloadImage = async () => {
     setIsExporting(true);
     try {
-      await downloadShareCardImage(item, theme, palette);
+      await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution);
     } finally {
       setIsExporting(false);
     }
@@ -117,10 +157,12 @@ export function ShareModal({
   const handleCopyImage = async () => {
     setIsExporting(true);
     try {
-      const ok = await copyShareCardImage(item, theme, palette);
+      const ok = await copyShareCardImage(item, theme, palette, aspectRatio, userAttribution);
       if (ok) {
         setCopiedImage(true);
         setTimeout(() => setCopiedImage(false), 2000);
+      } else {
+        await downloadShareCardImage(item, theme, palette, aspectRatio, userAttribution);
       }
     } finally {
       setIsExporting(false);
@@ -141,14 +183,14 @@ export function ShareModal({
 
   if (!mounted) return null;
 
-  const palettes = Object.values(PALETTE_CONFIGS);
+  const ratios: ShareAspectRatio[] = ["1:1", "3:4", "9:16", "16:9"];
 
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
         className="fixed inset-0"
@@ -167,7 +209,7 @@ export function ShareModal({
                 {isEn ? "Share & Social Card" : "Bagikan & Kartu Sosial"}
               </h2>
               <p className="text-[11px] text-muted-foreground font-mono">
-                {canonicalUrl.replace(/^https?:\/\//, "")}
+                proskillai.dev
               </p>
             </div>
           </div>
@@ -182,84 +224,129 @@ export function ShareModal({
           </button>
         </div>
 
-        <div className="p-4 sm:p-6 space-y-5 overflow-y-auto min-h-0">
+        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-2.5 rounded-xl border border-border bg-muted/20">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-foreground">
-                {isEn ? "Theme:" : "Tema:"}
-              </span>
-              <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setTheme("dark")}
-                  className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
-                    theme === "dark"
-                      ? "bg-foreground text-background shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Moon className="w-3 h-3" />
-                  <span>{isEn ? "Dark" : "Gelap"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTheme("light")}
-                  className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
-                    theme === "light"
-                      ? "bg-foreground text-background shadow-2xs"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Sun className="w-3 h-3" />
-                  <span>{isEn ? "Light" : "Terang"}</span>
-                </button>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-medium text-foreground">
+                  {isEn ? "Theme:" : "Tema:"}
+                </span>
+                <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setTheme("dark")}
+                    className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
+                      theme === "dark"
+                        ? "bg-foreground text-background shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Moon className="w-3 h-3" />
+                    <span>{isEn ? "Dark" : "Gelap"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTheme("light")}
+                    className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
+                      theme === "light"
+                        ? "bg-foreground text-background shadow-2xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Sun className="w-3 h-3" />
+                    <span>{isEn ? "Light" : "Terang"}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-medium text-foreground">
+                  {isEn ? "Ratio:" : "Rasio:"}
+                </span>
+                <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
+                  {ratios.map((r) => {
+                    const isActive = aspectRatio === r;
+                    const cfg = ASPECT_RATIO_CONFIGS[r];
+                    return (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setAspectRatio(r)}
+                        title={cfg?.sublabel || r}
+                        className={`h-6 px-2 rounded-[4px] text-[11px] font-semibold transition-all cursor-pointer ${
+                          isActive
+                            ? "bg-foreground text-background shadow-2xs"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs font-medium text-foreground mr-1">
-                {isEn ? "Palette:" : "Palet:"}
-              </span>
-              {palettes.map((p) => {
-                const isActive = palette === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setPalette(p.id)}
-                    title={isEn ? p.nameEn : p.nameId}
-                    className={`h-7 px-2 rounded-[5px] text-[11px] font-medium inline-flex items-center gap-1.5 border transition-all cursor-pointer ${
-                      isActive
-                        ? "border-foreground bg-foreground text-background shadow-2xs"
-                        : "border-border bg-background text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: p.dotColor }}
-                    />
-                    <span className="hidden sm:inline">
-                      {isEn ? p.nameEn.split(" ")[1] || p.nameEn : p.nameId.split(" ")[0]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {currentUser && (
+              <button
+                type="button"
+                onClick={() => setShowUser(!showUser)}
+                className={`h-7 px-2.5 rounded-[5px] border text-[11px] font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
+                  showUser
+                    ? "border-blue-500/40 bg-blue-500/10 text-blue-400 dark:text-blue-300"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {showUser ? (
+                  <>
+                    <UserCheck className="w-3.5 h-3.5 text-blue-500" />
+                    <span>@{currentUser}</span>
+                  </>
+                ) : (
+                  <>
+                    <UserX className="w-3.5 h-3.5" />
+                    <span>{isEn ? "Hide Username" : "Sembunyikan User"}</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="font-medium text-foreground tracking-tight">
-                {isEn ? "Card Preview (1200×630 Social Image)" : "Pratinjau Kartu (Gambar Sosial 1200×630)"}
+                {isEn ? `Card Preview (${aspectRatio})` : `Pratinjau Kartu (${aspectRatio})`}
               </span>
               <span className="text-[10px] font-mono text-muted-foreground">
-                {isEn ? "Live QR Code Included" : "Termasuk QR Code Aktif"}
+                proskillai.dev
               </span>
             </div>
-            <ShareCard item={item} theme={theme} palette={palette} />
+
+            <div className="w-full flex items-center justify-center p-2 sm:p-4 rounded-xl bg-muted/20 border border-border/70 overflow-hidden min-h-[260px] max-h-[380px] sm:max-h-[420px]">
+              <div
+                className={`w-full transition-all duration-200 ${
+                  aspectRatio === "16:9"
+                    ? "max-w-xl aspect-16/9"
+                    : aspectRatio === "1:1"
+                    ? "max-w-[320px] sm:max-w-[340px] aspect-square"
+                    : aspectRatio === "3:4"
+                    ? "max-w-[260px] sm:max-w-[280px] aspect-3/4"
+                    : "max-w-[210px] sm:max-w-[230px] aspect-9/16"
+                }`}
+              >
+                <ShareCard
+                  item={item}
+                  theme={theme}
+                  palette={palette}
+                  aspectRatio={aspectRatio}
+                  userAttribution={userAttribution}
+                  className="h-full"
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-3 pt-1">
+          <div className="space-y-2.5 pt-1">
             <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
               <span className="font-semibold text-foreground tracking-tight">
                 {isEn ? "Direct Social Share" : "Bagikan Langsung ke Media Sosial"}
@@ -309,7 +396,7 @@ export function ShareModal({
             </div>
           </div>
 
-          <div className="space-y-3 pt-1">
+          <div className="space-y-2.5 pt-1">
             <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
               <span className="font-semibold text-foreground tracking-tight">
                 {isEn ? "Export & Link Actions" : "Aksi Ekspor & Tautan"}
@@ -330,7 +417,7 @@ export function ShareModal({
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5" />
-                    <span>{isEn ? "Copy Canonical Link" : "Salin Tautan Resmi"}</span>
+                    <span>{isEn ? "Copy Link" : "Salin Tautan"}</span>
                   </>
                 )}
               </button>
@@ -344,12 +431,12 @@ export function ShareModal({
                 {isExporting ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>{isEn ? "Generating PNG..." : "Membuat PNG..."}</span>
+                    <span>{isEn ? "Generating..." : "Memproses..."}</span>
                   </>
                 ) : (
                   <>
                     <Download className="w-3.5 h-3.5" />
-                    <span>{isEn ? "Download Card PNG" : "Unduh Kartu PNG"}</span>
+                    <span>{isEn ? `Download ${aspectRatio} PNG` : `Unduh ${aspectRatio} PNG`}</span>
                   </>
                 )}
               </button>
