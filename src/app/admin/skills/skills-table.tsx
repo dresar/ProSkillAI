@@ -57,24 +57,24 @@ function getPreviewBadge(previewType: string): { label: string; active: boolean 
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
+      className={`text-[10px] px-1.5 py-0.5 rounded-[4px] border font-medium whitespace-nowrap ${
         status === "published"
-          ? "border-border bg-foreground text-background"
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold"
           : status === "pending"
-          ? "border-amber-500/40 bg-amber-500/10 text-amber-500 font-semibold"
+          ? "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold"
           : status === "draft"
-          ? "border-border border-dashed text-muted-foreground"
+          ? "border-border/80 bg-muted/60 text-muted-foreground"
           : "border-border text-muted-foreground line-through"
       }`}
     >
-      {status === "pending" ? "Review" : status}
+      {status === "pending" ? "Review" : status === "published" ? "Terbit" : status}
     </span>
   );
 }
 
 function SourceBadge({ sourceType }: { sourceType: string }) {
   return (
-    <span className="text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border border-border bg-muted text-foreground font-mono">
+    <span className="text-[10px] px-1.5 py-0.5 rounded-[4px] border border-border/70 bg-muted/50 text-muted-foreground font-mono">
       {sourceType === "github" ? "GitHub" : "Orisinal"}
     </span>
   );
@@ -83,10 +83,10 @@ function SourceBadge({ sourceType }: { sourceType: string }) {
 function PreviewBadge({ previewType }: { previewType: string }) {
   const preview = getPreviewBadge(previewType);
   if (!preview.active) {
-    return <span className="text-[10px] sm:text-[11px] text-muted-foreground">—</span>;
+    return null;
   }
   return (
-    <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium whitespace-nowrap">
+    <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-[4px] border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium whitespace-nowrap">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
       {preview.label}
     </span>
@@ -163,20 +163,20 @@ export function SkillsTable({
   const renderActions = (skill: Skill & { category?: Category | null }) => {
     if (confirmDeleteId === skill.id) {
       return (
-        <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs">
-          <span className="text-muted-foreground">Hapus?</span>
+        <div className="inline-flex items-center gap-1 text-[11px]">
+          <span className="text-muted-foreground text-[10px]">Hapus?</span>
           <button
             type="button"
             disabled={isDeleting}
             onClick={() => handleDelete(skill.id)}
-            className="px-1.5 sm:px-2 py-0.5 rounded bg-foreground text-background font-medium hover:opacity-90"
+            className="px-2 py-0.5 rounded-[4px] bg-rose-500 text-white font-medium hover:bg-rose-600 transition-colors cursor-pointer text-[10px]"
           >
             Ya
           </button>
           <button
             type="button"
             onClick={() => setConfirmDeleteId(null)}
-            className="px-1.5 sm:px-2 py-0.5 rounded border border-border text-foreground"
+            className="px-2 py-0.5 rounded-[4px] border border-border text-foreground hover:bg-muted transition-colors cursor-pointer text-[10px]"
           >
             Batal
           </button>
@@ -185,7 +185,7 @@ export function SkillsTable({
     }
 
     return (
-      <div className="inline-flex items-center gap-0.5 sm:gap-1">
+      <div className="inline-flex items-center gap-1">
         {skill.status === "pending" && (
           <button
             type="button"
@@ -193,7 +193,7 @@ export function SkillsTable({
               await approveSkillAction(skill.id);
               router.refresh();
             }}
-            className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 text-[10px] sm:text-[11px] font-medium cursor-pointer mr-0.5 sm:mr-1"
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-[5px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-medium cursor-pointer transition-colors"
             title="Setujui dan Publikasikan"
           >
             <CheckCircle2 className="w-3 h-3" />
@@ -203,14 +203,14 @@ export function SkillsTable({
         <Link
           href={`/id/skills/${skill.slug}`}
           target="_blank"
-          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1.5 rounded-[5px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Lihat halaman publik"
         >
           <ExternalLink className="w-3.5 h-3.5" />
         </Link>
         <Link
           href={`/admin/skills/${skill.id}/edit`}
-          className="p-1 sm:p-1.5 rounded hover:bg-muted text-foreground"
+          className="p-1.5 rounded-[5px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           title="Edit skill"
         >
           <Edit className="w-3.5 h-3.5" />
@@ -218,7 +218,7 @@ export function SkillsTable({
         <button
           type="button"
           onClick={() => setConfirmDeleteId(skill.id)}
-          className="p-1 sm:p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-1.5 rounded-[5px] hover:bg-rose-500/10 hover:text-rose-500 text-muted-foreground transition-colors cursor-pointer"
           title="Hapus skill"
         >
           <Trash2 className="w-3.5 h-3.5" />
@@ -296,17 +296,17 @@ export function SkillsTable({
           Belum ada skill yang sesuai filter.
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {skillsList.map((skill) => {
             const cover = getSkillCoverImage(skill.images, skill.previewImageUrl);
             return (
               <article
                 key={skill.id}
-                className="rounded-xl border border-border bg-surface overflow-hidden flex flex-col"
+                className="group rounded-xl border border-border/80 bg-surface overflow-hidden flex flex-col hover:border-foreground/30 hover:shadow-xs transition-all duration-200"
               >
                 <Link
                   href={`/admin/skills/${skill.id}/edit`}
-                  className="relative aspect-video bg-muted block"
+                  className="relative aspect-video bg-muted overflow-hidden block"
                 >
                   {cover ? (
                     <Image
@@ -314,8 +314,8 @@ export function SkillsTable({
                       alt={skill.titleId}
                       fill
                       unoptimized
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-muted-foreground">
@@ -323,22 +323,22 @@ export function SkillsTable({
                       <span className="text-[9px] sm:text-[10px]">Tanpa gambar</span>
                     </div>
                   )}
+                  <div className="absolute top-2 right-2 z-10">
+                    <StatusBadge status={skill.status} />
+                  </div>
                 </Link>
 
-                <div className="p-2.5 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
-                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-                    <div className="min-w-0 flex-1">
-                      <Link
-                        href={`/admin/skills/${skill.id}/edit`}
-                        className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
-                      >
-                        {skill.titleId}
-                      </Link>
-                      <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
-                        /{skill.slug}
-                      </div>
+                <div className="p-3 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
+                  <div className="min-w-0">
+                    <Link
+                      href={`/admin/skills/${skill.id}/edit`}
+                      className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
+                    >
+                      {skill.titleId}
+                    </Link>
+                    <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
+                      /{skill.slug}
                     </div>
-                    <StatusBadge status={skill.status} />
                   </div>
 
                   <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
@@ -350,7 +350,7 @@ export function SkillsTable({
                     <PreviewBadge previewType={skill.previewType} />
                   </div>
 
-                  <div className="mt-auto pt-2 border-t border-border/60 flex justify-end">
+                  <div className="mt-auto pt-2.5 border-t border-border/60 flex items-center justify-end">
                     {renderActions(skill)}
                   </div>
                 </div>

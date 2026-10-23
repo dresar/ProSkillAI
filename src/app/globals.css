@@ -28,7 +28,7 @@
   --ring: #09090b;
   --accent: #09090b;
   --accent-glow: rgba(9, 9, 11, 0.08);
-  --line-color: rgba(0, 0, 0, 0.12);
+  --line-color: rgba(0, 0, 0, 0.05);
   --radius: 6px;
 }
 
@@ -43,7 +43,7 @@
   --ring: #f4f4f5;
   --accent: #f4f4f5;
   --accent-glow: rgba(255, 255, 255, 0.12);
-  --line-color: rgba(255, 255, 255, 0.16);
+  --line-color: rgba(255, 255, 255, 0.07);
 }
 
 .light {
@@ -57,7 +57,7 @@
   --ring: #09090b;
   --accent: #09090b;
   --accent-glow: rgba(9, 9, 11, 0.08);
-  --line-color: rgba(0, 0, 0, 0.12);
+  --line-color: rgba(0, 0, 0, 0.05);
 }
 
 html[data-theme="noir"],
@@ -76,7 +76,7 @@ html[data-theme="noir"].dark,
   --ring: #f4f4f5;
   --accent: #f4f4f5;
   --accent-glow: rgba(255, 255, 255, 0.12);
-  --line-color: rgba(255, 255, 255, 0.16);
+  --line-color: rgba(255, 255, 255, 0.07);
 }
 
 html[data-theme="noir"].light,
@@ -93,7 +93,7 @@ html.light[data-theme="noir"],
   --ring: #09090b;
   --accent: #09090b;
   --accent-glow: rgba(9, 9, 11, 0.08);
-  --line-color: rgba(0, 0, 0, 0.12);
+  --line-color: rgba(0, 0, 0, 0.05);
 }
 
 html[data-theme="cyber"],
@@ -112,7 +112,7 @@ html[data-theme="cyber"].dark,
   --ring: #06b6d4;
   --accent: #06b6d4;
   --accent-glow: rgba(6, 182, 212, 0.28);
-  --line-color: rgba(6, 182, 212, 0.28);
+  --line-color: rgba(6, 182, 212, 0.09);
 }
 
 html[data-theme="cyber"].light,
@@ -129,7 +129,7 @@ html.light[data-theme="cyber"],
   --ring: #0891b2;
   --accent: #0891b2;
   --accent-glow: rgba(8, 145, 178, 0.15);
-  --line-color: rgba(8, 145, 178, 0.20);
+  --line-color: rgba(8, 145, 178, 0.07);
 }
 
 html[data-theme="emerald"],
@@ -148,7 +148,7 @@ html[data-theme="emerald"].dark,
   --ring: #10b981;
   --accent: #10b981;
   --accent-glow: rgba(16, 185, 129, 0.28);
-  --line-color: rgba(16, 185, 129, 0.28);
+  --line-color: rgba(16, 185, 129, 0.09);
 }
 
 html[data-theme="emerald"].light,
@@ -165,7 +165,7 @@ html.light[data-theme="emerald"],
   --ring: #059669;
   --accent: #059669;
   --accent-glow: rgba(5, 150, 105, 0.15);
-  --line-color: rgba(5, 150, 105, 0.20);
+  --line-color: rgba(5, 150, 105, 0.07);
 }
 
 html[data-theme="indigo"],
@@ -184,7 +184,7 @@ html[data-theme="indigo"].dark,
   --ring: #6366f1;
   --accent: #6366f1;
   --accent-glow: rgba(99, 102, 241, 0.28);
-  --line-color: rgba(99, 102, 241, 0.30);
+  --line-color: rgba(99, 102, 241, 0.09);
 }
 
 html[data-theme="indigo"].light,
@@ -201,7 +201,7 @@ html.light[data-theme="indigo"],
   --ring: #4f46e5;
   --accent: #4f46e5;
   --accent-glow: rgba(79, 70, 229, 0.15);
-  --line-color: rgba(79, 70, 229, 0.20);
+  --line-color: rgba(79, 70, 229, 0.07);
 }
 
 html[data-theme="amber"],
@@ -220,7 +220,7 @@ html[data-theme="amber"].dark,
   --ring: #f59e0b;
   --accent: #f59e0b;
   --accent-glow: rgba(245, 158, 11, 0.28);
-  --line-color: rgba(245, 158, 11, 0.28);
+  --line-color: rgba(245, 158, 11, 0.09);
 }
 
 html[data-theme="amber"].light,
@@ -237,7 +237,7 @@ html.light[data-theme="amber"],
   --ring: #d97706;
   --accent: #d97706;
   --accent-glow: rgba(217, 119, 6, 0.15);
-  --line-color: rgba(217, 119, 6, 0.20);
+  --line-color: rgba(217, 119, 6, 0.07);
 }
 
 html[data-theme="rose"],
@@ -256,7 +256,7 @@ html[data-theme="rose"].dark,
   --ring: #f43f5e;
   --accent: #f43f5e;
   --accent-glow: rgba(244, 63, 94, 0.28);
-  --line-color: rgba(244, 63, 94, 0.28);
+  --line-color: rgba(244, 63, 94, 0.09);
 }
 
 html[data-theme="rose"].light,
@@ -273,7 +273,7 @@ html.light[data-theme="rose"],
   --ring: #e11d48;
   --accent: #e11d48;
   --accent-glow: rgba(225, 29, 72, 0.15);
-  --line-color: rgba(225, 29, 72, 0.20);
+  --line-color: rgba(225, 29, 72, 0.07);
 }
 
 html[data-theme="slate"],
@@ -292,7 +292,7 @@ html[data-theme="slate"].dark,
   --ring: #38bdf8;
   --accent: #38bdf8;
   --accent-glow: rgba(56, 189, 248, 0.28);
-  --line-color: rgba(56, 189, 248, 0.28);
+  --line-color: rgba(56, 189, 248, 0.09);
 }
 
 html[data-theme="slate"].light,
@@ -309,7 +309,7 @@ html.light[data-theme="slate"],
   --ring: #0284c7;
   --accent: #0284c7;
   --accent-glow: rgba(2, 132, 199, 0.15);
-  --line-color: rgba(2, 132, 199, 0.20);
+  --line-color: rgba(2, 132, 199, 0.07);
 }
 
 html[data-theme="aurora"],
@@ -328,7 +328,7 @@ html[data-theme="aurora"].dark,
   --ring: #14b8a6;
   --accent: #14b8a6;
   --accent-glow: rgba(20, 184, 166, 0.28);
-  --line-color: rgba(20, 184, 166, 0.28);
+  --line-color: rgba(20, 184, 166, 0.09);
 }
 
 html[data-theme="aurora"].light,
@@ -345,7 +345,7 @@ html.light[data-theme="aurora"],
   --ring: #0d9488;
   --accent: #0d9488;
   --accent-glow: rgba(13, 148, 136, 0.15);
-  --line-color: rgba(13, 148, 136, 0.20);
+  --line-color: rgba(13, 148, 136, 0.07);
 }
 
 html[data-theme="neon"],
@@ -364,7 +364,7 @@ html[data-theme="neon"].dark,
   --ring: #d946ef;
   --accent: #d946ef;
   --accent-glow: rgba(217, 70, 239, 0.28);
-  --line-color: rgba(217, 70, 239, 0.30);
+  --line-color: rgba(217, 70, 239, 0.09);
 }
 
 html[data-theme="neon"].light,
@@ -381,7 +381,7 @@ html.light[data-theme="neon"],
   --ring: #c026d3;
   --accent: #c026d3;
   --accent-glow: rgba(192, 38, 211, 0.15);
-  --line-color: rgba(192, 38, 211, 0.20);
+  --line-color: rgba(192, 38, 211, 0.07);
 }
 
 html[data-theme="espresso"],
@@ -400,7 +400,7 @@ html[data-theme="espresso"].dark,
   --ring: #ea580c;
   --accent: #d97706;
   --accent-glow: rgba(217, 119, 6, 0.28);
-  --line-color: rgba(234, 88, 12, 0.28);
+  --line-color: rgba(234, 88, 12, 0.09);
 }
 
 html[data-theme="espresso"].light,
@@ -417,14 +417,14 @@ html.light[data-theme="espresso"],
   --ring: #ea580c;
   --accent: #d97706;
   --accent-glow: rgba(217, 119, 6, 0.15);
-  --line-color: rgba(217, 119, 6, 0.20);
+  --line-color: rgba(217, 119, 6, 0.07);
 }
 
 .bg-grid-lines {
   background-image:
-    linear-gradient(to right, var(--line-color) 1.5px, transparent 1.5px),
-    linear-gradient(to bottom, var(--line-color) 1.5px, transparent 1.5px);
-  background-size: 38px 38px;
+    linear-gradient(to right, var(--line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-color) 1px, transparent 1px);
+  background-size: 36px 36px;
 }
 
 .bg-grid-mask {

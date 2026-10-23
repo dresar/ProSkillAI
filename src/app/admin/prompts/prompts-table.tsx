@@ -38,15 +38,15 @@ interface PromptsTableProps {
 function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded border font-medium whitespace-nowrap ${
+      className={`text-[10px] px-1.5 py-0.5 rounded-[4px] border font-medium whitespace-nowrap ${
         status === "published"
-          ? "border-border bg-foreground text-background"
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold"
           : status === "draft"
-          ? "border-border border-dashed text-muted-foreground"
+          ? "border-border/80 bg-muted/60 text-muted-foreground"
           : "border-border text-muted-foreground line-through"
       }`}
     >
-      {status}
+      {status === "published" ? "Terbit" : status}
     </span>
   );
 }
@@ -244,18 +244,18 @@ export function PromptsTable({
           Belum ada prompt yang sesuai filter.
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3.5">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
           {promptsList.map((prompt) => {
             const cover = getCoverImage(prompt.images);
             const vars = variableCount(prompt.variables);
             return (
               <article
                 key={prompt.id}
-                className="rounded-xl border border-border bg-surface overflow-hidden flex flex-col"
+                className="group rounded-xl border border-border/80 bg-surface overflow-hidden flex flex-col hover:border-foreground/30 hover:shadow-xs transition-all duration-200"
               >
                 <Link
                   href={`/admin/prompts/${prompt.id}/edit`}
-                  className="relative aspect-video bg-muted block"
+                  className="relative aspect-video bg-muted overflow-hidden block"
                 >
                   {cover ? (
                     <Image
@@ -263,8 +263,8 @@ export function PromptsTable({
                       alt={prompt.titleId}
                       fill
                       unoptimized
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      className="object-cover"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-muted-foreground">
@@ -272,22 +272,22 @@ export function PromptsTable({
                       <span className="text-[9px] sm:text-[10px]">Tanpa gambar</span>
                     </div>
                   )}
+                  <div className="absolute top-2 right-2 z-10">
+                    <StatusBadge status={prompt.status} />
+                  </div>
                 </Link>
 
-                <div className="p-2.5 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
-                  <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-                    <div className="min-w-0 flex-1">
-                      <Link
-                        href={`/admin/prompts/${prompt.id}/edit`}
-                        className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
-                      >
-                        {prompt.titleId}
-                      </Link>
-                      <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
-                        /{prompt.slug}
-                      </div>
+                <div className="p-3 sm:p-3.5 flex flex-col gap-1.5 sm:gap-2 flex-1">
+                  <div className="min-w-0">
+                    <Link
+                      href={`/admin/prompts/${prompt.id}/edit`}
+                      className="font-semibold text-xs sm:text-sm text-foreground truncate block hover:underline"
+                    >
+                      {prompt.titleId}
+                    </Link>
+                    <div className="font-mono text-[10px] sm:text-[11px] text-muted-foreground truncate">
+                      /{prompt.slug}
                     </div>
-                    <StatusBadge status={prompt.status} />
                   </div>
 
                   <div className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
@@ -298,7 +298,7 @@ export function PromptsTable({
                     {vars} variabel
                   </div>
 
-                  <div className="mt-auto pt-2 border-t border-border/60 flex justify-end">
+                  <div className="mt-auto pt-2.5 border-t border-border/60 flex items-center justify-end">
                     {renderActions(prompt)}
                   </div>
                 </div>

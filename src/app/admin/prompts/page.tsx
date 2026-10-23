@@ -82,7 +82,7 @@ export default async function AdminPromptsPage({ searchParams }: PageProps) {
 
         <Link
           href="/admin/prompts/new"
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-95"
+          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Buat Prompt Baru</span>

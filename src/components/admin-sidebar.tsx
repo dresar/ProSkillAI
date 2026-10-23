@@ -29,7 +29,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
   const [collapsed, setCollapsed] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const links = [
+  const managementLinks = [
     { href: "/admin", label: "Ringkasan", icon: LayoutDashboard },
     { href: "/admin/skills", label: "Skills", icon: Layers },
     ...(userRole === "admin"
@@ -37,6 +37,9 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       : []),
     { href: "/admin/prompts", label: "Prompts", icon: FileCode },
     { href: "/admin/categories", label: "Kategori", icon: Tag },
+  ];
+
+  const systemLinks = [
     ...(userRole === "admin"
       ? [
           { href: "/admin/users", label: "Pengguna", icon: Users },
@@ -46,6 +49,8 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
     { href: "/admin/activity", label: "Log Aktivitas", icon: History },
     { href: "/admin/feedback", label: "Umpan Balik", icon: MessageSquare },
   ];
+
+  const allLinks = [...managementLinks, ...systemLinks];
 
   const toggleCollapse = () => setCollapsed((prev) => !prev);
 
@@ -81,7 +86,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
                 </button>
               </div>
               <nav className="mt-4 space-y-1">
-                {links.map((link) => {
+                {allLinks.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href;
                   return (
@@ -108,18 +113,23 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       )}
 
       <aside
-        className={`hidden lg:flex flex-col justify-between border-r border-border bg-surface transition-all duration-200 ${
+        className={`hidden lg:flex flex-col justify-between border-r border-border/80 bg-surface transition-all duration-200 ${
           collapsed ? "w-16" : "w-56"
         } h-full shrink-0 select-none`}
       >
         <div className="flex flex-col min-h-0 flex-1">
-          <div className="h-14 shrink-0 border-b border-border flex items-center justify-between px-3.5">
+          <div className="h-14 shrink-0 border-b border-border/80 flex items-center justify-between px-3.5">
             <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
               <BrandLogo className="w-6 h-6" size={24} />
               {!collapsed && (
-                <span className="font-semibold text-xs tracking-tight truncate text-foreground">
-                  ProSkillAI
-                </span>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="font-bold text-xs tracking-wider truncate text-foreground uppercase">
+                    ProSkillAI
+                  </span>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-muted text-muted-foreground border border-border">
+                    Admin
+                  </span>
+                </div>
               )}
             </Link>
 
@@ -137,33 +147,78 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
             </button>
           </div>
 
-          <nav className="p-2 space-y-1 overflow-y-auto flex-1">
-            {links.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  title={collapsed ? link.label : undefined}
-                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded text-xs font-medium transition-colors ${
-                    isActive
-                      ? "bg-foreground text-background font-semibold"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  } ${collapsed ? "justify-center" : ""}`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  {!collapsed && <span className="truncate">{link.label}</span>}
-                </Link>
-              );
-            })}
-          </nav>
+          <div className="p-2 space-y-4 overflow-y-auto flex-1">
+            <div>
+              {!collapsed && (
+                <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-2.5 block mb-1">
+                  Manajemen
+                </span>
+              )}
+              <nav className="space-y-0.5">
+                {managementLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      title={collapsed ? link.label : undefined}
+                      className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-[6px] text-xs font-medium transition-colors ${
+                        isActive
+                          ? "bg-foreground text-background font-semibold shadow-2xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
+                      } ${collapsed ? "justify-center" : ""}`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {!collapsed && <span className="truncate">{link.label}</span>}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div>
+              {!collapsed && (
+                <span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase px-2.5 block mb-1">
+                  Sistem
+                </span>
+              )}
+              <nav className="space-y-0.5">
+                {systemLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      title={collapsed ? link.label : undefined}
+                      className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-[6px] text-xs font-medium transition-colors ${
+                        isActive
+                          ? "bg-foreground text-background font-semibold shadow-2xs"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
+                      } ${collapsed ? "justify-center" : ""}`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      {!collapsed && <span className="truncate">{link.label}</span>}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
         </div>
 
-        <div className="p-3 shrink-0 border-t border-border text-[11px] text-muted-foreground">
-          {!collapsed && (
-            <div className="truncate">
-              Role: <span className="font-semibold text-foreground">{userRole}</span>
+        <div className="p-3 shrink-0 border-t border-border/80 text-[11px] text-muted-foreground">
+          {!collapsed ? (
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-medium">Role</span>
+              <span className="text-[10px] font-mono font-semibold uppercase px-1.5 py-0.5 rounded-[4px] bg-muted border border-border text-foreground">
+                {userRole}
+              </span>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" title={`Role: ${userRole}`} />
             </div>
           )}
         </div>
