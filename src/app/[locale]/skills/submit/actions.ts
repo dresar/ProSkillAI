@@ -98,6 +98,18 @@ export async function fetchGitHubSkillAction(githubUrl: string) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
+    const imgMatch = rawContent.match(/!\[.*?\]\((https?:\/\/[^\s)]+|\.?\/?[^\s)]+)\)/);
+    let imageUrl = "";
+    if (imgMatch && imgMatch[1]) {
+      const src = imgMatch[1];
+      if (src.startsWith("http://") || src.startsWith("https://")) {
+        imageUrl = src;
+      } else {
+        const cleanPath = src.replace(/^\.?\//, "");
+        imageUrl = `https://raw.githubusercontent.com/${parsed.owner}/${parsed.repo}/${branch}/${cleanPath}`;
+      }
+    }
+
     return {
       success: true,
       data: {
@@ -111,6 +123,7 @@ export async function fetchGitHubSkillAction(githubUrl: string) {
         filePath,
         branch,
         slug,
+        imageUrl,
       },
     };
   } catch (err) {
@@ -169,6 +182,19 @@ export async function submitUserSkillAction(
       }
     } catch {
       files = [];
+    }
+  }
+
+  let images: string[] = [];
+  const rawImages = formData.get("imagesJson") as string;
+  if (rawImages) {
+    try {
+      const parsedImages = JSON.parse(rawImages);
+      if (Array.isArray(parsedImages)) {
+        images = parsedImages.map(String).filter((u) => u.startsWith("http://") || u.startsWith("https://") || u.startsWith("/"));
+      }
+    } catch {
+      images = [];
     }
   }
 
@@ -264,6 +290,8 @@ export async function submitUserSkillAction(
     authorName: parsed.data.authorName || currentUser.name || "Kontributor Komunitas",
     authorUrl: parsed.data.authorUrl || null,
     tags: parsed.data.tags || [],
+    images,
+    previewImageUrl: images[0] || null,
     status,
     previewType: "none",
     createdBy: currentUser.id,

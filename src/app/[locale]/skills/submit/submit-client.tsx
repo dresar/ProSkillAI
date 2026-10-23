@@ -20,6 +20,7 @@ import {
 } from "./actions";
 import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
 import { SkillFilesManager } from "@/components/skill-files-manager";
+import { ImageUploader } from "@/components/admin/image-uploader";
 import type { Category, SkillFileItem } from "@/db/schema";
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -68,6 +69,7 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
   const [title, setTitle] = React.useState("");
   const [summary, setSummary] = React.useState("");
   const [content, setContent] = React.useState("");
+  const [images, setImages] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<SkillFileItem[]>([]);
   const [slug, setSlug] = React.useState("");
   const [categoryId, setCategoryId] = React.useState("");
@@ -135,6 +137,9 @@ export function SubmitClient({ categories, locale, user }: SubmitClientProps) {
       setAuthorUrl(res.data.authorUrl);
       setRepoUrl(res.data.repoUrl);
       setSourceType("github");
+      if (res.data.imageUrl) {
+        setImages((prev) => (prev.includes(res.data.imageUrl) ? prev : [res.data.imageUrl, ...prev]));
+      }
 
       setParseMessage({
         type: "success",
@@ -538,6 +543,16 @@ license: MIT
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
           <SkillFilesManager files={files} onChange={setFiles} maxFiles={10} />
+        </div>
+
+        <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
+          <ImageUploader
+            value={images}
+            onChange={setImages}
+            folder="skills"
+            slug={slug || "skill"}
+            label={isEn ? "Cover & Preview Images (Paste CDN URL or Drop Files)" : "Gambar Cover & Preview (Tempel URL CDN atau Seret Gambar)"}
+          />
         </div>
 
         <div className="p-5 rounded-xl border border-border bg-surface space-y-4 shadow-2xs">
