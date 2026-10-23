@@ -261,25 +261,23 @@ export default async function SkillDetailPage({ params }: PageProps) {
               </div>
             </header>
 
-            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <div className="flex-1 min-w-[130px]">
-                <CopySkillDropdown
-                  skillId={skill.id}
-                  slug={skill.slug}
-                  title={title}
-                  summary={summary}
-                  content={content}
-                  locale={locale}
-                />
-              </div>
-              <div className="flex-1 min-w-[130px]">
-                <DownloadSkillButton
-                  skillId={skill.id}
-                  content={content}
-                  filename={`${skill.slug}.md`}
-                  label={t("download")}
-                />
-              </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <CopySkillDropdown
+                skillId={skill.id}
+                slug={skill.slug}
+                title={title}
+                summary={summary}
+                content={content}
+                locale={locale}
+              />
+              <DownloadSkillButton
+                skillId={skill.id}
+                content={content}
+                filename={`${skill.slug}.md`}
+                label={t("download")}
+                showLabel={false}
+                className="w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground flex items-center justify-center shadow-2xs transition-all cursor-pointer"
+              />
               <ShareButton
                 item={{
                   type: "skill",
@@ -295,7 +293,7 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   ],
                 }}
                 locale={locale}
-                className="w-9 h-9 shrink-0 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground flex items-center justify-center shadow-2xs transition-all cursor-pointer"
+                className="w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground flex items-center justify-center shadow-2xs transition-all cursor-pointer"
               />
             </div>
 

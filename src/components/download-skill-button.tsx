@@ -9,11 +9,15 @@ export function DownloadSkillButton({
   content,
   filename = "SKILL.md",
   label = "Unduh .md",
+  showLabel = true,
+  className = "",
 }: {
   skillId?: string;
   content: string;
   filename?: string;
   label?: string;
+  showLabel?: boolean;
+  className?: string;
 }) {
   const handleDownload = () => {
     const blob = new Blob([content], { type: "text/markdown;charset=utf-8;" });
@@ -30,14 +34,20 @@ export function DownloadSkillButton({
     }
   };
 
+  const defaultClass = showLabel
+    ? "inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] text-xs font-medium border border-border bg-surface text-foreground hover:bg-muted transition-transform active:scale-95 cursor-pointer shadow-2xs"
+    : "inline-flex items-center justify-center w-8 h-8 rounded-[6px] text-xs font-medium border border-border bg-surface text-foreground hover:bg-muted transition-transform active:scale-95 cursor-pointer shadow-2xs";
+
   return (
     <button
       type="button"
       onClick={handleDownload}
-      className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-transform active:scale-95 cursor-pointer"
+      title={label}
+      aria-label={label}
+      className={className || defaultClass}
     >
       <Download className="w-3.5 h-3.5" />
-      <span>{label}</span>
+      {showLabel && <span>{label}</span>}
     </button>
   );
 }

@@ -188,6 +188,7 @@ describe("Universal Share Feature & QR Code Engine", () => {
       "src/app/[locale]/mcp/mcp-client.tsx",
       "src/app/[locale]/favorites/favorites-client.tsx",
       "src/app/api/auth/me/route.ts",
+      "src/components/download-skill-button.tsx",
     ];
 
     for (const relPath of filesToCheck) {
