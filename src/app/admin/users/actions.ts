@@ -66,6 +66,10 @@ export async function createUserAction(prevState: unknown, formData: FormData) {
 export async function updateUserRoleAction(userId: string, newRole: "admin" | "user" | "editor") {
   const admin = await requireAdmin();
 
+  if (userId === admin.id && newRole !== "admin") {
+    return { error: "Anda tidak dapat mengubah atau menurunkan role akun Anda sendiri." };
+  }
+
   await db
     .update(users)
     .set({

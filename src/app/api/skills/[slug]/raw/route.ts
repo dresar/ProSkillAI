@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { skills } from "@/db/schema";
+import { getCurrentUser } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 
 export async function GET(
@@ -17,6 +18,13 @@ export async function GET(
   const skill = found[0];
   if (!skill) {
     return new NextResponse("Skill not found", { status: 404 });
+  }
+
+  if (skill.status !== "published") {
+    const user = await getCurrentUser();
+    if (!user || (user.role !== "admin" && user.role !== "editor")) {
+      return new NextResponse("Skill not found", { status: 404 });
+    }
   }
 
   const lang = request.nextUrl.searchParams.get("lang") || "id";

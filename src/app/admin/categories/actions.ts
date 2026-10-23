@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
 import { categories, auditLog } from "@/db/schema";
-import { requireAuth } from "@/lib/auth";
+import { requireAdmin, requireAdminOrEditor } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 
 const categorySchema = z.object({
@@ -18,7 +18,7 @@ const categorySchema = z.object({
 });
 
 export async function createCategoryAction(prevState: unknown, formData: FormData) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   const raw = {
     slug: formData.get("slug") as string,
@@ -62,7 +62,7 @@ export async function createCategoryAction(prevState: unknown, formData: FormDat
 }
 
 export async function deleteCategoryAction(id: string) {
-  const user = await requireAuth();
+  const user = await requireAdmin();
 
   await db.delete(categories).where(eq(categories.id, id));
 

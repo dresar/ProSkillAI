@@ -122,3 +122,11 @@ export async function requireAdmin(): Promise<User> {
   }
   return user;
 }
+
+export async function requireAdminOrEditor(): Promise<User> {
+  const user = await requireAuth();
+  if (user.role !== "admin" && user.role !== "editor") {
+    throw new Error("FORBIDDEN");
+  }
+  return user;
+}

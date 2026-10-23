@@ -95,6 +95,7 @@ export async function submitPromptAction(prevState: unknown, formData: FormData)
       variables: parsed.data.variables,
       copyCount: 0,
       status,
+      createdBy: currentUser.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

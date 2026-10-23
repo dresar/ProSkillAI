@@ -8,8 +8,8 @@ import { revalidatePath } from "next/cache";
 
 export async function updateFeedbackStatusAction(id: string, status: string) {
   const user = await getCurrentUser();
-  if (!user) {
-    return { error: "Akses ditolak. Silakan masuk terlebih dahulu." };
+  if (!user || (user.role !== "admin" && user.role !== "editor")) {
+    return { error: "Akses ditolak. Hanya administrator atau editor yang dapat memperbarui status umpan balik." };
   }
 
   await db

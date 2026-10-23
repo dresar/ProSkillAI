@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { skills, auditLog } from "@/db/schema";
-import { requireAuth } from "@/lib/auth";
+import { requireAdminOrEditor } from "@/lib/auth";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -57,7 +57,7 @@ const skillFormSchema = z.object({
 });
 
 export async function createSkillAction(prevState: unknown, formData: FormData) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
@@ -129,7 +129,7 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
 }
 
 export async function updateSkillAction(id: string, prevState: unknown, formData: FormData) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
@@ -205,7 +205,7 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
 }
 
 export async function deleteSkillAction(id: string) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   await db.delete(skills).where(eq(skills.id, id));
 
@@ -225,7 +225,7 @@ export async function deleteSkillAction(id: string) {
 }
 
 export async function approveSkillAction(id: string) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   await db
     .update(skills)

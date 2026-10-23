@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { prompts, auditLog } from "@/db/schema";
-import { requireAuth } from "@/lib/auth";
+import { requireAdminOrEditor } from "@/lib/auth";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -47,7 +47,7 @@ const promptFormSchema = z.object({
 });
 
 export async function createPromptAction(prevState: unknown, formData: FormData) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   let variablesData = [];
   const rawVars = formData.get("variablesJson") as string;
@@ -118,7 +118,7 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
 }
 
 export async function updatePromptAction(id: string, prevState: unknown, formData: FormData) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   let variablesData = [];
   const rawVars = formData.get("variablesJson") as string;
@@ -193,7 +193,7 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
 }
 
 export async function deletePromptAction(id: string) {
-  const user = await requireAuth();
+  const user = await requireAdminOrEditor();
 
   await db.delete(prompts).where(eq(prompts.id, id));
 

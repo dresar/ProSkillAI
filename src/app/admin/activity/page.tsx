@@ -1,6 +1,13 @@
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
 import { getAdminActivityLogs } from "@/db/queries";
 
 export default async function AdminActivityPage() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    redirect("/admin");
+  }
+
   const logs = await getAdminActivityLogs(50);
 
   return (

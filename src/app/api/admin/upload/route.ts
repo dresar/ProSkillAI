@@ -12,7 +12,7 @@ export async function POST(request: Request) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (user.role !== "admin") {
+  if (user.role !== "admin" && user.role !== "editor") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   if (!isStorageConfigured()) {
