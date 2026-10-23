@@ -101,7 +101,7 @@ export function PublicSidebar({
           <button
             type="button"
             onClick={toggleSidebar}
-            className={`inline-flex items-center justify-center w-7 h-7 rounded-md border border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer ${
+            className={`inline-flex items-center justify-center w-7 h-7 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer ${
               collapsed ? "" : "shrink-0"
             }`}
             aria-label={collapsed ? (isEn ? "Expand sidebar" : "Perlebar sidebar") : (isEn ? "Collapse sidebar" : "Ciutkan sidebar")}
