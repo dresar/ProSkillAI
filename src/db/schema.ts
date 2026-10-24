@@ -180,6 +180,34 @@ export const feedbacks = pgTable("feedbacks", {
   index("feedbacks_created_at_idx").on(table.createdAt),
 ]);
 
+export const uiInspirations = pgTable("ui_inspirations", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  titleId: text("title_id").notNull(),
+  titleEn: text("title_en").notNull(),
+  descriptionId: text("description_id").notNull(),
+  descriptionEn: text("description_en").notNull(),
+  category: text("category").notNull().default("cards"),
+  tags: jsonb("tags").$type<string[]>().default([]),
+  previewType: text("preview_type").notNull().default("component"),
+  componentSnippet: text("component_snippet").notNull(),
+  tailwindClasses: text("tailwind_classes"),
+  uxGuidelinesId: text("ux_guidelines_id"),
+  uxGuidelinesEn: text("ux_guidelines_en"),
+  designTokens: jsonb("design_tokens"),
+  previewImageUrl: text("preview_image_url"),
+  status: text("status").notNull().default("published"),
+  likesCount: integer("likes_count").notNull().default(0),
+  copyCount: integer("copy_count").notNull().default(0),
+  createdBy: text("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("ui_inspirations_slug_idx").on(table.slug),
+  index("ui_inspirations_category_idx").on(table.category),
+  index("ui_inspirations_status_idx").on(table.status),
+]);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -193,3 +221,5 @@ export type Setting = typeof settings.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type Feedback = typeof feedbacks.$inferSelect;
 export type NewFeedback = typeof feedbacks.$inferInsert;
+export type UiInspiration = typeof uiInspirations.$inferSelect;
+export type NewUiInspiration = typeof uiInspirations.$inferInsert;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { BrandLogo } from "./brand-logo";
 import { FeedbackModal } from "./feedback-modal";
-import { Layers, FileCode, Star, Plus, Sparkles, LogIn, ExternalLink, TrendingUp, Boxes } from "lucide-react";
+import { Layers, FileCode, Star, Plus, Sparkles, LogIn, ExternalLink, TrendingUp, Boxes, Palette } from "lucide-react";
 import type { PublicUser } from "./public-user-nav";
 
 export async function PublicFooter({
@@ -80,6 +80,15 @@ export async function PublicFooter({
                 >
                   <Boxes className="w-3 h-3 text-foreground" />
                   <span>{isEn ? "139 MCP Servers" : "139 Server MCP"}</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/inspirasi`}
+                  className="hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                >
+                  <Palette className="w-3 h-3 text-foreground" />
+                  <span>{isEn ? "UI/UX Inspiration" : "Inspirasi UI/UX"}</span>
                 </Link>
               </li>
               <li>

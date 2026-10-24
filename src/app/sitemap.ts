@@ -1,15 +1,19 @@
 import type { MetadataRoute } from "next";
-import { getSitemapData } from "@/db/queries";
+import { getSitemapData, getAllUiInspirations } from "@/db/queries";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { publishedSkills, publishedPrompts } = await getSitemapData();
+  const [{ publishedSkills, publishedPrompts }, publishedInspirations] = await Promise.all([
+    getSitemapData(),
+    getAllUiInspirations(),
+  ]);
 
   const staticRoutes = [
     { path: "", priority: 1.0, freq: "daily" as const },
     { path: "/trending", priority: 0.95, freq: "daily" as const },
     { path: "/mcp", priority: 0.95, freq: "daily" as const },
+    { path: "/inspirasi", priority: 0.95, freq: "daily" as const },
     { path: "/skills", priority: 0.9, freq: "daily" as const },
     { path: "/prompts", priority: 0.85, freq: "daily" as const },
     { path: "/privacy", priority: 0.3, freq: "monthly" as const },
@@ -63,6 +67,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: {
             id: `${BASE_URL}/id/prompts/${p.slug}`,
             en: `${BASE_URL}/en/prompts/${p.slug}`,
+          },
+        },
+      });
+    }
+  }
+
+  for (const ins of publishedInspirations) {
+    for (const locale of ["id", "en"]) {
+      entries.push({
+        url: `${BASE_URL}/${locale}/inspirasi/${ins.slug}`,
+        lastModified: ins.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.9,
+        alternates: {
+          languages: {
+            id: `${BASE_URL}/id/inspirasi/${ins.slug}`,
+            en: `${BASE_URL}/en/inspirasi/${ins.slug}`,
           },
         },
       });

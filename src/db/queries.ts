@@ -1,6 +1,7 @@
 import { db } from "@/db";
-import { skills, prompts, categories, settings, users, auditLog, type Skill, type Prompt, type Category, type User, type AuditLogEntry } from "@/db/schema";
-import { eq, and, sql, desc, asc, ne, inArray } from "drizzle-orm";
+import { skills, prompts, categories, settings, users, auditLog, uiInspirations, type Skill, type Prompt, type Category, type User, type AuditLogEntry, type UiInspiration } from "@/db/schema";
+import { FALLBACK_UI_INSPIRATIONS } from "@/db/ui-inspirations-data";
+import { eq, and, sql, desc, asc, ne, inArray, ilike, or } from "drizzle-orm";
 
 const FALLBACK_CATEGORIES: Category[] = [
   {
@@ -590,5 +591,108 @@ export async function incrementPromptCopy(id: string): Promise<void> {
       .update(prompts)
       .set({ copyCount: sql`${prompts.copyCount} + 1` })
       .where(eq(prompts.id, id));
+  } catch {}
+}
+
+export async function getAllUiInspirations(params?: {
+  category?: string;
+  search?: string;
+  sort?: "newest" | "popular" | "copied";
+}): Promise<UiInspiration[]> {
+  try {
+    const conditions = [eq(uiInspirations.status, "published")];
+
+    if (params?.category && params.category !== "all") {
+      conditions.push(eq(uiInspirations.category, params.category));
+    }
+
+    if (params?.search && params.search.trim()) {
+      const q = `%${params.search.trim()}%`;
+      conditions.push(
+        or(
+          ilike(uiInspirations.titleEn, q),
+          ilike(uiInspirations.titleId, q),
+          ilike(uiInspirations.descriptionEn, q),
+          ilike(uiInspirations.descriptionId, q)
+        )!
+      );
+    }
+
+    let orderByClause = desc(uiInspirations.createdAt);
+    if (params?.sort === "popular") {
+      orderByClause = desc(uiInspirations.likesCount);
+    } else if (params?.sort === "copied") {
+      orderByClause = desc(uiInspirations.copyCount);
+    }
+
+    const rows = await db
+      .select()
+      .from(uiInspirations)
+      .where(and(...conditions))
+      .orderBy(orderByClause);
+
+    if (rows && rows.length > 0) {
+      return rows;
+    }
+  } catch {}
+
+  let filtered = [...FALLBACK_UI_INSPIRATIONS];
+  if (params?.category && params.category !== "all") {
+    filtered = filtered.filter((item) => item.category === params.category);
+  }
+  if (params?.search && params.search.trim()) {
+    const q = params.search.trim().toLowerCase();
+    filtered = filtered.filter(
+      (item) =>
+        item.titleEn.toLowerCase().includes(q) ||
+        item.titleId.toLowerCase().includes(q) ||
+        item.descriptionEn.toLowerCase().includes(q) ||
+        item.descriptionId.toLowerCase().includes(q) ||
+        (item.tags as string[] | null)?.some((t) => t.toLowerCase().includes(q))
+    );
+  }
+  if (params?.sort === "popular") {
+    filtered.sort((a, b) => b.likesCount - a.likesCount);
+  } else if (params?.sort === "copied") {
+    filtered.sort((a, b) => b.copyCount - a.copyCount);
+  } else {
+    filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  return filtered;
+}
+
+export async function getUiInspirationBySlug(slug: string): Promise<UiInspiration | null> {
+  try {
+    const rows = await db
+      .select()
+      .from(uiInspirations)
+      .where(and(eq(uiInspirations.slug, slug), eq(uiInspirations.status, "published")))
+      .limit(1);
+
+    if (rows && rows.length > 0) {
+      return rows[0];
+    }
+  } catch {}
+
+  const fallback = FALLBACK_UI_INSPIRATIONS.find((item) => item.slug === slug);
+  return fallback || null;
+}
+
+export async function incrementUiInspirationCopy(id: string): Promise<void> {
+  try {
+    await db
+      .update(uiInspirations)
+      .set({ copyCount: sql`${uiInspirations.copyCount} + 1` })
+      .where(eq(uiInspirations.id, id));
+  } catch {}
+}
+
+export async function incrementUiInspirationLike(id: string): Promise<void> {
+  try {
+    await db
+      .update(uiInspirations)
+      .set({ likesCount: sql`${uiInspirations.likesCount} + 1` })
+      .where(eq(uiInspirations.id, id));
   } catch {}
 }
