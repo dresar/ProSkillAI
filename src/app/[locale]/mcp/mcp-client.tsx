@@ -9,6 +9,8 @@ import {
   Search,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Cpu,
   Database,
@@ -64,8 +66,15 @@ export function McpClient({ servers, locale }: McpClientProps) {
   const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
   const [filterType, setFilterType] = React.useState<"all" | "open-source" | "self-hostable">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = React.useState(false);
   const categoryDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const ITEMS_PER_PAGE = 20;
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, filterType, searchQuery]);
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -135,6 +144,12 @@ export function McpClient({ servers, locale }: McpClientProps) {
       return true;
     });
   }, [servers, selectedCategory, filterType, searchQuery]);
+
+  const totalPages = Math.ceil(filteredServers.length / ITEMS_PER_PAGE) || 1;
+  const paginatedServers = React.useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredServers.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredServers, currentPage]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-10">
@@ -340,8 +355,8 @@ export function McpClient({ servers, locale }: McpClientProps) {
       <div className="flex items-center justify-between text-xs text-muted-foreground border-b border-border/70 pb-3">
         <span>
           {isEn
-            ? `Showing ${filteredServers.length} of ${servers.length} MCP stack modules`
-            : `Menampilkan ${filteredServers.length} dari ${servers.length} modul stack MCP`}
+            ? `Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredServers.length)} of ${filteredServers.length} MCP stack modules (Page ${currentPage} of ${totalPages})`
+            : `Menampilkan ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredServers.length)} dari ${filteredServers.length} modul stack MCP (Halaman ${currentPage} dari ${totalPages})`}
         </span>
         <span className="font-mono text-[11px]">
           {isEn ? "Anthropic MCP Specification 1.0" : "Spesifikasi Anthropic MCP 1.0"}
@@ -359,109 +374,189 @@ export function McpClient({ servers, locale }: McpClientProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
-          {filteredServers.map((server) => {
-            const IconComponent = getCategoryIcon(server.category);
-            return (
-              <div
-                key={server.id}
-                className="group rounded-xl border border-border bg-surface p-3.5 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
-              >
-                <div className="space-y-2.5">
-                  <Link
-                    href={`/${locale}/mcp/${server.slug}`}
-                    className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
-                  >
-                    <Image
-                      src={`/images/mcp/${server.category}.svg`}
-                      alt={server.categoryLabel}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                      className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
-                    />
-                  </Link>
-
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
-                        <IconComponent className="w-3.5 h-3.5 text-background" />
-                      </div>
-                      <div className="min-w-0">
-                        <Link
-                          href={`/${locale}/mcp/${server.slug}`}
-                          className="text-xs font-semibold text-foreground hover:underline truncate block"
-                        >
-                          {server.name}
-                        </Link>
-                        <p className="text-[10px] text-muted-foreground font-mono truncate">
-                          {server.vendor}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 shrink-0">
-                      {server.isOpenSource && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
-                          OSS
-                        </span>
-                      )}
-                      {server.isSelfHostable && (
-                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-[4px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold">
-                          Self-Host
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
-                    {server.description}
-                  </p>
-                </div>
-
-                <div className="pt-2.5 border-t border-border/70 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span className="text-[10px] font-mono truncate max-w-[130px]">
-                      {server.categoryLabel}
-                    </span>
-                    <span className="font-mono text-[10px]">
-                      {formatCompactNumber(server.stars)} stars
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+            {paginatedServers.map((server) => {
+              const IconComponent = getCategoryIcon(server.category);
+              return (
+                <div
+                  key={server.id}
+                  className="group rounded-xl border border-border bg-surface p-3 sm:p-3.5 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
+                >
+                  <div className="space-y-2 sm:space-y-2.5">
                     <Link
                       href={`/${locale}/mcp/${server.slug}`}
-                      className="h-7 px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                      className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
                     >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>{isEn ? "Detail" : "Detail"}</span>
+                      <Image
+                        src={`/images/mcp/${server.category || "default"}.svg`}
+                        alt={server.categoryLabel}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
+                      />
                     </Link>
 
-                    <ShareButton
-                      item={{
-                        type: "mcp",
-                        slug: server.id,
-                        title: server.name,
-                        description: server.description,
-                        url: `/${locale}/mcp/${server.slug}`,
-                        category: server.categoryLabel,
-                        author: server.vendor,
-                        stats: [
-                          { label: "Tools", value: server.tools.length },
-                          { label: "Stars", value: formatCompactNumber(server.stars) },
-                          { label: "License", value: server.isOpenSource ? "OSS" : "Commercial" },
-                        ],
-                      }}
-                      locale={locale}
-                      showLabel
-                      label={isEn ? "Share" : "Bagi"}
-                      className="h-7 px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                    />
+                    <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
+                          <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
+                        </div>
+                        <div className="min-w-0">
+                          <Link
+                            href={`/${locale}/mcp/${server.slug}`}
+                            className="text-[11px] sm:text-xs font-semibold text-foreground hover:underline truncate block"
+                          >
+                            {server.name}
+                          </Link>
+                          <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono truncate">
+                            {server.vendor}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {server.isOpenSource && (
+                          <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                            OSS
+                          </span>
+                        )}
+                        {server.isSelfHostable && (
+                          <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold">
+                            Self-Host
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                      {server.description}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 sm:pt-2.5 border-t border-border/70 space-y-2">
+                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground">
+                      <span className="font-mono truncate max-w-[90px] sm:max-w-[130px]">
+                        {server.categoryLabel}
+                      </span>
+                      <span className="font-mono">
+                        {formatCompactNumber(server.stars)} stars
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1 sm:gap-1.5 pt-0.5">
+                      <Link
+                        href={`/${locale}/mcp/${server.slug}`}
+                        className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[10px] sm:text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        <span>{isEn ? "Detail" : "Detail"}</span>
+                      </Link>
+
+                      <ShareButton
+                        item={{
+                          type: "mcp",
+                          slug: server.id,
+                          title: server.name,
+                          description: server.description,
+                          url: `/${locale}/mcp/${server.slug}`,
+                          category: server.categoryLabel,
+                          author: server.vendor,
+                          stats: [
+                            { label: "Tools", value: server.tools.length },
+                            { label: "Stars", value: formatCompactNumber(server.stars) },
+                            { label: "License", value: server.isOpenSource ? "OSS" : "Commercial" },
+                          ],
+                        }}
+                        locale={locale}
+                        showLabel
+                        label={isEn ? "Share" : "Bagi"}
+                        className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[10px] sm:text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      />
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border/80">
+              <div className="text-xs text-muted-foreground font-mono">
+                {isEn
+                  ? `Showing ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredServers.length)} of ${filteredServers.length} items`
+                  : `Menampilkan ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredServers.length)} dari ${filteredServers.length} item`}
               </div>
-            );
-          })}
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  disabled={currentPage <= 1}
+                  onClick={() => {
+                    setCurrentPage((p) => Math.max(1, p - 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground text-xs font-medium inline-flex items-center gap-1 hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{isEn ? "Prev" : "Sebelumnya"}</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      const isActive = page === currentPage;
+                      return (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage(page);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className={`h-8 min-w-[32px] px-2 rounded-[6px] text-xs font-semibold transition-colors cursor-pointer ${
+                            isActive
+                              ? "bg-foreground text-background shadow-2xs font-bold"
+                              : "border border-border bg-surface text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    }
+                    if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <span key={page} className="px-1 text-xs text-muted-foreground font-mono">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => {
+                    setCurrentPage((p) => Math.min(totalPages, p + 1));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground text-xs font-medium inline-flex items-center gap-1 hover:bg-muted disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  aria-label="Next page"
+                >
+                  <span className="hidden sm:inline">{isEn ? "Next" : "Berikutnya"}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

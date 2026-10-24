@@ -214,6 +214,7 @@ export default async function McpDetailPage({ params }: McpDetailPageProps) {
             alt={server.categoryLabel}
             fill
             priority
+            unoptimized
             className="object-contain p-4"
           />
         </div>

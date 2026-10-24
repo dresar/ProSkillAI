@@ -294,13 +294,13 @@ export function TrendingClient({
           </p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
           {filteredRepos.map((repo) => (
             <div
               key={repo.id}
-              className="group rounded-xl border border-border bg-surface p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs relative"
+              className="group rounded-xl border border-border bg-surface p-3 sm:p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs relative"
             >
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 <Link
                   href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
                   className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/80 bg-muted group/cover hover:opacity-95 transition-opacity"
@@ -394,7 +394,7 @@ export function TrendingClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-1.5 pt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-1.5 pt-1">
                   <Link
                     href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
                     className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
