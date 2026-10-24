@@ -1,6 +1,9 @@
 import { randomBytes } from "node:crypto";
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
+import { toGithubCdnUrl } from "./media-utils";
+
+export { toGithubCdnUrl, formatShortMediaName } from "./media-utils";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 
@@ -22,8 +25,6 @@ export interface UploadedImage {
   mimeType: string;
 }
 
-export { formatShortMediaName } from "./media-utils";
-
 export function getStorageConfig() {
   const owner = process.env.GITHUB_STORAGE_OWNER || process.env.GITHUB_OWNER || "dresar";
   const repo = process.env.GITHUB_STORAGE_REPO || process.env.GITHUB_REPO || "ProSkillAI";
@@ -34,21 +35,6 @@ export function getStorageConfig() {
 
 export function isStorageConfigured(): boolean {
   return getStorageConfig().configured;
-}
-
-export function toGithubCdnUrl(pathOrUrl: string): { cdnUrl: string; rawUrl: string; localUrl: string } {
-  const { owner, repo, branch } = getStorageConfig();
-  const clean = (pathOrUrl || "").trim();
-  if (clean.startsWith("http://") || clean.startsWith("https://")) {
-    if (clean.includes("githubusercontent.com") || clean.includes("jsdelivr.net")) {
-      return { cdnUrl: clean, rawUrl: clean, localUrl: clean };
-    }
-  }
-  const cleanPath = clean.replace(/^\/+/, "").replace(/^public\//, "");
-  const localUrl = `/${cleanPath}`;
-  const cdnUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/public/${cleanPath}`;
-  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/public/${cleanPath}`;
-  return { cdnUrl, rawUrl, localUrl };
 }
 
 export async function uploadImageToStorage({

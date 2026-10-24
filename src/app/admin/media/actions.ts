@@ -1,14 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { readdir, stat, unlink } from "node:fs/promises";
-import { join } from "node:path";
-import { existsSync } from "node:fs";
 import { eq, or, desc } from "drizzle-orm";
 import { requireAdminOrEditor } from "@/lib/auth";
 import { db } from "@/db";
 import { media, type Media } from "@/db/schema";
-import { toGithubCdnUrl, deleteImageFromGitHub } from "@/lib/github-storage";
+import { toGithubCdnUrl } from "@/lib/media-utils";
 
 export interface MediaFileItem {
   id: string;
@@ -24,6 +21,9 @@ export interface MediaFileItem {
 
 export async function getUploadedMediaList(): Promise<MediaFileItem[]> {
   await requireAdminOrEditor();
+
+  const { join } = await import("node:path");
+  const { readdir, stat } = await import("node:fs/promises");
 
   const baseDir = join(process.cwd(), "public", "images", "uploads");
   const diskFiles: Array<{ name: string; fullPath: string; rel: string; folder: string; size: number; mtime: string }> = [];
@@ -126,6 +126,11 @@ export async function getUploadedMediaList(): Promise<MediaFileItem[]> {
 export async function deleteMediaAction(identifier: string) {
   await requireAdminOrEditor();
 
+  const { join } = await import("node:path");
+  const { unlink } = await import("node:fs/promises");
+  const { existsSync } = await import("node:fs");
+  const { deleteImageFromGitHub } = await import("@/lib/github-storage");
+
   const safeIdent = identifier.replace(/\.\./g, "").replace(/^\/+/, "");
   let targetPath = safeIdent;
 
@@ -158,6 +163,11 @@ export async function deleteMediaAction(identifier: string) {
 
 export async function cleanOrphanedMediaAction() {
   await requireAdminOrEditor();
+
+  const { join } = await import("node:path");
+  const { readdir, unlink } = await import("node:fs/promises");
+  const { existsSync } = await import("node:fs");
+  const { deleteImageFromGitHub } = await import("@/lib/github-storage");
 
   const baseDir = join(process.cwd(), "public", "images", "uploads");
   const diskFiles: string[] = [];
