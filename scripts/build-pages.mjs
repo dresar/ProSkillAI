@@ -159,6 +159,12 @@ await esbuild.build({
     "worker_threads": emptyShim,
     "node:wasi": emptyShim,
     "wasi": emptyShim,
+    "node:os": emptyShim,
+    "os": emptyShim,
+    "node:http": emptyShim,
+    "http": emptyShim,
+    "node:https": emptyShim,
+    "https": emptyShim,
   },
   loader: {
     ".bin": "binary",

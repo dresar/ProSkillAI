@@ -76,6 +76,24 @@ export class Script {
   runInThisContext() {}
 }
 
+export const cpus = () => [{ model: "CPU", speed: 2000, times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 } }];
+export const totalmem = () => 1024 * 1024 * 1024;
+export const freemem = () => 1024 * 1024 * 1024;
+export const homedir = () => "/tmp";
+export const tmpdir = () => "/tmp";
+export const hostname = () => "cloudflare";
+export const platform = () => "linux";
+export const release = () => "1.0.0";
+export const type = () => "Linux";
+export const arch = () => "x64";
+export const endianness = () => "LE";
+export const networkInterfaces = () => ({});
+export const userInfo = () => ({ username: "worker", uid: 0, gid: 0, homedir: "/tmp", shell: "" });
+export const uptime = () => 0;
+export const loadavg = () => [0, 0, 0];
+export const constants = {};
+export const EOL = "\n";
+
 const known = {
   readFileSync,
   writeFileSync,
@@ -119,6 +137,23 @@ const known = {
   runInNewContext,
   runInThisContext,
   Script,
+  cpus,
+  totalmem,
+  freemem,
+  homedir,
+  tmpdir,
+  hostname,
+  platform,
+  release,
+  type,
+  arch,
+  endianness,
+  networkInterfaces,
+  userInfo,
+  uptime,
+  loadavg,
+  constants,
+  EOL,
 };
 
 const dummy = new Proxy(function () {}, {
