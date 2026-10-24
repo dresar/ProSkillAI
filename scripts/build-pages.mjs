@@ -21,6 +21,11 @@ function patchNextFiles() {
   patchFile(cdPath, [
     [/require\(["']node:inspector["']\)/g, "({})"],
   ]);
+  const bsPath = path.resolve(process.cwd(), "node_modules/next/dist/server/base-server.js");
+  patchFile(bsPath, [
+    [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
+    [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
+  ]);
 }
 
 patchNextFiles();
@@ -40,6 +45,8 @@ patchFile(handlerPath, [
   [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
   [/require\(["']node:inspector["']\)/g, "({})"],
   [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
+  [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
+  [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
 ]);
 
 const distDir = path.resolve(process.cwd(), ".pages-dist");
@@ -192,6 +199,8 @@ patchFile(workerOutput, [
   [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
   [/require\(["']node:inspector["']\)/g, "({})"],
   [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
+  [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
+  [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
 ]);
 
 const stat = fs.statSync(workerOutput);
