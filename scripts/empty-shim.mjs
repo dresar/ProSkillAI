@@ -181,6 +181,11 @@ const dummy = new Proxy(function () {}, {
   get(target, prop) {
     if (prop === "__esModule") return true;
     if (prop === "default") return dummy;
+    if (prop === "then") return undefined;
+    if (prop === Symbol.toPrimitive) return () => "";
+    if (prop === Symbol.iterator) return function* () {};
+    if (prop === "toString" || prop === "valueOf") return () => "";
+    if (prop === "length") return 0;
     if (prop in known) return known[prop];
     return dummy;
   },
