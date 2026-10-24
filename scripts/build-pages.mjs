@@ -33,6 +33,14 @@ function patchNextFiles() {
     if (typeof url !== "string" || !url) url = "/";
     if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
   ]);
+  const cookiePath = path.resolve(process.cwd(), "node_modules/next/dist/compiled/cookie/index.js");
+  patchFile(cookiePath, [
+    [/throw\s+new\s+TypeError\(["']argument str must be a string["']\)/g, "return {}"],
+  ]);
+  const gcpPath = path.resolve(process.cwd(), "node_modules/next/dist/server/api-utils/get-cookie-parser.js");
+  patchFile(gcpPath, [
+    [/if\s*\(!cookie\)\s*\{/g, "if (!cookie || typeof cookie !== 'string') {"],
+  ]);
 }
 
 patchNextFiles();
@@ -57,6 +65,7 @@ patchFile(handlerPath, [
   [/function\s+parseUrl\s*\(\s*url\s*\)\s*\{/g, `function parseUrl(url) {
     if (typeof url !== "string" || !url) url = "/";
     if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
+  [/throw\s+new\s+TypeError\(["']argument str must be a string["']\)/g, "return {}"],
   [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "/")), $1.url = ($1.url.startsWith("/") || $1.url.startsWith("http://") || $1.url.startsWith("https://")) ? $1.url : "/" + $1.url, $1.url).split("?"'],
 ]);
 
@@ -215,6 +224,7 @@ patchFile(workerOutput, [
   [/function\s+parseUrl\s*\(\s*url\s*\)\s*\{/g, `function parseUrl(url) {
     if (typeof url !== "string" || !url) url = "/";
     if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
+  [/throw\s+new\s+TypeError\(["']argument str must be a string["']\)/g, "return {}"],
   [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "/")), $1.url = ($1.url.startsWith("/") || $1.url.startsWith("http://") || $1.url.startsWith("https://")) ? $1.url : "/" + $1.url, $1.url).split("?"'],
 ]);
 
