@@ -39,6 +39,7 @@ const handlerPath = path.join(openNextDir, "server-functions/default/handler.mjs
 patchFile(handlerPath, [
   [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
   [/require\(["']node:inspector["']\)/g, "({})"],
+  [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
 ]);
 
 const distDir = path.resolve(process.cwd(), ".pages-dist");
@@ -78,6 +79,17 @@ workerContent = workerContent.replace(
 workerContent = workerContent.replace(
   /return\s+handler\(/g,
   "return serverHandler("
+);
+workerContent = workerContent.replace(
+  /async\s+fetch\s*\(\s*request\s*,\s*env\s*,\s*ctx\s*\)\s*\{/g,
+  `async fetch(request, env, ctx) {
+    if (env.ASSETS) {
+      const url = new URL(request.url);
+      if (url.pathname.startsWith("/_next/static/") || url.pathname === "/robots.txt" || url.pathname === "/icon.svg" || url.pathname === "/favicon.ico" || (url.pathname.includes(".") && !url.pathname.endsWith(".html"))) {
+        const asset = await env.ASSETS.fetch(request);
+        if (asset.status < 400) return asset;
+      }
+    }`
 );
 
 const patchedWorkerEntry = path.join(openNextDir, "worker.static.js");
@@ -179,6 +191,7 @@ await esbuild.build({
 patchFile(workerOutput, [
   [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
   [/require\(["']node:inspector["']\)/g, "({})"],
+  [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
 ]);
 
 const stat = fs.statSync(workerOutput);
