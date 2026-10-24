@@ -382,105 +382,107 @@ export function McpClient({ servers, locale }: McpClientProps) {
               return (
                 <div
                   key={server.id}
-                  className="group rounded-xl border border-border bg-surface p-3 sm:p-3.5 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
+                  className="group rounded-xl border border-border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs"
                 >
-                  <div className="space-y-2 sm:space-y-2.5">
-                    <Link
-                      href={`/${locale}/mcp/${server.slug}`}
-                      className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
-                    >
-                      <Image
-                        src={getMcpCoverImage(server.imageUrl)}
-                        alt={server.name}
-                        fill
-                        unoptimized
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          if (target.src !== DEFAULT_MCP_COVER) {
-                            target.src = DEFAULT_MCP_COVER;
-                          }
-                        }}
-                      />
-                    </Link>
+                  <Link
+                    href={`/${locale}/mcp/${server.slug}`}
+                    className="block relative aspect-video w-full overflow-hidden border-b border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
+                  >
+                    <Image
+                      src={getMcpCoverImage(server.imageUrl)}
+                      alt={server.name}
+                      fill
+                      unoptimized
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        if (target.src !== DEFAULT_MCP_COVER) {
+                          target.src = DEFAULT_MCP_COVER;
+                        }
+                      }}
+                    />
+                  </Link>
 
-                    <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-                      <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
-                          <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
+                  <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1 space-y-3">
+                    <div className="space-y-2 sm:space-y-2.5">
+                      <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
+                            <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
+                          </div>
+                          <div className="min-w-0">
+                            <Link
+                              href={`/${locale}/mcp/${server.slug}`}
+                              className="text-[11px] sm:text-xs font-semibold text-foreground hover:underline truncate block"
+                            >
+                              {server.name}
+                            </Link>
+                            <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono truncate">
+                              {server.vendor}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <Link
-                            href={`/${locale}/mcp/${server.slug}`}
-                            className="text-[11px] sm:text-xs font-semibold text-foreground hover:underline truncate block"
-                          >
-                            {server.name}
-                          </Link>
-                          <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono truncate">
-                            {server.vendor}
-                          </p>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          {server.isOpenSource && (
+                            <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                              OSS
+                            </span>
+                          )}
+                          {server.isSelfHostable && (
+                            <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold">
+                              Self-Host
+                            </span>
+                          )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
-                        {server.isOpenSource && (
-                          <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
-                            OSS
-                          </span>
-                        )}
-                        {server.isSelfHostable && (
-                          <span className="text-[8px] sm:text-[9px] font-mono px-1 sm:px-1.5 py-0.2 rounded-[4px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-semibold">
-                            Self-Host
-                          </span>
-                        )}
+                      <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                        {server.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 sm:pt-2.5 border-t border-border/70 space-y-2">
+                      <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground">
+                        <span className="font-mono truncate max-w-[90px] sm:max-w-[130px]">
+                          {server.categoryLabel}
+                        </span>
+                        <span className="font-mono">
+                          {formatCompactNumber(server.stars)} stars
+                        </span>
                       </div>
-                    </div>
 
-                    <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
-                      {server.description}
-                    </p>
-                  </div>
+                      <div className="grid grid-cols-2 gap-1 sm:gap-1.5 pt-0.5">
+                        <Link
+                          href={`/${locale}/mcp/${server.slug}`}
+                          className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[10px] sm:text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>{isEn ? "Detail" : "Detail"}</span>
+                        </Link>
 
-                  <div className="pt-2 sm:pt-2.5 border-t border-border/70 space-y-2">
-                    <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground">
-                      <span className="font-mono truncate max-w-[90px] sm:max-w-[130px]">
-                        {server.categoryLabel}
-                      </span>
-                      <span className="font-mono">
-                        {formatCompactNumber(server.stars)} stars
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1 sm:gap-1.5 pt-0.5">
-                      <Link
-                        href={`/${locale}/mcp/${server.slug}`}
-                        className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[10px] sm:text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        <span>{isEn ? "Detail" : "Detail"}</span>
-                      </Link>
-
-                      <ShareButton
-                        item={{
-                          type: "mcp",
-                          slug: server.id,
-                          title: server.name,
-                          description: server.description,
-                          url: `/${locale}/mcp/${server.slug}`,
-                          category: server.categoryLabel,
-                          author: server.vendor,
-                          stats: [
-                            { label: "Tools", value: server.tools.length },
-                            { label: "Stars", value: formatCompactNumber(server.stars) },
-                            { label: "License", value: server.isOpenSource ? "OSS" : "Commercial" },
-                          ],
-                        }}
-                        locale={locale}
-                        showLabel
-                        label={isEn ? "Share" : "Bagi"}
-                        className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[10px] sm:text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                      />
+                        <ShareButton
+                          item={{
+                            type: "mcp",
+                            slug: server.id,
+                            title: server.name,
+                            description: server.description,
+                            url: `/${locale}/mcp/${server.slug}`,
+                            category: server.categoryLabel,
+                            author: server.vendor,
+                            stats: [
+                              { label: "Tools", value: server.tools.length },
+                              { label: "Stars", value: formatCompactNumber(server.stars) },
+                              { label: "License", value: server.isOpenSource ? "OSS" : "Commercial" },
+                            ],
+                          }}
+                          locale={locale}
+                          showLabel
+                          label={isEn ? "Share" : "Bagi"}
+                          className="h-7 px-1.5 sm:px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[10px] sm:text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>

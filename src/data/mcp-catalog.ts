@@ -34,6 +34,8 @@ export interface McpServerItem {
   githubUrl: string;
   verified: boolean;
   imageUrl?: string;
+  logoUrl?: string;
+  gallery?: string[];
 }
 
 export const MCP_CATEGORIES: McpCategory[] = [
@@ -105,7 +107,15 @@ export const MCP_SERVERS_CATALOG: McpServerItem[] = [
     ],
     "websiteUrl": "https://agenticskills.io/mcp/langchain-mcp",
     "githubUrl": "https://github.com/modelcontextprotocol/servers/tree/main/src/langchain-mcp",
-    "verified": true
+    "verified": true,
+    "logoUrl": "/images/mcp/logos/langchain.png",
+    "gallery": [
+      "/images/mcp/previews/langchain/1.svg",
+      "/images/mcp/previews/langchain/2.svg",
+      "/images/mcp/previews/langchain/3.svg",
+      "/images/mcp/previews/langchain/4.svg",
+      "/images/mcp/previews/langchain/5.svg"
+    ]
   },
   {
     "id": "mcp-2",

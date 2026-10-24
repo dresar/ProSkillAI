@@ -1,0 +1,23 @@
+<svg viewBox="0 0 1200 675" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="675" fill="#070a13"/>
+    <rect x="40" y="40" width="1120" height="595" rx="12" fill="#04070e" stroke="#1e293b" stroke-width="2"/>
+    <text x="80" y="95" font-family="monospace" font-size="13" font-weight="bold" fill="#a855f7" letter-spacing="2">CLIENT CONFIGURATION · CLAUDE DESKTOP / CURSOR 03/05</text>
+    <text x="80" y="135" font-family="sans-serif" font-size="24" font-weight="bold" fill="#ffffff">claude_desktop_config.json Integration</text>
+    <rect x="80" y="175" width="1040" height="390" rx="10" fill="#0b0f19" stroke="#1e293b"/>
+    <circle cx="110" cy="205" r="6" fill="#ef4444"/>
+    <circle cx="130" cy="205" r="6" fill="#f59e0b"/>
+    <circle cx="150" cy="205" r="6" fill="#10b981"/>
+    <text x="180" y="210" font-family="monospace" font-size="12" fill="#64748b">~/Library/Application Support/Claude/claude_desktop_config.json</text>
+
+    <text x="110" y="260" font-family="monospace" font-size="15" fill="#f8fafc">{</text>
+    <text x="140" y="295" font-family="monospace" font-size="15" fill="#93c5fd">  &quot;mcpServers&quot;: {</text>
+    <text x="170" y="330" font-family="monospace" font-size="15" fill="#34d399">    &quot;langchain-mcp&quot;: {</text>
+    <text x="200" y="365" font-family="monospace" font-size="15" fill="#cbd5e1">      &quot;command&quot;: &quot;npx&quot;,</text>
+    <text x="200" y="400" font-family="monospace" font-size="15" fill="#cbd5e1">      &quot;args&quot;: [</text>
+    <text x="230" y="435" font-family="monospace" font-size="15" fill="#fcd34d">        &quot;-y&quot;,</text>
+    <text x="230" y="470" font-family="monospace" font-size="15" fill="#fcd34d">        &quot;@modelcontextprotocol/server-langchain-mcp&quot;</text>
+    <text x="200" y="505" font-family="monospace" font-size="15" fill="#cbd5e1">      ]</text>
+    <text x="170" y="535" font-family="monospace" font-size="15" fill="#ffffff">    }</text>
+    <text x="140" y="555" font-family="monospace" font-size="15" fill="#ffffff">  }</text>
+    <text x="110" y="575" font-family="monospace" font-size="15" fill="#ffffff">}</text>
+  </svg>
