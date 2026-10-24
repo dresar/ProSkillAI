@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { QrCode } from "lucide-react";
 import type {
   ShareAspectRatio,
   ShareItemData,
@@ -10,16 +9,11 @@ import type {
   ShareTheme,
   ShareUserAttribution,
 } from "@/types/share";
-import {
-  PALETTE_CONFIGS,
-  buildShareUrl,
-  generateQrCodeDataUrl,
-  getCurrentDomain,
-} from "@/lib/share-utils";
+import { getCurrentDomain } from "@/lib/share-utils";
 
 interface ShareCardProps {
   item: ShareItemData;
-  theme: ShareTheme;
+  theme?: ShareTheme;
   palette?: SharePalette;
   aspectRatio?: ShareAspectRatio;
   userAttribution?: ShareUserAttribution;
@@ -29,31 +23,12 @@ interface ShareCardProps {
 
 export function ShareCard({
   item,
-  theme,
-  palette = "zinc",
   aspectRatio = "16:9",
   userAttribution,
   domain,
   className = "",
 }: ShareCardProps) {
-  const isDark = theme === "dark";
-  const p = PALETTE_CONFIGS[palette] || PALETTE_CONFIGS.zinc;
-  const canonicalUrl = buildShareUrl(item.url);
-  const [qrSrc, setQrSrc] = React.useState<string | null>(null);
-
   const displayDomain = domain || getCurrentDomain();
-
-  React.useEffect(() => {
-    let active = true;
-    generateQrCodeDataUrl(canonicalUrl, theme).then((url) => {
-      if (active) {
-        setQrSrc(url);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [canonicalUrl, theme]);
 
   const typeLabels: Record<string, string> = {
     skill: "AGENT SKILL",
@@ -80,272 +55,152 @@ export function ShareCard({
         { label: "License", value: "Open Source" },
       ];
 
-  const bgGradient = isDark ? p.darkGradient : p.lightGradient;
-  const borderColor = isDark ? p.darkBorder : p.lightBorder;
-  const badgeClass = isDark ? p.darkBadge : p.lightBadge;
-
   const isStory = aspectRatio === "9:16";
   const isPortrait = aspectRatio === "3:4";
   const isSquare = aspectRatio === "1:1";
   const isVertical = isStory || isPortrait;
 
   const coverUrl = item.cover || (item.type === "repo" ? `https://opengraph.githubassets.com/1/${item.title}` : null);
-
   const showUserBadge = Boolean(userAttribution?.show && userAttribution?.username);
   const displayUsername = userAttribution?.username || "";
 
   return (
     <div
-      className={`relative w-full rounded-2xl border bg-gradient-to-br ${bgGradient} ${borderColor} ${
-        isStory ? "p-3 sm:p-4.5" : isSquare ? "p-3.5 sm:p-5" : "p-4 sm:p-6"
-      } transition-all duration-300 shadow-xl overflow-hidden select-none flex flex-col justify-between ${
-        isDark ? "text-zinc-100" : "text-zinc-900"
+      className={`relative w-full rounded-2xl border border-white/15 bg-black/95 text-white overflow-hidden select-none flex flex-col justify-between shadow-2xl transition-all duration-300 ${
+        isStory ? "p-3 sm:p-4" : isSquare ? "p-3.5 sm:p-5" : "p-4 sm:p-5.5"
       } ${className}`}
+      style={{
+        backgroundImage: "url('/images/share-card-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      <div className="flex items-center justify-between gap-2 shrink-0">
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 pointer-events-none" />
+
+      <div className="relative z-10 flex items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 relative shrink-0">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 relative shrink-0">
             <Image
-              src={isDark ? "/brand/logo-mark-white.png" : "/brand/logo-mark-black.png"}
+              src="/brand/logo-mark-white.png"
               alt="Skills Logo"
-              width={32}
-              height={32}
-              className="w-full h-full object-contain"
+              width={28}
+              height={28}
+              className="w-full h-full object-contain drop-shadow"
               priority
             />
           </div>
           <div className="leading-tight">
-            <span className="text-xs sm:text-sm font-bold tracking-tight block">
+            <span className="text-xs sm:text-sm font-bold tracking-tight block bg-gradient-to-r from-white via-zinc-100 to-cyan-300 bg-clip-text text-transparent">
               Skills
             </span>
-            <span
-              className={`text-[9px] sm:text-[10px] font-mono block ${
-                isDark ? "text-blue-400" : "text-blue-600"
-              }`}
-            >
+            <span className="text-[9px] sm:text-[10px] font-mono text-cyan-400 block tracking-wide">
               {displayDomain}
             </span>
           </div>
         </div>
 
         {showUserBadge ? (
-          <div
-            className={`flex items-center gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border text-[10px] sm:text-[11px] font-medium shrink-0 ${
-              isDark
-                ? "bg-blue-950/40 border-blue-500/30 text-blue-300"
-                : "bg-blue-50 border-blue-200 text-blue-900"
-            }`}
-          >
-            <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-blue-500 text-white text-[8px] sm:text-[9px] font-bold flex items-center justify-center uppercase">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-950/60 text-cyan-300 text-[10px] font-medium shrink-0">
+            <span className="w-3.5 h-3.5 rounded-full bg-cyan-500 text-black text-[8px] font-bold flex items-center justify-center uppercase">
               {displayUsername.charAt(0) || "U"}
             </span>
-            <span className="font-semibold tracking-tight">
+            <span className="font-semibold tracking-tight font-mono">
               @{displayUsername}
             </span>
           </div>
         ) : (
-          <span
-            className={`text-[9px] sm:text-[10px] font-mono uppercase font-semibold px-2 py-0.5 rounded-[5px] border ${badgeClass} shrink-0`}
-          >
+          <span className="text-[9px] sm:text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-[5px] border border-cyan-500/30 bg-cyan-950/60 text-cyan-300 shrink-0">
             {typeLabel}
           </span>
         )}
       </div>
 
       <div
-        className={`my-auto py-2 ${
+        className={`relative z-10 my-auto py-1.5 ${
           isVertical
-            ? "flex flex-col items-center text-center gap-2 sm:gap-3"
+            ? "flex flex-col items-center text-center gap-2"
             : isSquare
-            ? "flex flex-col gap-2.5"
-            : "grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_110px] gap-3 sm:gap-4 items-center"
+            ? "flex flex-col gap-2"
+            : "flex flex-col gap-2"
         }`}
       >
-        <div className={`space-y-1.5 min-w-0 ${isVertical ? "flex flex-col items-center" : ""}`}>
-          <div className="flex items-center gap-1.5 flex-wrap justify-center sm:justify-start">
-            <span
-              className={`text-[10px] sm:text-[11px] font-semibold tracking-tight px-1.5 py-0.5 rounded-[4px] border ${badgeClass}`}
-            >
-              {categoryName}
+        <div className="flex items-center gap-1.5 flex-wrap justify-start">
+          <span className="text-[10px] sm:text-[11px] font-semibold tracking-tight px-1.5 py-0.5 rounded-[4px] border border-blue-500/40 bg-blue-950/70 text-blue-300 font-mono">
+            {categoryName}
+          </span>
+          {item.author && (
+            <span className="text-[10px] sm:text-[11px] font-medium text-zinc-300">
+              by <span className="text-cyan-300 font-mono">@{item.author.replace(/^@/, "")}</span>
             </span>
-            {item.author && (
-              <span
-                className={`text-[10px] sm:text-[11px] font-medium truncate ${
-                  isDark ? "text-zinc-400" : "text-zinc-600"
-                }`}
-              >
-                by @{item.author.replace(/^@/, "")}
-              </span>
-            )}
-          </div>
+          )}
+        </div>
 
-          <h3
-            className={`font-bold tracking-tight leading-snug ${
-              isStory
-                ? "text-xs sm:text-sm line-clamp-2 max-w-[220px]"
-                : isPortrait
-                ? "text-sm sm:text-base line-clamp-3 max-w-[240px]"
-                : isSquare
-                ? "text-xs sm:text-sm line-clamp-2"
-                : "text-sm sm:text-base line-clamp-2"
+        <h3
+          className={`font-extrabold tracking-tight leading-tight text-white ${
+            isStory
+              ? "text-xs sm:text-sm line-clamp-2"
+              : isPortrait
+              ? "text-sm sm:text-base line-clamp-2"
+              : isSquare
+              ? "text-xs sm:text-sm line-clamp-2"
+              : "text-sm sm:text-lg line-clamp-2"
+          }`}
+        >
+          {item.title}
+        </h3>
+
+        {coverUrl && (
+          <div
+            className={`relative aspect-[2/1] w-full rounded-lg overflow-hidden border border-white/20 bg-black/50 shadow-md shrink-0 ${
+              isStory ? "max-h-20" : isPortrait ? "max-h-24" : isSquare ? "max-h-24" : "max-h-28 sm:max-h-32"
             }`}
           >
-            {item.title}
-          </h3>
+            <Image
+              src={coverUrl}
+              alt={item.title}
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          </div>
+        )}
 
-          {coverUrl && (
-            <div className="relative aspect-[2/1] max-h-20 sm:max-h-24 w-full rounded-lg overflow-hidden border border-white/20 dark:border-white/10 bg-black/20 my-1 shrink-0">
-              <Image
-                src={coverUrl}
-                alt={item.title}
-                fill
-                unoptimized
-                className="object-cover"
-              />
-            </div>
-          )}
-
+        {item.description && (
           <p
-            className={`text-[10px] sm:text-xs leading-relaxed ${
-              isDark ? "text-zinc-300" : "text-zinc-600"
-            } ${
+            className={`text-[10px] sm:text-xs text-zinc-300 leading-relaxed ${
               isStory
-                ? "max-w-[210px] line-clamp-2"
+                ? "line-clamp-2"
                 : isPortrait
-                ? "max-w-[230px] line-clamp-3"
+                ? "line-clamp-2"
                 : isSquare
                 ? "line-clamp-2"
                 : "line-clamp-2"
             }`}
           >
-            {item.description || ""}
+            {item.description}
           </p>
-
-          {isVertical && (
-            <div className="flex items-center gap-1.5 pt-0.5 flex-wrap justify-center">
-              {stats.slice(0, 2).map((s, idx) => (
-                <span
-                  key={idx}
-                  className={`px-1.5 py-0.5 rounded-[4px] border text-[9px] font-mono ${
-                    isDark
-                      ? "bg-white/5 border-white/10 text-zinc-300"
-                      : "bg-black/5 border-black/10 text-zinc-700"
-                  }`}
-                >
-                  {s.label}: <strong>{s.value}</strong>
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {isSquare ? (
-          <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/40">
-            <div className="flex items-center gap-1 flex-wrap">
-              {stats.slice(0, 2).map((s, idx) => (
-                <span
-                  key={idx}
-                  className={`px-1.5 py-0.5 rounded-[4px] border text-[9px] font-mono ${
-                    isDark
-                      ? "bg-white/5 border-white/10 text-zinc-300"
-                      : "bg-black/5 border-black/10 text-zinc-700"
-                  }`}
-                >
-                  {s.label}: <strong>{s.value}</strong>
-                </span>
-              ))}
-            </div>
-
-            <div
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg border shadow-xs shrink-0 ${
-                isDark
-                  ? "bg-zinc-950 text-zinc-100 border-zinc-800"
-                  : "bg-white text-zinc-950 border-zinc-200/80"
-              }`}
-            >
-              {qrSrc ? (
-                <Image
-                  src={qrSrc}
-                  alt="QR Code"
-                  width={56}
-                  height={56}
-                  unoptimized
-                  className="w-14 h-14 object-contain rounded-xs"
-                />
-              ) : (
-                <div className="w-14 h-14 flex items-center justify-center text-zinc-400">
-                  <QrCode className="w-6 h-6 animate-pulse" />
-                </div>
-              )}
-              <span
-                className={`text-[7px] font-mono font-bold uppercase tracking-wider mt-0.5 ${
-                  isDark ? "text-zinc-400" : "text-zinc-800"
-                }`}
-              >
-                Scan to Open
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div
-            className={`flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border shadow-md shrink-0 ${
-              isVertical ? "w-20 sm:w-24 mx-auto" : "w-22 sm:w-26 mx-auto sm:mx-0"
-            } ${
-              isDark
-                ? "bg-zinc-950 text-zinc-100 border-zinc-800"
-                : "bg-white text-zinc-950 border-zinc-200/80"
-            }`}
-          >
-            {qrSrc ? (
-              <Image
-                src={qrSrc}
-                alt="QR Code"
-                width={76}
-                height={76}
-                unoptimized
-                className={`${isVertical ? "w-14 h-14 sm:w-18 sm:h-18" : "w-16 h-16 sm:w-20 sm:h-20"} object-contain rounded-md`}
-              />
-            ) : (
-              <div className={`${isVertical ? "w-14 h-14 sm:w-18 sm:h-18" : "w-16 h-16 sm:w-20 sm:h-20"} flex items-center justify-center text-zinc-400`}>
-                <QrCode className="w-6 h-6 animate-pulse" />
-              </div>
-            )}
-            <span
-              className={`text-[8px] sm:text-[9px] font-mono font-bold uppercase tracking-wider mt-0.5 ${
-                isDark ? "text-zinc-400" : "text-zinc-800"
-              }`}
-            >
-              Scan to Open
-            </span>
-          </div>
         )}
       </div>
 
-      <div
-        className={`pt-2 border-t flex items-center justify-between gap-1.5 flex-wrap text-[10px] font-mono shrink-0 ${
-          isDark
-            ? "border-white/10 text-zinc-400"
-            : "border-zinc-300/80 text-zinc-600"
-        }`}
-      >
-        <div className="flex items-center gap-1 flex-wrap">
-          {!isVertical && !isSquare &&
-            stats.slice(0, 3).map((s, idx) => (
+      <div className="relative z-10 pt-2 border-t border-white/10 flex items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {stats.slice(0, 3).map((s, idx) => {
+            const isStar = s.label.toLowerCase().includes("star") || s.label.toLowerCase().includes("cop");
+            const isFork = s.label.toLowerCase().includes("fork") || s.label.toLowerCase().includes("var");
+            const valueColor = isStar ? "text-amber-400" : isFork ? "text-cyan-400" : "text-emerald-400";
+            return (
               <span
                 key={idx}
-                className={`px-1.5 py-0.5 rounded-[4px] border ${
-                  isDark
-                    ? "bg-white/5 border-white/10 text-zinc-300"
-                    : "bg-black/5 border-black/10 text-zinc-700"
-                }`}
+                className="px-1.5 py-0.5 rounded-[4px] border border-white/10 bg-black/40 text-[9px] sm:text-[10px] font-mono text-zinc-300"
               >
-                {s.label}: <strong className={isDark ? "text-white" : "text-zinc-900"}>{s.value}</strong>
+                {s.label}: <strong className={`font-bold ${valueColor}`}>{s.value}</strong>
               </span>
-            ))}
+            );
+          })}
         </div>
 
-        <span className="text-[9px] sm:text-[10px] font-semibold text-blue-500 dark:text-blue-400 ml-auto">
-          {displayDomain}
+        <span className="text-[9px] sm:text-[10px] font-mono text-cyan-400/80 shrink-0">
+          verified
         </span>
       </div>
     </div>

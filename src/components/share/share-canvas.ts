@@ -7,9 +7,6 @@ import type {
 } from "@/types/share";
 import {
   ASPECT_RATIO_CONFIGS,
-  PALETTE_CONFIGS,
-  buildShareUrl,
-  generateQrCodeDataUrl,
   getCurrentDomain,
 } from "@/lib/share-utils";
 
@@ -92,7 +89,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 export async function generateShareCardBlob(
   item: ShareItemData,
-  theme: ShareTheme,
+  theme: ShareTheme = "dark",
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
   userAttribution?: ShareUserAttribution,
@@ -114,15 +111,24 @@ export async function generateShareCardBlob(
     throw new Error("Could not get 2d context");
   }
 
-  const isDark = theme === "dark";
-  const p = PALETTE_CONFIGS[palette] || PALETTE_CONFIGS.zinc;
-  const canonicalUrl = buildShareUrl(item.url);
   const domainText = domain || getCurrentDomain();
 
-  const bgGradient = ctx.createLinearGradient(0, 0, width, height);
-  bgGradient.addColorStop(0, isDark ? p.canvasDarkBgStart : p.canvasLightBgStart);
-  bgGradient.addColorStop(1, isDark ? p.canvasDarkBgEnd : p.canvasLightBgEnd);
-  ctx.fillStyle = bgGradient;
+  try {
+    const bgImg = await loadImage("/images/share-card-bg.png");
+    ctx.drawImage(bgImg, 0, 0, width, height);
+  } catch {
+    const bgGradient = ctx.createLinearGradient(0, 0, width, height);
+    bgGradient.addColorStop(0, "#080b14");
+    bgGradient.addColorStop(1, "#020408");
+    ctx.fillStyle = bgGradient;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  const overlayGrad = ctx.createLinearGradient(0, 0, 0, height);
+  overlayGrad.addColorStop(0, "rgba(0, 0, 0, 0.45)");
+  overlayGrad.addColorStop(0.5, "rgba(0, 0, 0, 0.2)");
+  overlayGrad.addColorStop(1, "rgba(0, 0, 0, 0.65)");
+  ctx.fillStyle = overlayGrad;
   ctx.fillRect(0, 0, width, height);
 
   const padding = width >= 1000 ? 44 : 32;
@@ -133,9 +139,9 @@ export async function generateShareCardBlob(
   const cardRadius = 24;
 
   drawRoundedRect(ctx, cardX, cardY, cardW, cardH, cardRadius);
-  ctx.fillStyle = isDark ? "rgba(10, 14, 23, 0.75)" : "rgba(255, 255, 255, 0.82)";
+  ctx.fillStyle = "rgba(7, 10, 18, 0.82)";
   ctx.fill();
-  ctx.strokeStyle = isDark ? p.canvasDarkBorder : p.canvasLightBorder;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.16)";
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
@@ -143,15 +149,14 @@ export async function generateShareCardBlob(
   const brandMarkY = cardY + 36;
   const brandMarkSize = 46;
 
-  const logoSrc = isDark ? "/brand/logo-mark-white.png" : "/brand/logo-mark-black.png";
   try {
-    const logoImg = await loadImage(logoSrc);
+    const logoImg = await loadImage("/brand/logo-mark-white.png");
     ctx.drawImage(logoImg, brandMarkX, brandMarkY, brandMarkSize, brandMarkSize);
   } catch {
     drawRoundedRect(ctx, brandMarkX, brandMarkY, brandMarkSize, brandMarkSize, 10);
-    ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
-    ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
+    ctx.fillStyle = "#09090b";
     ctx.font = "bold 24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -160,12 +165,12 @@ export async function generateShareCardBlob(
 
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.font = "bold 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-  ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
-  ctx.fillText("Skills", brandMarkX + brandMarkSize + 14, brandMarkY + 4);
+  ctx.font = "bold 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText("Skills", brandMarkX + brandMarkSize + 14, brandMarkY + 3);
 
-  ctx.font = "600 12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-  ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
+  ctx.font = "600 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+  ctx.fillStyle = "#38bdf8";
   ctx.fillText(domainText, brandMarkX + brandMarkSize + 14, brandMarkY + 28);
 
   const showUserBadge = Boolean(userAttribution?.show && userAttribution?.username);
@@ -185,21 +190,21 @@ export async function generateShareCardBlob(
     const userBadgeY = brandMarkY + 6;
 
     drawRoundedRect(ctx, userBadgeX, userBadgeY, userBadgeWidth, 34, 17);
-    ctx.fillStyle = isDark ? "rgba(30, 58, 138, 0.45)" : "rgba(219, 234, 254, 0.9)";
+    ctx.fillStyle = "rgba(6, 78, 59, 0.4)";
     ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(96, 165, 250, 0.4)" : "rgba(59, 130, 246, 0.4)";
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(userBadgeX + 17, userBadgeY + 17, 8, 0, Math.PI * 2);
-    ctx.fillStyle = "#3b82f6";
+    ctx.fillStyle = "#38bdf8";
     ctx.fill();
 
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.font = "bold 12px -apple-system, BlinkMacSystemFont, sans-serif";
-    ctx.fillStyle = isDark ? "#93c5fd" : "#1e40af";
+    ctx.fillStyle = "#7dd3fc";
     ctx.fillText(userText, userBadgeX + 30, userBadgeY + 17);
   } else {
     const badgeText = typeLabel;
@@ -208,23 +213,17 @@ export async function generateShareCardBlob(
     const badgeY = brandMarkY + 6;
 
     drawRoundedRect(ctx, badgeX, badgeY, badgeWidth, 32, 8);
-    ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)";
+    ctx.fillStyle = "rgba(6, 78, 59, 0.35)";
     ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)";
+    ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.fillStyle = isDark ? "#e4e4e7" : "#27272a";
+    ctx.fillStyle = "#7dd3fc";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(badgeText, badgeX + badgeWidth / 2, badgeY + 16);
   }
-
-  const isVertical = aspectRatio === "9:16" || aspectRatio === "3:4";
-  const isSquare = aspectRatio === "1:1";
-
-  const qrDataUrl = await generateQrCodeDataUrl(canonicalUrl, theme);
-  const qrImage = await loadImage(qrDataUrl);
 
   const categoryName = item.category || (
     item.type === "skill"
@@ -236,220 +235,167 @@ export async function generateShareCardBlob(
       : "Developer Tools"
   );
 
+  const isVertical = aspectRatio === "9:16" || aspectRatio === "3:4";
+  const isSquare = aspectRatio === "1:1";
+  const coverUrl = item.cover || (item.type === "repo" ? `https://opengraph.githubassets.com/1/${item.title}` : null);
+
+  let coverImg: HTMLImageElement | null = null;
+  if (coverUrl) {
+    try {
+      coverImg = await loadImage(coverUrl);
+    } catch {
+      coverImg = null;
+    }
+  }
+
   if (isVertical) {
-    const contentY = brandMarkY + 110;
+    let currentY = brandMarkY + 100;
 
     ctx.font = "bold 15px -apple-system, BlinkMacSystemFont, sans-serif";
     const catWidth = ctx.measureText(categoryName).width + 26;
     const catX = (width - catWidth) / 2;
-    drawRoundedRect(ctx, catX, contentY, catWidth, 34, 8);
-    ctx.fillStyle = isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(239, 246, 255, 1)";
+    drawRoundedRect(ctx, catX, currentY, catWidth, 34, 8);
+    ctx.fillStyle = "rgba(30, 58, 138, 0.6)";
     ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(59, 130, 246, 0.35)" : "rgba(191, 219, 254, 1)";
+    ctx.strokeStyle = "rgba(96, 165, 250, 0.5)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
+    ctx.fillStyle = "#93c5fd";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(categoryName, width / 2, contentY + 17);
+    ctx.fillText(categoryName, width / 2, currentY + 17);
+
+    currentY += 56;
+
+    if (item.author) {
+      ctx.font = "600 16px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = "#38bdf8";
+      ctx.fillText(`by @${item.author.replace(/^@/, "")}`, width / 2, currentY);
+      currentY += 34;
+    }
 
     ctx.font = "bold 44px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
+    ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    const titleLines = wrapText(ctx, item.title, cardW - 100, 3);
-    let currentY = contentY + 54;
+    const titleLines = wrapText(ctx, item.title, cardW - 80, 3);
     for (const line of titleLines) {
       ctx.fillText(line, width / 2, currentY);
       currentY += 56;
     }
 
-    ctx.font = "500 21px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#a1a1aa" : "#52525b";
-    const descLines = wrapText(ctx, item.description || "", cardW - 120, 3);
+    if (coverImg) {
+      const coverW = Math.min(cardW - 80, 540);
+      const coverH = coverW * 0.5;
+      const coverX = (width - coverW) / 2;
+      currentY += 16;
+      ctx.save();
+      drawRoundedRect(ctx, coverX, currentY, coverW, coverH, 14);
+      ctx.clip();
+      ctx.drawImage(coverImg, coverX, currentY, coverW, coverH);
+      ctx.restore();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.lineWidth = 2;
+      drawRoundedRect(ctx, coverX, currentY, coverW, coverH, 14);
+      ctx.stroke();
+      currentY += coverH + 20;
+    }
+
+    ctx.font = "500 22px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillStyle = "#cbd5e1";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    const descLines = wrapText(ctx, item.description || "", cardW - 100, 4);
     currentY += 12;
     for (const line of descLines) {
       ctx.fillText(line, width / 2, currentY);
-      currentY += 32;
+      currentY += 34;
     }
 
-    const qrCardSize = height >= 1600 ? 320 : 250;
-    const qrCardX = (width - qrCardSize) / 2;
-    const qrCardY = currentY + 50;
-
-    drawRoundedRect(ctx, qrCardX, qrCardY, qrCardSize, qrCardSize + 48, 20);
-    ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
-    ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    const qrInnerSize = qrCardSize - 40;
-    ctx.drawImage(qrImage, qrCardX + 20, qrCardY + 20, qrInnerSize, qrInnerSize);
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 14px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#a1a1aa" : "#52525b";
-    ctx.fillText("SCAN TO OPEN", width / 2, qrCardY + qrCardSize + 22);
-
-    const footerY = cardY + cardH - 50;
+    const footerY = cardY + cardH - 60;
     ctx.beginPath();
     ctx.moveTo(cardX + 36, footerY);
     ctx.lineTo(cardX + cardW - 36, footerY);
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    ctx.font = "bold 15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
+    ctx.font = "bold 16px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.fillStyle = "#38bdf8";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(domainText, width / 2, footerY + 26);
+    ctx.fillText(domainText, width / 2, footerY + 30);
   } else if (isSquare) {
-    const contentY = brandMarkY + 90;
+    let currentY = brandMarkY + 80;
 
     ctx.font = "bold 14px -apple-system, BlinkMacSystemFont, sans-serif";
     const catWidth = ctx.measureText(categoryName).width + 24;
     const catX = cardX + 36;
-    drawRoundedRect(ctx, catX, contentY, catWidth, 32, 6);
-    ctx.fillStyle = isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(239, 246, 255, 1)";
+    drawRoundedRect(ctx, catX, currentY, catWidth, 32, 6);
+    ctx.fillStyle = "rgba(30, 58, 138, 0.6)";
     ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(59, 130, 246, 0.35)" : "rgba(191, 219, 254, 1)";
+    ctx.strokeStyle = "rgba(96, 165, 250, 0.5)";
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
+    ctx.fillStyle = "#93c5fd";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(categoryName, catX + catWidth / 2, contentY + 16);
+    ctx.fillText(categoryName, catX + catWidth / 2, currentY + 16);
 
-    ctx.font = "bold 42px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
+    if (item.author) {
+      ctx.font = "600 15px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = "#38bdf8";
+      ctx.textAlign = "left";
+      ctx.fillText(`by @${item.author.replace(/^@/, "")}`, catX + catWidth + 14, currentY + 16);
+    }
+
+    currentY += 46;
+
+    ctx.font = "bold 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillStyle = "#ffffff";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    const titleLines = wrapText(ctx, item.title, cardW - 72, 3);
-    let currentY = contentY + 48;
+    const titleLines = wrapText(ctx, item.title, cardW - 72, 2);
     for (const line of titleLines) {
       ctx.fillText(line, cardX + 36, currentY);
-      currentY += 52;
+      currentY += 50;
+    }
+
+    if (coverImg) {
+      const coverW = cardW - 72;
+      const coverH = Math.min(260, coverW * 0.45);
+      const coverX = cardX + 36;
+      currentY += 10;
+      ctx.save();
+      drawRoundedRect(ctx, coverX, currentY, coverW, coverH, 12);
+      ctx.clip();
+      ctx.drawImage(coverImg, coverX, currentY, coverW, coverH);
+      ctx.restore();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.lineWidth = 2;
+      drawRoundedRect(ctx, coverX, currentY, coverW, coverH, 12);
+      ctx.stroke();
+      currentY += coverH + 16;
     }
 
     ctx.font = "500 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#a1a1aa" : "#52525b";
+    ctx.fillStyle = "#cbd5e1";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
     const descLines = wrapText(ctx, item.description || "", cardW - 72, 3);
-    currentY += 12;
+    currentY += 8;
     for (const line of descLines) {
       ctx.fillText(line, cardX + 36, currentY);
       currentY += 30;
     }
 
-    const qrCardSize = 220;
-    const qrCardX = (width - qrCardSize) / 2;
-    const qrCardY = currentY + 36;
-
-    drawRoundedRect(ctx, qrCardX, qrCardY, qrCardSize, qrCardSize + 40, 16);
-    ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
-    ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    const qrInnerSize = qrCardSize - 36;
-    ctx.drawImage(qrImage, qrCardX + 18, qrCardY + 18, qrInnerSize, qrInnerSize);
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#a1a1aa" : "#52525b";
-    ctx.fillText("SCAN TO OPEN", width / 2, qrCardY + qrCardSize + 18);
-
-    const footerY = cardY + cardH - 50;
-    ctx.beginPath();
-    ctx.moveTo(cardX + 36, footerY);
-    ctx.lineTo(cardX + cardW - 36, footerY);
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    ctx.font = "bold 15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
-    ctx.textAlign = "right";
-    ctx.textBaseline = "middle";
-    ctx.fillText(domainText, cardX + cardW - 36, footerY + 25);
-  } else {
-    const contentY = brandMarkY + 76;
-    const mainColWidth = cardW - 270;
-
-    ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, sans-serif";
-    const catWidth = ctx.measureText(categoryName).width + 22;
-    const catX = cardX + 36;
-    drawRoundedRect(ctx, catX, contentY, catWidth, 30, 6);
-    ctx.fillStyle = isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(239, 246, 255, 1)";
-    ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(59, 130, 246, 0.35)" : "rgba(191, 219, 254, 1)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(categoryName, catX + catWidth / 2, contentY + 15);
-
-    if (item.author) {
-      const authorText = `by @${item.author.replace(/^@/, "")}`;
-      ctx.font = "500 13px -apple-system, BlinkMacSystemFont, sans-serif";
-      ctx.fillStyle = isDark ? "#a1a1aa" : "#71717a";
-      ctx.textAlign = "left";
-      ctx.fillText(authorText, catX + catWidth + 14, contentY + 15);
-    }
-
-    ctx.font = "bold 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#ffffff" : "#09090b";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    const titleLines = wrapText(ctx, item.title, mainColWidth, 2);
-    let currentY = contentY + 44;
-    for (const line of titleLines) {
-      ctx.fillText(line, cardX + 36, currentY);
-      currentY += 46;
-    }
-
-    ctx.font = "500 18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillStyle = isDark ? "#d4d4d8" : "#52525b";
-    const descLines = wrapText(ctx, item.description || "", mainColWidth, 2);
-    currentY += 8;
-    for (const line of descLines) {
-      ctx.fillText(line, cardX + 36, currentY);
-      currentY += 26;
-    }
-
-    const qrCardSize = 190;
-    const qrCardX = cardX + cardW - qrCardSize - 36;
-    const qrCardY = contentY + 10;
-
-    drawRoundedRect(ctx, qrCardX, qrCardY, qrCardSize, qrCardSize + 36, 16);
-    ctx.fillStyle = isDark ? "#09090b" : "#ffffff";
-    ctx.fill();
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.1)";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    const qrInnerSize = qrCardSize - 32;
-    ctx.drawImage(qrImage, qrCardX + 16, qrCardY + 16, qrInnerSize, qrInnerSize);
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "bold 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#a1a1aa" : "#52525b";
-    ctx.fillText("SCAN TO OPEN", qrCardX + qrCardSize / 2, qrCardY + qrCardSize + 16);
-
     const footerY = cardY + cardH - 52;
     ctx.beginPath();
     ctx.moveTo(cardX + 36, footerY);
     ctx.lineTo(cardX + cardW - 36, footerY);
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.06)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -469,23 +415,132 @@ export async function generateShareCardBlob(
       const statText = `${stat.label}: ${stat.value}`;
       const statW = ctx.measureText(statText).width + 18;
 
-      drawRoundedRect(ctx, statX, footerY + 10, statW, 26, 5);
-      ctx.fillStyle = isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.04)";
+      drawRoundedRect(ctx, statX, footerY + 12, statW, 28, 6);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
       ctx.fill();
-      ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.08)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      ctx.fillStyle = isDark ? "#e4e4e7" : "#27272a";
-      ctx.fillText(statText, statX + 9, footerY + 23);
+      const isStar = stat.label.toLowerCase().includes("star") || stat.label.toLowerCase().includes("cop");
+      const isFork = stat.label.toLowerCase().includes("fork") || stat.label.toLowerCase().includes("var");
+      ctx.fillStyle = isStar ? "#fbbf24" : isFork ? "#38bdf8" : "#34d399";
+      ctx.fillText(statText, statX + 9, footerY + 26);
+      statX += statW + 8;
+    }
+
+    ctx.font = "bold 15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.fillStyle = "#38bdf8";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillText(domainText, cardX + cardW - 36, footerY + 26);
+  } else {
+    let currentY = brandMarkY + 76;
+    const mainColWidth = coverImg ? cardW - 380 : cardW - 72;
+
+    ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, sans-serif";
+    const catWidth = ctx.measureText(categoryName).width + 22;
+    const catX = cardX + 36;
+    drawRoundedRect(ctx, catX, currentY, catWidth, 30, 6);
+    ctx.fillStyle = "rgba(30, 58, 138, 0.6)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(96, 165, 250, 0.5)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = "#93c5fd";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(categoryName, catX + catWidth / 2, currentY + 15);
+
+    if (item.author) {
+      const authorText = `by @${item.author.replace(/^@/, "")}`;
+      ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.fillStyle = "#38bdf8";
+      ctx.textAlign = "left";
+      ctx.fillText(authorText, catX + catWidth + 14, currentY + 15);
+    }
+
+    currentY += 44;
+
+    ctx.font = "bold 40px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    const titleLines = wrapText(ctx, item.title, mainColWidth, 2);
+    for (const line of titleLines) {
+      ctx.fillText(line, cardX + 36, currentY);
+      currentY += 48;
+    }
+
+    ctx.font = "500 18px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillStyle = "#cbd5e1";
+    const descLines = wrapText(ctx, item.description || "", mainColWidth, 3);
+    currentY += 8;
+    for (const line of descLines) {
+      ctx.fillText(line, cardX + 36, currentY);
+      currentY += 26;
+    }
+
+    if (coverImg) {
+      const coverW = 320;
+      const coverH = 180;
+      const coverX = cardX + cardW - coverW - 36;
+      const coverY = brandMarkY + 76;
+      ctx.save();
+      drawRoundedRect(ctx, coverX, coverY, coverW, coverH, 12);
+      ctx.clip();
+      ctx.drawImage(coverImg, coverX, coverY, coverW, coverH);
+      ctx.restore();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+      ctx.lineWidth = 2;
+      drawRoundedRect(ctx, coverX, coverY, coverW, coverH, 12);
+      ctx.stroke();
+    }
+
+    const footerY = cardY + cardH - 52;
+    ctx.beginPath();
+    ctx.moveTo(cardX + 36, footerY);
+    ctx.lineTo(cardX + cardW - 36, footerY);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    const stats = item.stats && item.stats.length > 0
+      ? item.stats
+      : [
+          { label: "Community", value: "Verified" },
+          { label: "License", value: "Open Source" },
+        ];
+
+    let statX = cardX + 36;
+    ctx.font = "500 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+
+    for (const stat of stats.slice(0, 3)) {
+      const statText = `${stat.label}: ${stat.value}`;
+      const statW = ctx.measureText(statText).width + 18;
+
+      drawRoundedRect(ctx, statX, footerY + 12, statW, 26, 5);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const isStar = stat.label.toLowerCase().includes("star") || stat.label.toLowerCase().includes("cop");
+      const isFork = stat.label.toLowerCase().includes("fork") || stat.label.toLowerCase().includes("var");
+      ctx.fillStyle = isStar ? "#fbbf24" : isFork ? "#38bdf8" : "#34d399";
+      ctx.fillText(statText, statX + 9, footerY + 25);
       statX += statW + 8;
     }
 
     ctx.font = "bold 14px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
-    ctx.fillStyle = isDark ? "#60a5fa" : "#2563eb";
+    ctx.fillStyle = "#38bdf8";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    ctx.fillText(domainText, cardX + cardW - 36, footerY + 23);
+    ctx.fillText(domainText, cardX + cardW - 36, footerY + 25);
   }
 
   return new Promise((resolve, reject) => {
@@ -501,7 +556,7 @@ export async function generateShareCardBlob(
 
 export async function downloadShareCardImage(
   item: ShareItemData,
-  theme: ShareTheme,
+  theme: ShareTheme = "dark",
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
   userAttribution?: ShareUserAttribution,
@@ -525,7 +580,7 @@ export async function downloadShareCardImage(
 
 export async function copyShareCardImage(
   item: ShareItemData,
-  theme: ShareTheme,
+  theme: ShareTheme = "dark",
   palette: SharePalette = "zinc",
   aspectRatio: ShareAspectRatio = "16:9",
   userAttribution?: ShareUserAttribution,

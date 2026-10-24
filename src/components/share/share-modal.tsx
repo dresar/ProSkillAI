@@ -8,8 +8,6 @@ import {
   Copy,
   Download,
   Share2,
-  Moon,
-  Sun,
   ImageIcon,
   Loader2,
   UserCheck,
@@ -77,8 +75,8 @@ export function ShareModal({
 }: ShareModalProps) {
   const isEn = locale === "en";
   const [mounted, setMounted] = React.useState(false);
-  const [theme, setTheme] = React.useState<ShareTheme>("dark");
-  const [palette] = React.useState<SharePalette>("zinc");
+  const theme: ShareTheme = "dark";
+  const palette: SharePalette = "zinc";
   const [aspectRatio, setAspectRatio] = React.useState<ShareAspectRatio>("16:9");
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const [showUser, setShowUser] = React.useState(true);
@@ -187,32 +185,32 @@ export function ShareModal({
 
   if (!mounted) return null;
 
-  const ratios: ShareAspectRatio[] = ["1:1", "3:4", "9:16", "16:9"];
+  const ratios: ShareAspectRatio[] = ["16:9", "1:1", "3:4", "9:16"];
 
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6 bg-black/85 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
-        className="fixed inset-0 hidden sm:block"
+        className="fixed inset-0"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="relative w-full h-[100dvh] sm:h-auto sm:max-h-[92vh] sm:rounded-2xl rounded-none border-0 sm:border border-border bg-surface shadow-2xl flex flex-col overflow-hidden z-10 animate-in zoom-in-95 duration-150 max-w-2xl">
-        <div className="p-3 sm:p-4 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <BrandLogo size={28} className="w-7 h-7 shrink-0" />
-            <div>
-              <h2 id="share-modal-title" className="text-sm font-semibold text-foreground tracking-tight">
-                {isEn ? "Share & Social Card" : "Bagikan & Kartu Sosial"}
+      <div className="relative w-full max-w-xl rounded-2xl border border-border bg-surface shadow-2xl flex flex-col overflow-hidden z-10 animate-in zoom-in-95 duration-150">
+        <div className="px-3.5 py-2.5 sm:px-4 sm:py-3 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-2">
+            <BrandLogo size={24} className="w-6 h-6 shrink-0" />
+            <div className="flex items-baseline gap-2">
+              <h2 id="share-modal-title" className="text-xs sm:text-sm font-semibold text-foreground tracking-tight">
+                {isEn ? "Share Card" : "Bagikan Kartu"}
               </h2>
-              <p className="text-[11px] text-muted-foreground font-mono">
+              <span className="text-[10px] text-cyan-400 font-mono hidden sm:inline">
                 {currentDomain}
-              </p>
+              </span>
             </div>
           </div>
 
@@ -220,261 +218,203 @@ export function ShareModal({
             type="button"
             onClick={onClose}
             aria-label={isEn ? "Close dialog" : "Tutup dialog"}
-            className="w-7 h-7 rounded-[5px] border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+            className="w-7 h-7 rounded-[6px] border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer active:scale-[0.98]"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-2 sm:p-2.5 rounded-xl border border-border bg-muted/20">
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-medium text-foreground">
-                  {isEn ? "Theme:" : "Tema:"}
-                </span>
-                <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setTheme("dark")}
-                    className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
-                      theme === "dark"
-                        ? "bg-foreground text-background shadow-2xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Moon className="w-3 h-3" />
-                    <span>{isEn ? "Dark" : "Gelap"}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTheme("light")}
-                    className={`h-6 px-2 rounded-[4px] text-[11px] font-medium inline-flex items-center gap-1 transition-all cursor-pointer ${
-                      theme === "light"
-                        ? "bg-foreground text-background shadow-2xs"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Sun className="w-3 h-3" />
-                    <span>{isEn ? "Light" : "Terang"}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-medium text-foreground">
-                  {isEn ? "Ratio:" : "Rasio:"}
-                </span>
-                <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
-                  {ratios.map((r) => {
-                    const isActive = aspectRatio === r;
-                    const cfg = ASPECT_RATIO_CONFIGS[r];
-                    return (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => setAspectRatio(r)}
-                        title={cfg?.sublabel || r}
-                        className={`h-6 px-2 rounded-[4px] text-[11px] font-semibold transition-all cursor-pointer ${
-                          isActive
-                            ? "bg-foreground text-background shadow-2xs"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {r}
-                      </button>
-                    );
-                  })}
-                </div>
+        <div className="p-3 sm:p-4 space-y-2.5 flex-1 min-h-0">
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl border border-border bg-muted/20 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider pl-1">
+                {isEn ? "Ratio:" : "Rasio:"}
+              </span>
+              <div className="inline-flex rounded-[6px] border border-border bg-background p-0.5">
+                {ratios.map((r) => {
+                  const isActive = aspectRatio === r;
+                  const cfg = ASPECT_RATIO_CONFIGS[r];
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => setAspectRatio(r)}
+                      title={cfg?.sublabel || r}
+                      className={`h-6 px-2 rounded-[4px] text-[11px] font-semibold transition-all cursor-pointer active:scale-[0.98] ${
+                        isActive
+                          ? "bg-foreground text-background shadow-2xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {currentUser && (
-              <button
-                type="button"
-                onClick={() => setShowUser(!showUser)}
-                className={`h-7 px-2.5 rounded-[5px] border text-[11px] font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
-                  showUser
-                    ? "border-blue-500/40 bg-blue-500/10 text-blue-400 dark:text-blue-300"
-                    : "border-border bg-background text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {showUser ? (
-                  <>
-                    <UserCheck className="w-3.5 h-3.5 text-blue-500" />
-                    <span>@{currentUser}</span>
-                  </>
-                ) : (
-                  <>
-                    <UserX className="w-3.5 h-3.5" />
-                    <span>{isEn ? "Hide Username" : "Sembunyikan User"}</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-medium text-foreground tracking-tight">
-                {isEn ? `Card Preview (${aspectRatio})` : `Pratinjau Kartu (${aspectRatio})`}
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">
-                {currentDomain}
-              </span>
-            </div>
-
-            <div className="w-full flex items-center justify-center p-2 sm:p-4 rounded-xl bg-muted/20 border border-border/70 overflow-hidden min-h-[250px] sm:min-h-[290px] max-h-[460px]">
-              <div
-                className={`w-full transition-all duration-200 flex items-center justify-center ${
-                  aspectRatio === "16:9"
-                    ? "max-w-xl aspect-16/9"
-                    : aspectRatio === "1:1"
-                    ? "max-w-[270px] sm:max-w-[320px] aspect-square"
-                    : aspectRatio === "3:4"
-                    ? "max-w-[230px] sm:max-w-[260px] aspect-3/4"
-                    : "max-w-[200px] sm:max-w-[220px] aspect-9/16"
-                }`}
-              >
-                <ShareCard
-                  item={item}
-                  theme={theme}
-                  palette={palette}
-                  aspectRatio={aspectRatio}
-                  userAttribution={userAttribution}
-                  domain={currentDomain}
-                  className="h-full"
-                />
+            <div className="flex items-center gap-1.5">
+              <div className="inline-flex items-center gap-1 border border-border bg-background p-0.5 rounded-[6px]">
+                <a
+                  href={socialUrls.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on X / Twitter"
+                  aria-label="Share on X / Twitter"
+                  className="w-6 h-6 rounded-[4px] hover:bg-muted text-foreground flex items-center justify-center transition-colors active:scale-[0.98]"
+                >
+                  <TwitterIcon className="w-3 h-3" />
+                </a>
+                <a
+                  href={socialUrls.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on WhatsApp"
+                  aria-label="Share on WhatsApp"
+                  className="w-6 h-6 rounded-[4px] hover:bg-muted text-emerald-500 flex items-center justify-center transition-colors active:scale-[0.98]"
+                >
+                  <WhatsAppIcon className="w-3 h-3" />
+                </a>
+                <a
+                  href={socialUrls.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on LinkedIn"
+                  aria-label="Share on LinkedIn"
+                  className="w-6 h-6 rounded-[4px] hover:bg-muted text-sky-500 flex items-center justify-center transition-colors active:scale-[0.98]"
+                >
+                  <LinkedInIcon className="w-3 h-3" />
+                </a>
+                <a
+                  href={socialUrls.telegram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Share on Telegram"
+                  aria-label="Share on Telegram"
+                  className="w-6 h-6 rounded-[4px] hover:bg-muted text-cyan-500 flex items-center justify-center transition-colors active:scale-[0.98]"
+                >
+                  <TelegramIcon className="w-3 h-3" />
+                </a>
               </div>
+
+              {currentUser && (
+                <button
+                  type="button"
+                  onClick={() => setShowUser(!showUser)}
+                  className={`h-7 px-2 rounded-[5px] border text-[11px] font-medium inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0 active:scale-[0.98] ${
+                    showUser
+                      ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-300"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {showUser ? (
+                    <>
+                      <UserCheck className="w-3 h-3 text-cyan-400" />
+                      <span className="font-mono text-[10px]">@{currentUser}</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserX className="w-3 h-3" />
+                      <span>{isEn ? "Hide" : "Anon"}</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
-              <span className="font-semibold text-foreground tracking-tight">
-                {isEn ? "Direct Social Share" : "Bagikan Langsung ke Media Sosial"}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <a
-                href={socialUrls.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-8 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <TwitterIcon className="w-3.5 h-3.5" />
-                <span>X / Twitter</span>
-              </a>
-
-              <a
-                href={socialUrls.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-8 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <WhatsAppIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>WhatsApp</span>
-              </a>
-
-              <a
-                href={socialUrls.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-8 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <LinkedInIcon className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-                <span>LinkedIn</span>
-              </a>
-
-              <a
-                href={socialUrls.telegram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-8 px-2.5 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <TelegramIcon className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                <span>Telegram</span>
-              </a>
+          <div className="w-full flex items-center justify-center p-2 rounded-xl bg-muted/20 border border-border/70 overflow-hidden h-[240px] sm:h-[260px]">
+            <div
+              className={`w-full h-full transition-all duration-200 flex items-center justify-center ${
+                aspectRatio === "16:9"
+                  ? "max-w-[440px] aspect-16/9"
+                  : aspectRatio === "1:1"
+                  ? "max-w-[240px] aspect-square"
+                  : aspectRatio === "3:4"
+                  ? "max-w-[195px] aspect-3/4"
+                  : "max-w-[145px] aspect-9/16"
+              }`}
+            >
+              <ShareCard
+                item={item}
+                theme={theme}
+                palette={palette}
+                aspectRatio={aspectRatio}
+                userAttribution={userAttribution}
+                domain={currentDomain}
+                className="h-full"
+              />
             </div>
           </div>
 
-          <div className="space-y-2 pt-1 pb-2">
-            <div className="flex items-center justify-between text-xs pb-1 border-b border-border/60">
-              <span className="font-semibold text-foreground tracking-tight">
-                {isEn ? "Export & Link Actions" : "Aksi Ekspor & Tautan"}
-              </span>
-            </div>
+          <div className="grid grid-cols-3 gap-2 pt-0.5">
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="h-8 px-2 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-[0.98]"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-emerald-500 font-semibold">{isEn ? "Copied!" : "Disalin!"}</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Copy Link" : "Salin Link"}</span>
+                </>
+              )}
+            </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="h-8 px-3 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                {copiedLink ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-emerald-500 font-semibold">{isEn ? "Link Copied!" : "Tautan Disalin!"}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{isEn ? "Copy Link" : "Salin Tautan"}</span>
-                  </>
-                )}
-              </button>
+            <button
+              type="button"
+              onClick={handleDownloadImage}
+              disabled={isExporting}
+              className="h-8 px-2 rounded-[6px] border border-foreground bg-foreground text-background text-xs font-semibold inline-flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{isEn ? `PNG (${aspectRatio})` : `Unduh (${aspectRatio})`}</span>
+                </>
+              )}
+            </button>
 
-              <button
-                type="button"
-                onClick={handleDownloadImage}
-                disabled={isExporting}
-                className="h-8 px-3 rounded-[6px] border border-foreground bg-foreground text-background text-xs font-semibold inline-flex items-center justify-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer disabled:opacity-50"
-              >
-                {isExporting ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>{isEn ? "Generating..." : "Memproses..."}</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-3.5 h-3.5" />
-                    <span>{isEn ? `Download ${aspectRatio} PNG` : `Unduh ${aspectRatio} PNG`}</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleCopyImage}
-                disabled={isExporting}
-                className="h-8 px-3 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {copiedImage ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    <span className="text-emerald-500 font-semibold">{isEn ? "Image Copied!" : "Gambar Disalin!"}</span>
-                  </>
-                ) : (
-                  <>
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    <span>{isEn ? "Copy Image" : "Salin Gambar"}</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {canWebShare && (
-              <button
-                type="button"
-                onClick={handleWebShare}
-                className="w-full h-8 px-3 rounded-[6px] border border-dashed border-border bg-muted/30 hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>{isEn ? "Share via Device Menu" : "Bagikan via Menu Perangkat"}</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={handleCopyImage}
+              disabled={isExporting}
+              className="h-8 px-2 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 active:scale-[0.98]"
+            >
+              {copiedImage ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  <span className="text-emerald-500 font-semibold">{isEn ? "Copied!" : "Disalin!"}</span>
+                </>
+              ) : (
+                <>
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Copy Img" : "Salin Img"}</span>
+                </>
+              )}
+            </button>
           </div>
+
+          {canWebShare && (
+            <button
+              type="button"
+              onClick={handleWebShare}
+              className="w-full h-7 px-2 rounded-[6px] border border-dashed border-border bg-muted/30 hover:bg-muted text-[11px] font-medium text-muted-foreground hover:text-foreground inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-[0.98]"
+            >
+              <Share2 className="w-3 h-3" />
+              <span>{isEn ? "Share via Device" : "Bagikan via Menu Perangkat"}</span>
+            </button>
+          )}
         </div>
       </div>
     </div>,
