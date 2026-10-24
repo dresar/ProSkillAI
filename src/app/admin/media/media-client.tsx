@@ -201,33 +201,31 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-0.5">
+                  <div className="grid grid-cols-2 gap-1.5 pt-0.5">
                     <button
                       type="button"
                       onClick={() => handleCopyCdn(item)}
-                      className="flex-1 h-8.5 px-3 inline-flex items-center justify-center gap-1.5 rounded-[6px] border border-border bg-background text-xs font-semibold text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer whitespace-nowrap shadow-2xs"
+                      className={`h-8.5 inline-flex items-center justify-center rounded-[6px] border border-border bg-background hover:bg-muted active:scale-95 transition-all cursor-pointer shadow-2xs ${
+                        copiedId === item.id ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-500" : "text-foreground"
+                      }`}
+                      title={copiedId === item.id ? "Tersalin!" : "Salin CDN"}
+                      aria-label="Salin CDN"
                     >
                       {copiedId === item.id ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                          <span className="text-emerald-500">Tersalin</span>
-                        </>
+                        <Check className="w-4 h-4 text-emerald-500 shrink-0" />
                       ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                          <span>Salin CDN</span>
-                        </>
+                        <Copy className="w-4 h-4 shrink-0" />
                       )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setConfirmDeleteId(item.id)}
-                      className="h-8.5 px-3 inline-flex items-center justify-center gap-1 rounded-[6px] border border-border bg-background text-xs font-semibold text-rose-500 hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer whitespace-nowrap shadow-2xs shrink-0"
-                      title="Hapus Media"
+                      className="h-8.5 inline-flex items-center justify-center rounded-[6px] border border-border bg-background text-rose-500 hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                      title="Hapus"
+                      aria-label="Hapus"
                     >
-                      <Trash2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Hapus</span>
+                      <Trash2 className="w-4 h-4 shrink-0" />
                     </button>
                   </div>
                 </div>

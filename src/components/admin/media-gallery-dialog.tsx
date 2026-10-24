@@ -169,7 +169,7 @@ export function MediaGalleryDialog({
                         {shortName}
                       </div>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className={`grid gap-1.5 ${onSelect ? "grid-cols-2" : "grid-cols-1"}`}>
                         {onSelect && (
                           <button
                             type="button"
@@ -177,30 +177,27 @@ export function MediaGalleryDialog({
                               onSelect(item.cdnUrl, item);
                               onClose();
                             }}
-                            className="flex-1 h-8 inline-flex items-center justify-center rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs whitespace-nowrap"
+                            className="h-8 inline-flex items-center justify-center rounded-[6px] bg-foreground text-background hover:opacity-90 active:scale-95 cursor-pointer shadow-2xs"
+                            title="Pilih"
+                            aria-label="Pilih"
                           >
-                            Pilih
+                            <Check className="w-4 h-4 shrink-0" />
                           </button>
                         )}
 
                         <button
                           type="button"
                           onClick={() => handleCopy(item)}
-                          className={`h-8 px-2.5 inline-flex items-center justify-center gap-1 rounded-[5px] border border-border bg-background text-xs font-semibold transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-2xs ${
-                            onSelect ? "" : "w-full"
+                          className={`h-8 inline-flex items-center justify-center rounded-[6px] border border-border bg-background hover:bg-muted active:scale-95 transition-all cursor-pointer shadow-2xs ${
+                            copiedId === item.id ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-500" : "text-foreground"
                           }`}
-                          title="Salin CDN URL"
+                          title={copiedId === item.id ? "Tersalin!" : "Salin CDN"}
+                          aria-label="Salin CDN"
                         >
                           {copiedId === item.id ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                              <span className="text-emerald-500">Tersalin</span>
-                            </>
+                            <Check className="w-4 h-4 text-emerald-500 shrink-0" />
                           ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                              <span>Salin CDN</span>
-                            </>
+                            <Copy className="w-4 h-4 shrink-0" />
                           )}
                         </button>
                       </div>
