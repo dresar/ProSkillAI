@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getPublishedPromptBySlug } from "@/db/queries";
 import Link from "next/link";
-import { ArrowUpRight, ArrowLeft } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, ExternalLink } from "lucide-react";
 import { PromptVariableEngine } from "@/components/prompt-variable-engine";
 import { PromptDemoOutput } from "@/components/prompt-demo-output";
 import { ImageGallery } from "@/components/admin/image-gallery";
@@ -167,6 +167,17 @@ export default async function PromptDetailPage({ params }: PageProps) {
             </div>
           </div>
           <div className="flex items-center gap-1.5">
+            {prompt.demoUrl && (
+              <a
+                href={prompt.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-7 px-2.5 rounded-[6px] border border-foreground bg-foreground text-background text-xs font-semibold inline-flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer shadow-2xs mr-1"
+              >
+                <span>{isEn ? "Live Demo" : "Link Demo"}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
             <ShareButton
               item={{
                 type: "prompt",
@@ -241,7 +252,11 @@ export default async function PromptDetailPage({ params }: PageProps) {
       </section>
 
       {demoOutputText && (
-        <PromptDemoOutput demoOutput={demoOutputText} isEn={isEn} />
+        <PromptDemoOutput
+          demoOutput={demoOutputText}
+          isEn={isEn}
+          demoUrl={prompt.demoUrl}
+        />
       )}
     </article>
   );

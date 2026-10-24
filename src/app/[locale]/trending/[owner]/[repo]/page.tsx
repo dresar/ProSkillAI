@@ -183,6 +183,7 @@ export default async function RepoDetailPage({ params }: RepoDetailPageProps) {
                 url: canonicalUrl,
                 category: repoData.language || "Open Source",
                 author: repoData.owner.login,
+                cover: ogImage,
                 stats: [
                   { label: "Stars", value: formatCompactNumber(repoData.stars) },
                   { label: "Forks", value: formatCompactNumber(repoData.forks) },
@@ -207,14 +208,14 @@ export default async function RepoDetailPage({ params }: RepoDetailPageProps) {
           </div>
         </div>
 
-        <div className="relative aspect-video max-h-72 sm:max-h-84 w-full rounded-2xl overflow-hidden border border-border/80 bg-muted shadow-sm">
+        <div className="relative aspect-[2/1] max-w-3xl mx-auto w-full rounded-2xl overflow-hidden border border-border/80 bg-muted/40 shadow-sm flex items-center justify-center">
           <Image
             src={ogImage}
             alt={repoData.fullName}
             fill
             priority
             unoptimized
-            className="object-cover"
+            className="object-contain w-full h-full"
           />
         </div>
 

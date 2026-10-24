@@ -26,4 +26,5 @@ export interface ShareItemData {
   stats?: ShareStatItem[];
   badge?: string;
   slug?: string;
+  cover?: string;
 }

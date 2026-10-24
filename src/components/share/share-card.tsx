@@ -89,6 +89,8 @@ export function ShareCard({
   const isSquare = aspectRatio === "1:1";
   const isVertical = isStory || isPortrait;
 
+  const coverUrl = item.cover || (item.type === "repo" ? `https://opengraph.githubassets.com/1/${item.title}` : null);
+
   const showUserBadge = Boolean(userAttribution?.show && userAttribution?.username);
   const displayUsername = userAttribution?.username || "";
 
@@ -190,6 +192,18 @@ export function ShareCard({
           >
             {item.title}
           </h3>
+
+          {coverUrl && (
+            <div className="relative aspect-[2/1] max-h-20 sm:max-h-24 w-full rounded-lg overflow-hidden border border-white/20 dark:border-white/10 bg-black/20 my-1 shrink-0">
+              <Image
+                src={coverUrl}
+                alt={item.title}
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
+          )}
 
           <p
             className={`text-[10px] sm:text-xs leading-relaxed ${

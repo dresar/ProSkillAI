@@ -20,6 +20,8 @@ import {
   X,
   Loader2,
   CircleAlert,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { TrendingRepo, TrendingTimeRange } from "@/lib/github-trending";
 import { formatCompactNumber } from "@/lib/github-trending";
@@ -52,6 +54,8 @@ const TIME_RANGES: { key: TrendingTimeRange; labelEn: string; labelId: string }[
   { key: "monthly", labelEn: "This Month", labelId: "Bulan Ini" },
 ];
 
+const ITEMS_PER_PAGE = 20;
+
 export function TrendingClient({
   initialRepos,
   locale,
@@ -59,6 +63,7 @@ export function TrendingClient({
 }: TrendingClientProps) {
   const isEn = locale === "en";
   const [repos, setRepos] = React.useState<TrendingRepo[]>(initialRepos);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const [selectedRange, setSelectedRange] = React.useState<TrendingTimeRange>("all");
   const [selectedLanguage, setSelectedLanguage] = React.useState<string>("All");
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -106,11 +111,13 @@ export function TrendingClient({
 
   const handleRangeChange = (range: TrendingTimeRange) => {
     setSelectedRange(range);
+    setCurrentPage(1);
     fetchFilteredTrending(range, selectedLanguage);
   };
 
   const handleLanguageChange = (language: string) => {
     setSelectedLanguage(language);
+    setCurrentPage(1);
     fetchFilteredTrending(selectedRange, language);
   };
 
@@ -159,6 +166,12 @@ export function TrendingClient({
         r.topics.some((t) => t.toLowerCase().includes(q))
     );
   }, [repos, searchQuery]);
+
+  const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE) || 1;
+  const paginatedRepos = React.useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRepos.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredRepos, currentPage]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
@@ -219,7 +232,10 @@ export function TrendingClient({
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder={
                 isEn
                   ? "Search 100 repositories by name, description, topic, or language..."
@@ -273,8 +289,8 @@ export function TrendingClient({
         <div className="flex items-center gap-2">
           <span>
             {isEn
-              ? `Displaying ${filteredRepos.length} of ${repos.length} ranked repositories`
-              : `Menampilkan ${filteredRepos.length} dari ${repos.length} repositori peringkat`}
+              ? `Displaying ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredRepos.length)} of ${filteredRepos.length} ranked repositories (Page ${currentPage} of ${totalPages})`
+              : `Menampilkan ${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredRepos.length)} dari ${filteredRepos.length} repositori peringkat (Halaman ${currentPage} dari ${totalPages})`}
           </span>
           {isFetching && <Loader2 className="w-3 h-3 animate-spin text-foreground" />}
         </div>
@@ -295,7 +311,7 @@ export function TrendingClient({
         </div>
       ) : viewMode === "grid" ? (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
-          {filteredRepos.map((repo) => (
+          {paginatedRepos.map((repo) => (
             <div
               key={repo.id}
               className="group rounded-xl border border-border bg-surface p-3 sm:p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs relative"
@@ -430,6 +446,7 @@ export function TrendingClient({
                       url: repo.htmlUrl,
                       category: repo.language || "Open Source",
                       author: repo.owner.login,
+                      cover: `https://opengraph.githubassets.com/1/${repo.fullName}`,
                       stats: [
                         { label: "Stars", value: formatCompactNumber(repo.stars) },
                         { label: "Forks", value: formatCompactNumber(repo.forks) },
@@ -461,7 +478,7 @@ export function TrendingClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {filteredRepos.map((repo) => (
+                {paginatedRepos.map((repo) => (
                   <tr key={repo.id} className="hover:bg-muted/20 transition-colors">
                     <td className="py-3 px-3 font-mono font-bold text-muted-foreground">
                       #{repo.rank}
@@ -532,6 +549,7 @@ export function TrendingClient({
                             url: repo.htmlUrl,
                             category: repo.language || "Open Source",
                             author: repo.owner.login,
+                            cover: `https://opengraph.githubassets.com/1/${repo.fullName}`,
                             stats: [
                               { label: "Stars", value: formatCompactNumber(repo.stars) },
                               { label: "Forks", value: formatCompactNumber(repo.forks) },
@@ -560,11 +578,88 @@ export function TrendingClient({
         </div>
       )}
 
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border">
+          <p className="text-xs text-muted-foreground order-2 sm:order-1 font-mono">
+            {isEn
+              ? `Page ${currentPage} of ${totalPages} (${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredRepos.length)} of ${filteredRepos.length})`
+              : `Halaman ${currentPage} dari ${totalPages} (${(currentPage - 1) * ITEMS_PER_PAGE + 1} - ${Math.min(currentPage * ITEMS_PER_PAGE, filteredRepos.length)} dari ${filteredRepos.length})`}
+          </p>
+
+          <div className="flex items-center gap-1.5 order-1 sm:order-2">
+            <button
+              type="button"
+              disabled={currentPage <= 1}
+              onClick={() => {
+                setCurrentPage((p) => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="h-8 px-2.5 rounded-[6px] border border-border bg-surface text-xs font-medium text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>{isEn ? "Prev" : "Sebelumnya"}</span>
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && typeof arr[idx - 1] === "number" && (p as number) - (arr[idx - 1] as number) > 1) {
+                    acc.push("...");
+                  }
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, idx) => {
+                  if (p === "...") {
+                    return (
+                      <span key={`dots-${idx}`} className="px-1 text-xs text-muted-foreground font-mono">
+                        ...
+                      </span>
+                    );
+                  }
+                  const isCurrent = p === currentPage;
+                  return (
+                    <button
+                      key={`page-${p}`}
+                      type="button"
+                      onClick={() => {
+                        setCurrentPage(Number(p));
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className={`h-8 min-w-[32px] px-2 rounded-[6px] text-xs font-mono font-medium transition-colors cursor-pointer border ${
+                        isCurrent
+                          ? "border-foreground bg-foreground text-background font-semibold"
+                          : "border-border bg-surface text-foreground hover:bg-muted"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+            </div>
+
+            <button
+              type="button"
+              disabled={currentPage >= totalPages}
+              onClick={() => {
+                setCurrentPage((p) => Math.min(totalPages, p + 1));
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="h-8 px-2.5 rounded-[6px] border border-border bg-surface text-xs font-medium text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1 transition-all cursor-pointer shadow-2xs"
+            >
+              <span>{isEn ? "Next" : "Berikutnya"}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {activeReadmeRepo && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150"
         >
           <div
             className="fixed inset-0"
@@ -572,8 +667,8 @@ export function TrendingClient({
             aria-hidden="true"
           />
 
-          <div className="relative w-full max-w-4xl h-[90vh] flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
+          <div className="relative w-full max-w-4xl max-h-[85vh] flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-150">
+            <div className="px-4 py-3 sm:px-5 sm:py-3.5 border-b border-border bg-muted/40 flex items-center justify-between gap-3 shrink-0">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative w-8 h-8 rounded-[6px] overflow-hidden border border-border shrink-0 bg-muted">
                   <Image
@@ -587,8 +682,8 @@ export function TrendingClient({
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-sm font-bold text-foreground truncate flex items-center gap-2">
-                    <span>{activeReadmeRepo.fullName}</span>
-                    <span className="text-[10px] font-mono font-normal px-1.5 py-0.2 rounded bg-muted border border-border/70 text-muted-foreground">
+                    <span className="truncate">{activeReadmeRepo.fullName}</span>
+                    <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-muted border border-border/70 text-foreground shrink-0">
                       #{activeReadmeRepo.rank}
                     </span>
                   </h2>
@@ -636,6 +731,7 @@ export function TrendingClient({
                     url: activeReadmeRepo.htmlUrl,
                     category: activeReadmeRepo.language || "Open Source",
                     author: activeReadmeRepo.owner.login,
+                    cover: `https://opengraph.githubassets.com/1/${activeReadmeRepo.fullName}`,
                     stats: [
                       { label: "Stars", value: formatCompactNumber(activeReadmeRepo.stars) },
                       { label: "Forks", value: formatCompactNumber(activeReadmeRepo.forks) },
@@ -664,7 +760,7 @@ export function TrendingClient({
                   <span className="text-xs">{isEn ? "Fetching raw README from GitHub..." : "Mengambil README dari GitHub..."}</span>
                 </div>
               ) : readmeContent ? (
-                <div className="prose prose-xs sm:prose-sm max-w-none dark:prose-invert">
+                <div className="prose prose-xs sm:prose-sm dark:prose-invert max-w-none text-foreground break-words leading-relaxed">
                   <MarkdownRenderer content={readmeContent} />
                 </div>
               ) : (
