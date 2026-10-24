@@ -333,6 +333,117 @@ export async function translateIdToEn({
   return fallbackContent.trim();
 }
 
+export async function translateEnToId({
+  text,
+  type = "title",
+  config,
+}: {
+  text: string;
+  type?: "title" | "description" | "content";
+  config?: AiConfig;
+}): Promise<string> {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+
+  const activeConfig = config || (await getStoredAiConfig());
+
+  const systemPrompt =
+    type === "title"
+      ? "You are an expert translator. Translate this English title to concise, natural, professional Indonesian. Output ONLY the Indonesian translation without quotes or conversational filler."
+      : type === "description"
+      ? "You are an expert translator. Translate this English description to concise, natural, professional Indonesian (1-3 sentences max). Output ONLY the Indonesian translation without quotes or conversational filler."
+      : "You are an expert AI prompt engineer and translator. Translate this English prompt or skill into professional Indonesian. CRITICAL: Preserve all variables like [variable_name] or {{variable_name}} exactly as they are. Keep all markdown formatting intact. Output ONLY the translated content without conversational filler.";
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const res = await fetch(`${activeConfig.endpoint}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${activeConfig.apiKey}`,
+      },
+      body: JSON.stringify({
+        model: activeConfig.defaultModel,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: trimmed },
+        ],
+        temperature: 0.3,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (content && typeof content === "string" && content.trim().length > 0) {
+        return content.trim();
+      }
+    }
+  } catch {}
+
+  const fallbackRes = await fetch(`${activeConfig.fallbackEndpoint}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${activeConfig.fallbackApiKey}`,
+    },
+    body: JSON.stringify({
+      model: activeConfig.fallbackModel,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: trimmed },
+      ],
+      temperature: 0.3,
+    }),
+  });
+
+  if (!fallbackRes.ok) {
+    return trimmed;
+  }
+
+  const fallbackData = await fallbackRes.json();
+  const fallbackContent = fallbackData?.choices?.[0]?.message?.content;
+  if (!fallbackContent || typeof fallbackContent !== "string") {
+    return trimmed;
+  }
+
+  return fallbackContent.trim();
+}
+
+export async function resolveLanguagePair({
+  textId,
+  textEn,
+  type = "title",
+}: {
+  textId?: string | null;
+  textEn?: string | null;
+  type?: "title" | "description" | "content";
+}): Promise<{ id: string; en: string }> {
+  const idVal = (textId || "").trim();
+  const enVal = (textEn || "").trim();
+
+  if (idVal && enVal) {
+    return { id: idVal, en: enVal };
+  }
+
+  if (idVal && !enVal) {
+    const translatedEn = await translateIdToEn({ text: idVal, type }).catch(() => idVal);
+    return { id: idVal, en: translatedEn || idVal };
+  }
+
+  if (!idVal && enVal) {
+    const translatedId = await translateEnToId({ text: enVal, type }).catch(() => enVal);
+    return { id: translatedId || enVal, en: enVal };
+  }
+
+  return { id: "", en: "" };
+}
+
 export interface AiAuditResult {
   score: number;
   grade: "S" | "A" | "B" | "C" | "D";

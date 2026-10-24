@@ -7,14 +7,15 @@ import { z } from "zod";
 import { db } from "@/db";
 import { uiInspirations, auditLog } from "@/db/schema";
 import { requireAdminOrEditor } from "@/lib/auth";
+import { resolveLanguagePair } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const designTrendSchema = z.object({
   slug: z.string().min(2, "Slug minimal 2 karakter"),
-  titleId: z.string().min(2, "Judul Indonesia wajib diisi"),
-  titleEn: z.string().min(2, "Judul Inggris wajib diisi"),
-  descriptionId: z.string().min(5, "Deskripsi Indonesia minimal 5 karakter"),
-  descriptionEn: z.string().min(5, "Deskripsi Inggris minimal 5 karakter"),
+  titleId: z.string().min(2, "Judul wajib diisi"),
+  titleEn: z.string().min(2, "Judul wajib diisi"),
+  descriptionId: z.string().min(5, "Deskripsi minimal 5 karakter"),
+  descriptionEn: z.string().min(5, "Deskripsi minimal 5 karakter"),
   category: z.enum(["cards", "agentic", "nav", "forms", "metrics", "modals"]).default("cards"),
   componentSnippet: z.string().min(10, "Kode komponen snippet minimal 10 karakter"),
   tailwindClasses: z.string().optional().nullable(),
@@ -46,17 +47,55 @@ export async function createDesignTrendAction(prevState: unknown, formData: Form
     } catch {}
   }
 
+  const rawTitle = (formData.get("title") as string)?.trim() || "";
+  const rawTitleId = (formData.get("titleId") as string)?.trim() || "";
+  const rawTitleEn = (formData.get("titleEn") as string)?.trim() || "";
+
+  const resolvedTitle = await resolveLanguagePair({
+    textId: rawTitleId || rawTitle,
+    textEn: rawTitleEn || rawTitle,
+    type: "title",
+  });
+
+  const rawDescription = (formData.get("description") as string)?.trim() || "";
+  const rawDescId = (formData.get("descriptionId") as string)?.trim() || "";
+  const rawDescEn = (formData.get("descriptionEn") as string)?.trim() || "";
+
+  const resolvedDesc = await resolveLanguagePair({
+    textId: rawDescId || rawDescription,
+    textEn: rawDescEn || rawDescription,
+    type: "description",
+  });
+
+  const rawUx = (formData.get("uxGuidelines") as string)?.trim() || "";
+  const rawUxId = (formData.get("uxGuidelinesId") as string)?.trim() || "";
+  const rawUxEn = (formData.get("uxGuidelinesEn") as string)?.trim() || "";
+
+  const resolvedUx = await resolveLanguagePair({
+    textId: rawUxId || rawUx,
+    textEn: rawUxEn || rawUx,
+    type: "description",
+  });
+
+  let slug = (formData.get("slug") as string)?.trim().toLowerCase();
+  if (!slug) {
+    slug = (resolvedTitle.en || resolvedTitle.id)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  }
+
   const raw = {
-    slug: (formData.get("slug") as string)?.trim().toLowerCase(),
-    titleId: (formData.get("titleId") as string)?.trim(),
-    titleEn: (formData.get("titleEn") as string)?.trim(),
-    descriptionId: (formData.get("descriptionId") as string)?.trim(),
-    descriptionEn: (formData.get("descriptionEn") as string)?.trim(),
+    slug,
+    titleId: resolvedTitle.id,
+    titleEn: resolvedTitle.en,
+    descriptionId: resolvedDesc.id,
+    descriptionEn: resolvedDesc.en,
     category: (formData.get("category") as "cards" | "agentic" | "nav" | "forms" | "metrics" | "modals") || "cards",
     componentSnippet: (formData.get("componentSnippet") as string)?.trim(),
     tailwindClasses: (formData.get("tailwindClasses") as string)?.trim() || null,
-    uxGuidelinesId: (formData.get("uxGuidelinesId") as string)?.trim() || null,
-    uxGuidelinesEn: (formData.get("uxGuidelinesEn") as string)?.trim() || null,
+    uxGuidelinesId: resolvedUx.id || null,
+    uxGuidelinesEn: resolvedUx.en || null,
     previewType: (formData.get("previewType") as string) || "component",
     previewImageUrl: (formData.get("previewImageUrl") as string)?.trim() || null,
     status: (formData.get("status") as "published" | "draft" | "archived") || "published",
@@ -129,17 +168,55 @@ export async function updateDesignTrendAction(id: string, prevState: unknown, fo
     } catch {}
   }
 
+  const rawTitle = (formData.get("title") as string)?.trim() || "";
+  const rawTitleId = (formData.get("titleId") as string)?.trim() || "";
+  const rawTitleEn = (formData.get("titleEn") as string)?.trim() || "";
+
+  const resolvedTitle = await resolveLanguagePair({
+    textId: rawTitleId || rawTitle,
+    textEn: rawTitleEn || rawTitle,
+    type: "title",
+  });
+
+  const rawDescription = (formData.get("description") as string)?.trim() || "";
+  const rawDescId = (formData.get("descriptionId") as string)?.trim() || "";
+  const rawDescEn = (formData.get("descriptionEn") as string)?.trim() || "";
+
+  const resolvedDesc = await resolveLanguagePair({
+    textId: rawDescId || rawDescription,
+    textEn: rawDescEn || rawDescription,
+    type: "description",
+  });
+
+  const rawUx = (formData.get("uxGuidelines") as string)?.trim() || "";
+  const rawUxId = (formData.get("uxGuidelinesId") as string)?.trim() || "";
+  const rawUxEn = (formData.get("uxGuidelinesEn") as string)?.trim() || "";
+
+  const resolvedUx = await resolveLanguagePair({
+    textId: rawUxId || rawUx,
+    textEn: rawUxEn || rawUx,
+    type: "description",
+  });
+
+  let slug = (formData.get("slug") as string)?.trim().toLowerCase();
+  if (!slug) {
+    slug = (resolvedTitle.en || resolvedTitle.id)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  }
+
   const raw = {
-    slug: (formData.get("slug") as string)?.trim().toLowerCase(),
-    titleId: (formData.get("titleId") as string)?.trim(),
-    titleEn: (formData.get("titleEn") as string)?.trim(),
-    descriptionId: (formData.get("descriptionId") as string)?.trim(),
-    descriptionEn: (formData.get("descriptionEn") as string)?.trim(),
+    slug,
+    titleId: resolvedTitle.id,
+    titleEn: resolvedTitle.en,
+    descriptionId: resolvedDesc.id,
+    descriptionEn: resolvedDesc.en,
     category: (formData.get("category") as "cards" | "agentic" | "nav" | "forms" | "metrics" | "modals") || "cards",
     componentSnippet: (formData.get("componentSnippet") as string)?.trim(),
     tailwindClasses: (formData.get("tailwindClasses") as string)?.trim() || null,
-    uxGuidelinesId: (formData.get("uxGuidelinesId") as string)?.trim() || null,
-    uxGuidelinesEn: (formData.get("uxGuidelinesEn") as string)?.trim() || null,
+    uxGuidelinesId: resolvedUx.id || null,
+    uxGuidelinesEn: resolvedUx.en || null,
     previewType: (formData.get("previewType") as string) || "component",
     previewImageUrl: (formData.get("previewImageUrl") as string)?.trim() || null,
     status: (formData.get("status") as "published" | "draft" | "archived") || "published",

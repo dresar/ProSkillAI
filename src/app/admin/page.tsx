@@ -1,6 +1,19 @@
 import { getAdminStats, getAdminActivityLogs } from "@/db/queries";
 import Link from "next/link";
-import { Layers, FileCode, Tag, Users as UsersIcon, Plus, DownloadCloud, Palette } from "lucide-react";
+import {
+  Layers,
+  FileCode,
+  Tag,
+  Users as UsersIcon,
+  Plus,
+  DownloadCloud,
+  Palette,
+  Image as ImageIcon,
+  Bot,
+  Settings,
+  Shield,
+  ArrowRight,
+} from "lucide-react";
 
 export default async function AdminOverviewPage() {
   const [stats, recentLogs] = await Promise.all([
@@ -13,40 +26,40 @@ export default async function AdminOverviewPage() {
 
   const statCards = [
     {
-      label: "Total Skills",
+      label: "Skills",
       value: totalSkills,
-      detail: `${stats.skills.published} terbit, ${stats.skills.draft} draft`,
+      detail: `${stats.skills.published} terbit · ${stats.skills.draft} draf`,
       href: "/admin/skills",
       icon: Layers,
     },
     {
-      label: "Total Prompts",
+      label: "Prompts",
       value: totalPrompts,
-      detail: `${stats.prompts.published} terbit, ${stats.prompts.draft} draft`,
+      detail: `${stats.prompts.published} terbit · ${stats.prompts.draft} draf`,
       href: "/admin/prompts",
       icon: FileCode,
     },
     {
       label: "Design Trends",
       value: stats.uiInspirations.total,
-      detail: `${stats.uiInspirations.published} terbit, ${stats.uiInspirations.draft} draft`,
+      detail: `${stats.uiInspirations.published} terbit · ${stats.uiInspirations.draft} draf`,
       href: "/admin/design-trends",
       icon: Palette,
     },
     {
-      label: "Kategori",
+      label: "Kategori & Staf",
       value: stats.totalCategories,
-      detail: "Kategori terdaftar",
+      detail: `${stats.totalCategories} kategori · ${stats.totalUsers} staf`,
       href: "/admin/categories",
       icon: Tag,
     },
-    {
-      label: "Pengguna",
-      value: stats.totalUsers,
-      detail: "Staf & editor terdaftar",
-      href: "/admin/users",
-      icon: UsersIcon,
-    },
+  ];
+
+  const quickNav = [
+    { label: "Pustaka Media", href: "/admin/media", icon: ImageIcon },
+    { label: "Konfigurasi AI", href: "/admin/ai", icon: Bot },
+    { label: "Pengguna & Staf", href: "/admin/users", icon: UsersIcon },
+    { label: "Pengaturan Sistem", href: "/admin/settings", icon: Settings },
   ];
 
   return (
@@ -57,17 +70,24 @@ export default async function AdminOverviewPage() {
             Ringkasan Sistem
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Metrik data riil dari database Neon PostgreSQL.
+            Metrik data riil direktori Neon PostgreSQL.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/admin/media"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] text-xs font-medium border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95"
+          >
+            <ImageIcon className="w-3.5 h-3.5" />
+            <span>Media</span>
+          </Link>
           <Link
             href="/admin/github-import"
             className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] text-xs font-medium border border-border bg-surface hover:bg-muted text-foreground transition-all active:scale-95"
           >
             <DownloadCloud className="w-3.5 h-3.5" />
-            <span>Impor GitHub</span>
+            <span>Impor</span>
           </Link>
           <Link
             href="/admin/skills/new"
@@ -79,17 +99,19 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {statCards.map((c) => {
           const Icon = c.icon;
           return (
             <Link
               key={c.label}
               href={c.href}
-              className="group p-4 rounded-xl border border-border/80 bg-surface hover:border-foreground/30 hover:shadow-xs transition-all duration-200 block"
+              className="group p-4 rounded-[8px] border border-border bg-surface hover:border-foreground/30 hover:shadow-xs transition-all duration-200 block"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-medium truncate group-hover:text-foreground transition-colors">{c.label}</span>
+                <span className="text-xs text-muted-foreground font-medium truncate group-hover:text-foreground transition-colors">
+                  {c.label}
+                </span>
                 <Icon className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-foreground transition-colors" />
               </div>
               <div className="mt-2 text-2xl font-bold tracking-tight text-foreground font-mono">
@@ -101,8 +123,27 @@ export default async function AdminOverviewPage() {
         })}
       </div>
 
-      <div className="p-4 sm:p-5 rounded-xl border border-border/80 bg-surface space-y-3.5">
-        <div className="flex items-center justify-between pb-3 border-b border-border/80">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {quickNav.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="p-3 rounded-[8px] border border-border bg-surface hover:bg-muted/40 transition-colors flex items-center justify-between text-xs font-medium text-foreground"
+            >
+              <div className="flex items-center gap-2">
+                <Icon className="w-4 h-4 text-muted-foreground" />
+                <span>{item.label}</span>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="p-4 sm:p-5 rounded-[8px] border border-border bg-surface space-y-3.5">
+        <div className="flex items-center justify-between pb-3 border-b border-border">
           <h3 className="text-xs font-semibold text-foreground tracking-tight uppercase">
             Log Aktivitas Terbaru
           </h3>

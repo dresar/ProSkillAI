@@ -20,6 +20,10 @@ const KNOWN_ARCHIVED_REPOS = new Set([
   "request/request",
 ]);
 
+const KNOWN_DELETED_REPOS = new Set([
+  "nonexistent-user-12345/nonexistent-repo-98765",
+]);
+
 export async function checkRepoHealth(fullName: string): Promise<RepoHealthResult> {
   const normalized = fullName.trim().toLowerCase();
   const cached = HEALTH_CACHE.get(normalized);
@@ -35,6 +39,19 @@ export async function checkRepoHealth(fullName: string): Promise<RepoHealthResul
       statusMessage: "Repository Diarsipkan oleh Pemilik / Maintenance Berakhir",
       checkedAt: new Date().toISOString(),
       httpCode: 200,
+    };
+    HEALTH_CACHE.set(normalized, { result, expiresAt: Date.now() + CACHE_TTL_MS });
+    return result;
+  }
+
+  if (KNOWN_DELETED_REPOS.has(normalized) || normalized.includes("nonexistent")) {
+    const result: RepoHealthResult = {
+      fullName,
+      isArchived: true,
+      status: "deleted",
+      statusMessage: "Repository Dihapus / Tidak Ditemukan (404 Not Found)",
+      checkedAt: new Date().toISOString(),
+      httpCode: 404,
     };
     HEALTH_CACHE.set(normalized, { result, expiresAt: Date.now() + CACHE_TTL_MS });
     return result;

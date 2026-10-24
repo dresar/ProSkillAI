@@ -7,7 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { prompts, auditLog } from "@/db/schema";
 import { requireAdminOrEditor } from "@/lib/auth";
-import { translateIdToEn } from "@/lib/ai";
+import { translateIdToEn, translateEnToId } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -65,21 +65,29 @@ export async function createPromptAction(prevState: unknown, formData: FormData)
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
-  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
-  const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
+  let descriptionId = ((formData.get("descriptionId") as string) || "").trim();
   let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
-  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentId = ((formData.get("contentId") as string) || "").trim();
   let contentEn = ((formData.get("contentEn") as string) || "").trim();
 
   if (!titleEn && titleId) {
     titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  } else if (!titleId && titleEn) {
+    titleId = await translateEnToId({ text: titleEn, type: "title" }).catch(() => titleEn);
   }
+
   if (!descriptionEn && descriptionId) {
     descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+  } else if (!descriptionId && descriptionEn) {
+    descriptionId = await translateEnToId({ text: descriptionEn, type: "description" }).catch(() => descriptionEn);
   }
+
   if (!contentEn && contentId) {
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  } else if (!contentId && contentEn) {
+    contentId = await translateEnToId({ text: contentEn, type: "content" }).catch(() => contentEn);
   }
 
   const rawDemoOutput = ((formData.get("demoOutput") || formData.get("demo_output")) as string || "").trim();
@@ -160,21 +168,29 @@ export async function updatePromptAction(id: string, prevState: unknown, formDat
   const images = parseStringArray(formData.get("imagesJson")).slice(0, 5);
   const tags = parseStringArray(formData.get("tagsJson"));
 
-  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
-  const descriptionId = ((formData.get("descriptionId") as string) || "").trim();
+  let descriptionId = ((formData.get("descriptionId") as string) || "").trim();
   let descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
-  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentId = ((formData.get("contentId") as string) || "").trim();
   let contentEn = ((formData.get("contentEn") as string) || "").trim();
 
   if (!titleEn && titleId) {
     titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  } else if (!titleId && titleEn) {
+    titleId = await translateEnToId({ text: titleEn, type: "title" }).catch(() => titleEn);
   }
+
   if (!descriptionEn && descriptionId) {
     descriptionEn = await translateIdToEn({ text: descriptionId, type: "description" }).catch(() => descriptionId);
+  } else if (!descriptionId && descriptionEn) {
+    descriptionId = await translateEnToId({ text: descriptionEn, type: "description" }).catch(() => descriptionEn);
   }
+
   if (!contentEn && contentId) {
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  } else if (!contentId && contentEn) {
+    contentId = await translateEnToId({ text: contentEn, type: "content" }).catch(() => contentEn);
   }
 
   const rawDemoOutput = ((formData.get("demoOutput") || formData.get("demo_output")) as string || "").trim();

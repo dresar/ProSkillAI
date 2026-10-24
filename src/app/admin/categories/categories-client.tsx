@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 import { createCategoryAction, updateCategoryAction, deleteCategoryAction } from "./actions";
-import { Plus, Trash2, Edit, AlertCircle, CheckCircle2, X } from "lucide-react";
+import { Plus, Trash2, Edit, AlertCircle, CheckCircle2, X, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import type { Category } from "@/db/schema";
 
 export function CategoriesClient({ categoriesList }: { categoriesList: Category[] }) {
@@ -13,6 +13,8 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
   const [editState, setEditState] = React.useState<{ error?: string; success?: boolean } | null>(null);
   const [isEditing, setIsEditing] = React.useState(false);
   const [confirmId, setConfirmId] = React.useState<string | null>(null);
+  const [showAdvancedNew, setShowAdvancedNew] = React.useState(false);
+  const [showAdvancedEdit, setShowAdvancedEdit] = React.useState(false);
 
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,45 +83,22 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label htmlFor="cat-nameId" className="block font-medium text-foreground">
-                Nama (Bahasa Indonesia) *
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1 sm:col-span-2">
+              <label htmlFor="cat-name" className="block font-medium text-foreground">
+                Nama Kategori *
               </label>
               <input
-                id="cat-nameId"
-                name="nameId"
+                id="cat-name"
+                name="name"
                 type="text"
                 required
+                placeholder="e.g. Prompt Engineering atau Pola Agen AI"
                 className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
-            </div>
-
-            <div className="space-y-1">
-              <label htmlFor="cat-nameEn" className="block font-medium text-foreground">
-                Name (English) *
-              </label>
-              <input
-                id="cat-nameEn"
-                name="nameEn"
-                type="text"
-                required
-                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label htmlFor="cat-slug" className="block font-medium text-foreground">
-                Slug URL *
-              </label>
-              <input
-                id="cat-slug"
-                name="slug"
-                type="text"
-                required
-                placeholder="e.g. prompt-engineering"
-                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
-              />
+              <span className="text-[10px] text-muted-foreground">
+                Otomatis diterjemahkan AI ke bahasa pasangannya saat disimpan.
+              </span>
             </div>
 
             <div className="space-y-1">
@@ -139,10 +118,71 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label htmlFor="cat-slug" className="block font-medium text-foreground">
+                Slug URL (Opsional)
+              </label>
+              <input
+                id="cat-slug"
+                name="slug"
+                type="text"
+                placeholder="Otomatis dibuat dari nama jika kosong"
+                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="cat-desc" className="block font-medium text-foreground">
+                Deskripsi Singkat (Opsional)
+              </label>
+              <input
+                id="cat-desc"
+                name="description"
+                type="text"
+                placeholder="Deskripsi kategori..."
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowAdvancedNew(!showAdvancedNew)}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              {showAdvancedNew ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              <span>Kustomisasi Dwibahasa Manual (Opsional)</span>
+            </button>
+
+            {showAdvancedNew && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2.5 pt-2.5 border-t border-border/60">
+                <div className="space-y-1">
+                  <label className="block text-[11px] text-foreground">Nama (Indonesia)</label>
+                  <input
+                    name="nameId"
+                    type="text"
+                    className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] text-foreground">Name (English)</label>
+                  <input
+                    name="nameEn"
+                    type="text"
+                    placeholder="Auto-translated jika kosong"
+                    className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              onClick={() => setOpenNew(false)}
+              onClick={() => setShowAdvancedNew(false)}
               className="h-8 px-3 rounded-[6px] border border-border hover:bg-muted text-foreground transition-colors"
             >
               Batal
@@ -167,7 +207,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
             <div className="flex items-center gap-2">
               <Edit className="w-4 h-4 text-cyan-500" />
               <h3 className="font-semibold text-foreground">
-                Edit Kategori: {editingCategory.nameEn}
+                Edit Kategori: {editingCategory.nameEn || editingCategory.nameId}
               </h3>
             </div>
             <button
@@ -193,43 +233,17 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1 sm:col-span-2">
               <label className="block font-medium text-foreground">
-                Nama (Bahasa Indonesia) *
+                Nama Kategori *
               </label>
               <input
-                name="nameId"
+                name="name"
                 type="text"
                 required
-                defaultValue={editingCategory.nameId}
+                defaultValue={editingCategory.nameId || editingCategory.nameEn}
                 className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="block font-medium text-foreground">
-                Name (English) *
-              </label>
-              <input
-                name="nameEn"
-                type="text"
-                required
-                defaultValue={editingCategory.nameEn}
-                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="block font-medium text-foreground">
-                Slug URL *
-              </label>
-              <input
-                name="slug"
-                type="text"
-                required
-                defaultValue={editingCategory.slug}
-                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
 
@@ -247,6 +261,67 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                 <option value="prompt">Prompt Saja</option>
               </select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Slug URL *
+              </label>
+              <input
+                name="slug"
+                type="text"
+                required
+                defaultValue={editingCategory.slug}
+                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Deskripsi
+              </label>
+              <input
+                name="description"
+                type="text"
+                defaultValue={editingCategory.descriptionId || editingCategory.descriptionEn || ""}
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowAdvancedEdit(!showAdvancedEdit)}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              {showAdvancedEdit ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              <span>Kustomisasi Dwibahasa Manual (Opsional)</span>
+            </button>
+
+            {showAdvancedEdit && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2.5 pt-2.5 border-t border-border/60">
+                <div className="space-y-1">
+                  <label className="block text-[11px] text-foreground">Nama (Indonesia)</label>
+                  <input
+                    name="nameId"
+                    type="text"
+                    defaultValue={editingCategory.nameId}
+                    className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] text-foreground">Name (English)</label>
+                  <input
+                    name="nameEn"
+                    type="text"
+                    defaultValue={editingCategory.nameEn}
+                    className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

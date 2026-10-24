@@ -490,23 +490,31 @@ export async function getAdminSkills(params?: {
   const pageSize = [12, 24, 48].includes(Number(params?.pageSize)) ? Number(params?.pageSize) : 12;
   const page = Math.max(1, Number(params?.page) || 1);
 
-  const [rows, countResult] = await Promise.all([
-    db
-      .select()
-      .from(skills)
-      .where(whereClause)
-      .orderBy(orderByClause)
-      .limit(pageSize)
-      .offset((page - 1) * pageSize),
-    db.select({ count: sql<number>`count(*)` }).from(skills).where(whereClause),
-  ]);
+  try {
+    const [rows, countResult] = await Promise.all([
+      db
+        .select()
+        .from(skills)
+        .where(whereClause)
+        .orderBy(orderByClause)
+        .limit(pageSize)
+        .offset((page - 1) * pageSize),
+      db.select({ count: sql<number>`count(*)` }).from(skills).where(whereClause),
+    ]);
 
-  return { rows, total: Number(countResult[0]?.count ?? 0) };
+    return { rows, total: Number(countResult[0]?.count ?? 0) };
+  } catch {
+    return { rows: [], total: 0 };
+  }
 }
 
 export async function getAdminSkillById(id: string): Promise<Skill | null> {
-  const result = await db.select().from(skills).where(eq(skills.id, id)).limit(1);
-  return result[0] || null;
+  try {
+    const result = await db.select().from(skills).where(eq(skills.id, id)).limit(1);
+    return result[0] || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getAdminPrompts(params?: {
@@ -534,40 +542,60 @@ export async function getAdminPrompts(params?: {
   const pageSize = [12, 24, 48].includes(Number(params?.pageSize)) ? Number(params?.pageSize) : 12;
   const page = Math.max(1, Number(params?.page) || 1);
 
-  const [rows, countResult] = await Promise.all([
-    db
-      .select()
-      .from(prompts)
-      .where(whereClause)
-      .orderBy(orderByClause)
-      .limit(pageSize)
-      .offset((page - 1) * pageSize),
-    db.select({ count: sql<number>`count(*)` }).from(prompts).where(whereClause),
-  ]);
+  try {
+    const [rows, countResult] = await Promise.all([
+      db
+        .select()
+        .from(prompts)
+        .where(whereClause)
+        .orderBy(orderByClause)
+        .limit(pageSize)
+        .offset((page - 1) * pageSize),
+      db.select({ count: sql<number>`count(*)` }).from(prompts).where(whereClause),
+    ]);
 
-  return { rows, total: Number(countResult[0]?.count ?? 0) };
+    return { rows, total: Number(countResult[0]?.count ?? 0) };
+  } catch {
+    return { rows: [], total: 0 };
+  }
 }
 
 export async function getSkillOptions(): Promise<
   Array<{ id: string; titleId: string; titleEn: string; slug: string }>
 > {
-  return await db
-    .select({ id: skills.id, titleId: skills.titleId, titleEn: skills.titleEn, slug: skills.slug })
-    .from(skills)
-    .orderBy(asc(skills.titleId));
+  try {
+    return await db
+      .select({ id: skills.id, titleId: skills.titleId, titleEn: skills.titleEn, slug: skills.slug })
+      .from(skills)
+      .orderBy(asc(skills.titleId));
+  } catch {
+    return [];
+  }
 }
 
 export async function getAdminPromptById(id: string): Promise<Prompt | null> {
-  const result = await db.select().from(prompts).where(eq(prompts.id, id)).limit(1);
-  return result[0] || null;
+  try {
+    const result = await db.select().from(prompts).where(eq(prompts.id, id)).limit(1);
+    return result[0] || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getAdminUsers(): Promise<User[]> {
-  return await db.select().from(users).orderBy(desc(users.createdAt));
+  try {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  } catch {
+    return [];
+  }
 }
 
 export async function getAdminActivityLogs(limit = 50): Promise<AuditLogEntry[]> {
-  return await db.select().from(auditLog).orderBy(desc(auditLog.createdAt)).limit(limit);
+  try {
+    return await db.select().from(auditLog).orderBy(desc(auditLog.createdAt)).limit(limit);
+  } catch {
+    return [];
+  }
 }
 
 export async function getSitemapData() {

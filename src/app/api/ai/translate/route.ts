@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { translateIdToEn } from "@/lib/ai";
+import { translateIdToEn, translateEnToId } from "@/lib/ai";
 
 export async function POST(req: Request) {
   try {
@@ -37,7 +37,11 @@ export async function POST(req: Request) {
         ? rawType
         : "title";
 
-    const translatedText = await translateIdToEn({ text, type });
+    const direction = body.direction === "en-to-id" ? "en-to-id" : "id-to-en";
+    const translatedText =
+      direction === "en-to-id"
+        ? await translateEnToId({ text, type })
+        : await translateIdToEn({ text, type });
 
     return NextResponse.json({
       success: true,

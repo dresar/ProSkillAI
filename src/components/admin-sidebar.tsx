@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Bot,
   Palette,
+  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -40,6 +41,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
     { href: "/admin/prompts", label: "Prompts", icon: FileCode },
     { href: "/admin/design-trends", label: "Design Trends", icon: Palette },
     { href: "/admin/categories", label: "Kategori", icon: Tag },
+    { href: "/admin/media", label: "Media", icon: ImageIcon },
   ];
 
   const systemLinks = [

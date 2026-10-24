@@ -6,26 +6,55 @@ import { z } from "zod";
 import { db } from "@/db";
 import { categories, auditLog } from "@/db/schema";
 import { requireAdmin, requireAdminOrEditor } from "@/lib/auth";
+import { resolveLanguagePair } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const categorySchema = z.object({
   slug: z.string().min(2, "Slug minimal 2 karakter"),
-  nameId: z.string().min(2, "Nama Indonesia wajib diisi"),
-  nameEn: z.string().min(2, "Nama Inggris wajib diisi"),
-  descriptionId: z.string().optional(),
-  descriptionEn: z.string().optional(),
+  nameId: z.string().min(2, "Nama kategori wajib diisi"),
+  nameEn: z.string().min(2, "Nama kategori wajib diisi"),
+  descriptionId: z.string().optional().nullable(),
+  descriptionEn: z.string().optional().nullable(),
   type: z.enum(["skill", "prompt", "all"]).default("all"),
 });
 
 export async function createCategoryAction(prevState: unknown, formData: FormData) {
   const user = await requireAdminOrEditor();
 
+  const rawName = (formData.get("name") as string)?.trim() || "";
+  const rawNameId = (formData.get("nameId") as string)?.trim() || "";
+  const rawNameEn = (formData.get("nameEn") as string)?.trim() || "";
+
+  const resolvedName = await resolveLanguagePair({
+    textId: rawNameId || rawName,
+    textEn: rawNameEn || rawName,
+    type: "title",
+  });
+
+  const rawDesc = (formData.get("description") as string)?.trim() || "";
+  const rawDescId = (formData.get("descriptionId") as string)?.trim() || "";
+  const rawDescEn = (formData.get("descriptionEn") as string)?.trim() || "";
+
+  const resolvedDesc = await resolveLanguagePair({
+    textId: rawDescId || rawDesc,
+    textEn: rawDescEn || rawDesc,
+    type: "description",
+  });
+
+  let slug = (formData.get("slug") as string)?.trim().toLowerCase();
+  if (!slug) {
+    slug = (resolvedName.en || resolvedName.id)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  }
+
   const raw = {
-    slug: formData.get("slug") as string,
-    nameId: formData.get("nameId") as string,
-    nameEn: formData.get("nameEn") as string,
-    descriptionId: (formData.get("descriptionId") as string) || undefined,
-    descriptionEn: (formData.get("descriptionEn") as string) || undefined,
+    slug,
+    nameId: resolvedName.id,
+    nameEn: resolvedName.en,
+    descriptionId: resolvedDesc.id || null,
+    descriptionEn: resolvedDesc.en || null,
     type: (formData.get("type") as "skill" | "prompt" | "all") || "all",
   };
 
@@ -53,7 +82,7 @@ export async function createCategoryAction(prevState: unknown, formData: FormDat
     action: "CREATE_CATEGORY",
     entityType: "category",
     entityId: id,
-    details: { name: val.data.nameId },
+    details: { name: val.data.nameId, slug: val.data.slug },
     createdAt: new Date(),
   });
 
@@ -61,33 +90,43 @@ export async function createCategoryAction(prevState: unknown, formData: FormDat
   return { success: true };
 }
 
-export async function deleteCategoryAction(id: string) {
-  const user = await requireAdmin();
-
-  await db.delete(categories).where(eq(categories.id, id));
-
-  await db.insert(auditLog).values({
-    id: randomBytes(16).toString("hex"),
-    userId: user.id,
-    userEmail: user.email,
-    action: "DELETE_CATEGORY",
-    entityType: "category",
-    entityId: id,
-    createdAt: new Date(),
-  });
-
-  revalidatePath("/admin/categories");
-}
-
 export async function updateCategoryAction(id: string, prevState: unknown, formData: FormData) {
   const user = await requireAdminOrEditor();
 
+  const rawName = (formData.get("name") as string)?.trim() || "";
+  const rawNameId = (formData.get("nameId") as string)?.trim() || "";
+  const rawNameEn = (formData.get("nameEn") as string)?.trim() || "";
+
+  const resolvedName = await resolveLanguagePair({
+    textId: rawNameId || rawName,
+    textEn: rawNameEn || rawName,
+    type: "title",
+  });
+
+  const rawDesc = (formData.get("description") as string)?.trim() || "";
+  const rawDescId = (formData.get("descriptionId") as string)?.trim() || "";
+  const rawDescEn = (formData.get("descriptionEn") as string)?.trim() || "";
+
+  const resolvedDesc = await resolveLanguagePair({
+    textId: rawDescId || rawDesc,
+    textEn: rawDescEn || rawDesc,
+    type: "description",
+  });
+
+  let slug = (formData.get("slug") as string)?.trim().toLowerCase();
+  if (!slug) {
+    slug = (resolvedName.en || resolvedName.id)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  }
+
   const raw = {
-    slug: formData.get("slug") as string,
-    nameId: formData.get("nameId") as string,
-    nameEn: formData.get("nameEn") as string,
-    descriptionId: (formData.get("descriptionId") as string) || undefined,
-    descriptionEn: (formData.get("descriptionEn") as string) || undefined,
+    slug,
+    nameId: resolvedName.id,
+    nameEn: resolvedName.en,
+    descriptionId: resolvedDesc.id || null,
+    descriptionEn: resolvedDesc.en || null,
     type: (formData.get("type") as "skill" | "prompt" | "all") || "all",
   };
 
@@ -130,4 +169,22 @@ export async function updateCategoryAction(id: string, prevState: unknown, formD
   revalidatePath("/id/prompts");
   revalidatePath("/en/prompts");
   return { success: true };
+}
+
+export async function deleteCategoryAction(id: string) {
+  const user = await requireAdmin();
+
+  await db.delete(categories).where(eq(categories.id, id));
+
+  await db.insert(auditLog).values({
+    id: randomBytes(16).toString("hex"),
+    userId: user.id,
+    userEmail: user.email,
+    action: "DELETE_CATEGORY",
+    entityType: "category",
+    entityId: id,
+    createdAt: new Date(),
+  });
+
+  revalidatePath("/admin/categories");
 }

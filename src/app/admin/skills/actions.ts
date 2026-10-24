@@ -7,7 +7,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { skills, auditLog } from "@/db/schema";
 import { requireAdminOrEditor } from "@/lib/auth";
-import { translateIdToEn } from "@/lib/ai";
+import { translateIdToEn, translateEnToId } from "@/lib/ai";
 import { and, eq, ne } from "drizzle-orm";
 
 const imageUrlSchema = z.string().refine((value) => {
@@ -82,21 +82,29 @@ export async function createSkillAction(prevState: unknown, formData: FormData) 
     }
   }
 
-  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
-  const summaryId = ((formData.get("summaryId") as string) || "").trim();
+  let summaryId = ((formData.get("summaryId") as string) || "").trim();
   let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
-  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentId = ((formData.get("contentId") as string) || "").trim();
   let contentEn = ((formData.get("contentEn") as string) || "").trim();
 
   if (!titleEn && titleId) {
     titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  } else if (!titleId && titleEn) {
+    titleId = await translateEnToId({ text: titleEn, type: "title" }).catch(() => titleEn);
   }
+
   if (!summaryEn && summaryId) {
     summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+  } else if (!summaryId && summaryEn) {
+    summaryId = await translateEnToId({ text: summaryEn, type: "description" }).catch(() => summaryEn);
   }
+
   if (!contentEn && contentId) {
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  } else if (!contentId && contentEn) {
+    contentId = await translateEnToId({ text: contentEn, type: "content" }).catch(() => contentEn);
   }
 
   const raw = {
@@ -191,21 +199,29 @@ export async function updateSkillAction(id: string, prevState: unknown, formData
     }
   }
 
-  const titleId = ((formData.get("titleId") as string) || "").trim();
+  let titleId = ((formData.get("titleId") as string) || "").trim();
   let titleEn = ((formData.get("titleEn") as string) || "").trim();
-  const summaryId = ((formData.get("summaryId") as string) || "").trim();
+  let summaryId = ((formData.get("summaryId") as string) || "").trim();
   let summaryEn = ((formData.get("summaryEn") as string) || "").trim();
-  const contentId = ((formData.get("contentId") as string) || "").trim();
+  let contentId = ((formData.get("contentId") as string) || "").trim();
   let contentEn = ((formData.get("contentEn") as string) || "").trim();
 
   if (!titleEn && titleId) {
     titleEn = await translateIdToEn({ text: titleId, type: "title" }).catch(() => titleId);
+  } else if (!titleId && titleEn) {
+    titleId = await translateEnToId({ text: titleEn, type: "title" }).catch(() => titleEn);
   }
+
   if (!summaryEn && summaryId) {
     summaryEn = await translateIdToEn({ text: summaryId, type: "description" }).catch(() => summaryId);
+  } else if (!summaryId && summaryEn) {
+    summaryId = await translateEnToId({ text: summaryEn, type: "description" }).catch(() => summaryEn);
   }
+
   if (!contentEn && contentId) {
     contentEn = await translateIdToEn({ text: contentId, type: "content" }).catch(() => contentId);
+  } else if (!contentId && contentEn) {
+    contentId = await translateEnToId({ text: contentEn, type: "content" }).catch(() => contentEn);
   }
 
   const raw = {
