@@ -61,7 +61,6 @@ function copyDirSync(src, dest) {
   }
 }
 
-const openNextDir = path.resolve(process.cwd(), ".open-next");
 const assetsDir = path.join(openNextDir, "assets");
 
 console.log("[build-pages] Copying static assets from .open-next/assets...");
