@@ -3,6 +3,28 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 import * as esbuild from "esbuild";
 
+function patchFile(filePath, replacements) {
+  if (!fs.existsSync(filePath)) return;
+  let content = fs.readFileSync(filePath, "utf8");
+  for (const [pattern, replacement] of replacements) {
+    content = content.replace(pattern, replacement);
+  }
+  fs.writeFileSync(filePath, content, "utf8");
+}
+
+function patchNextFiles() {
+  const fsiPath = path.resolve(process.cwd(), "node_modules/next/dist/server/node-environment-extensions/fast-set-immediate.external.js");
+  patchFile(fsiPath, [
+    [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
+  ]);
+  const cdPath = path.resolve(process.cwd(), "node_modules/next/dist/server/node-environment-extensions/console-dim.external.js");
+  patchFile(cdPath, [
+    [/require\(["']node:inspector["']\)/g, "({})"],
+  ]);
+}
+
+patchNextFiles();
+
 console.log("[build-pages] Starting OpenNext build for Cloudflare Pages...");
 execSync("pnpm exec opennextjs-cloudflare build || npx @opennextjs/cloudflare build", {
   stdio: "inherit",
@@ -11,6 +33,13 @@ execSync("pnpm exec opennextjs-cloudflare build || npx @opennextjs/cloudflare bu
     SKIP_WRANGLER_CONFIG_CHECK: "yes",
   },
 });
+
+const openNextDir = path.resolve(process.cwd(), ".open-next");
+const handlerPath = path.join(openNextDir, "server-functions/default/handler.mjs");
+patchFile(handlerPath, [
+  [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
+  [/require\(["']node:inspector["']\)/g, "({})"],
+]);
 
 const distDir = path.resolve(process.cwd(), ".pages-dist");
 if (fs.existsSync(distDir)) {
@@ -141,6 +170,11 @@ await esbuild.build({
   ],
   logLevel: "info",
 });
+
+patchFile(workerOutput, [
+  [/function\s+install\s*\(\)\s*\{/g, "function install() { return;"],
+  [/require\(["']node:inspector["']\)/g, "({})"],
+]);
 
 const stat = fs.statSync(workerOutput);
 console.log(`[build-pages] Single _worker.js bundled successfully: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
