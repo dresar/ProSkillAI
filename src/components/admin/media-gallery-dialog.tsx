@@ -4,6 +4,7 @@ import * as React from "react";
 import { X, Search, UploadCloud, Copy, Check, Image as ImageIcon, AlertCircle, Loader2 } from "lucide-react";
 import { getUploadedMediaList, type MediaFileItem } from "@/app/admin/media/actions";
 import { UploadModal } from "@/components/admin/upload-modal";
+import { formatShortMediaName } from "@/lib/media-utils";
 
 interface MediaGalleryDialogProps {
   open: boolean;
@@ -86,7 +87,7 @@ export function MediaGalleryDialog({
               <button
                 type="button"
                 onClick={() => setUploadModalOpen(true)}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-foreground px-3.5 text-xs font-semibold text-background hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
+                className="inline-flex h-8.5 items-center gap-1.5 rounded-[6px] bg-foreground px-4 text-xs font-semibold text-background hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
               >
                 <UploadCloud className="w-3.5 h-3.5" />
                 <span>Unggah Media Baru</span>
@@ -100,7 +101,7 @@ export function MediaGalleryDialog({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari gambar..."
-                className="w-full h-8 pl-8 pr-3 rounded-[6px] border border-border bg-surface text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+                className="w-full h-8.5 pl-8 pr-3 rounded-[6px] border border-border bg-surface text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
           </div>
@@ -138,72 +139,75 @@ export function MediaGalleryDialog({
               <span>Tidak ada gambar ditemukan.</span>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {filteredItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="group rounded-[8px] border border-border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-all shadow-2xs"
-                >
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {filteredItems.map((item) => {
+                const shortName = formatShortMediaName(item.name);
+                return (
                   <div
-                    onClick={() => {
-                      if (onSelect) {
-                        onSelect(item.cdnUrl, item);
-                        onClose();
-                      }
-                    }}
-                    className="relative aspect-square w-full cursor-pointer overflow-hidden bg-background"
+                    key={item.id}
+                    className="group rounded-[8px] border border-border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-all shadow-2xs"
                   >
-                    <img
-                      src={item.url}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <div className="p-2 space-y-1.5 border-t border-border/80">
-                    <div className="text-[11px] font-semibold text-foreground truncate" title={item.name}>
-                      {item.name}
+                    <div
+                      onClick={() => {
+                        if (onSelect) {
+                          onSelect(item.cdnUrl, item);
+                          onClose();
+                        }
+                      }}
+                      className="relative aspect-square w-full cursor-pointer overflow-hidden bg-background"
+                    >
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      {onSelect && (
+                    <div className="p-2.5 space-y-2 border-t border-border/80">
+                      <div className="text-xs font-bold font-mono text-foreground truncate" title={item.name}>
+                        {shortName}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {onSelect && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onSelect(item.cdnUrl, item);
+                              onClose();
+                            }}
+                            className="flex-1 h-8 inline-flex items-center justify-center rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs whitespace-nowrap"
+                          >
+                            Pilih
+                          </button>
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => {
-                            onSelect(item.cdnUrl, item);
-                            onClose();
-                          }}
-                          className="flex-1 h-7 inline-flex items-center justify-center rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs whitespace-nowrap"
+                          onClick={() => handleCopy(item)}
+                          className={`h-8 px-2.5 inline-flex items-center justify-center gap-1 rounded-[5px] border border-border bg-background text-xs font-semibold transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-2xs ${
+                            onSelect ? "" : "w-full"
+                          }`}
+                          title="Salin CDN URL"
                         >
-                          Pilih
+                          {copiedId === item.id ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                              <span className="text-emerald-500">Tersalin</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                              <span>Salin CDN</span>
+                            </>
+                          )}
                         </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(item)}
-                        className={`h-7 px-2.5 inline-flex items-center justify-center gap-1 rounded-[5px] border border-border bg-background text-xs font-medium transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-2xs ${
-                          onSelect ? "" : "w-full"
-                        }`}
-                        title="Salin CDN URL"
-                      >
-                        {copiedId === item.id ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-500" />
-                            <span className="text-emerald-500">Tersalin</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5 text-muted-foreground" />
-                            <span>Salin CDN</span>
-                          </>
-                        )}
-                      </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -215,7 +219,7 @@ export function MediaGalleryDialog({
           <button
             type="button"
             onClick={onClose}
-            className="h-7 px-3 rounded-[5px] border border-border bg-surface text-xs text-foreground hover:bg-muted cursor-pointer"
+            className="h-8 px-3.5 rounded-[6px] border border-border bg-surface text-xs font-medium text-foreground hover:bg-muted cursor-pointer"
           >
             Tutup
           </button>

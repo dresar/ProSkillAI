@@ -22,6 +22,8 @@ export interface UploadedImage {
   mimeType: string;
 }
 
+export { formatShortMediaName } from "./media-utils";
+
 export function getStorageConfig() {
   const owner = process.env.GITHUB_STORAGE_OWNER || process.env.GITHUB_OWNER || "dresar";
   const repo = process.env.GITHUB_STORAGE_REPO || process.env.GITHUB_REPO || "ProSkillAI";
@@ -72,7 +74,8 @@ export async function uploadImageToStorage({
       .toLowerCase()
       .replace(/[^a-z0-9-]+/g, "-")
       .replace(/(^-|-$)/g, "") || "misc";
-  const fileName = `${Date.now()}-${randomBytes(4).toString("hex")}.${extension}`;
+  const shortCode = randomBytes(2).toString("hex");
+  const fileName = `${shortCode}.${extension}`;
 
   const uploadDir = join(process.cwd(), "public", "images", "uploads", safeFolder, safeSlug);
   await mkdir(uploadDir, { recursive: true });
