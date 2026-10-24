@@ -52,11 +52,11 @@ export function ShareCard({
   const { owner, repo, title } = extractOwnerAndRepo(item);
 
   const username =
-    userAttribution?.show && userAttribution?.username
+    userAttribution?.show && userAttribution?.username?.trim()
       ? (userAttribution.username.startsWith("@")
-          ? userAttribution.username
-          : `@${userAttribution.username}`)
-      : "@proskillai";
+          ? userAttribution.username.trim()
+          : `@${userAttribution.username.trim()}`)
+      : null;
 
   let rawStars = "555.7k";
   let rawForks = "52k";
@@ -131,12 +131,12 @@ export function ShareCard({
         >
           <div className="flex flex-row items-center justify-between w-full">
             <div className="flex items-center gap-4">
-              <div className="w-[60px] h-[60px] rounded-full border-4 border-black bg-[#FFD23F] flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-[72px] h-[72px] rounded-full border-4 border-black bg-[#FFD23F] flex items-center justify-center overflow-hidden shrink-0">
                 <Image
                   src="/brand/logo-mark-black.png"
                   alt="ProSkillAI Logo"
-                  width={40}
-                  height={40}
+                  width={52}
+                  height={52}
                   className="object-contain"
                   priority
                 />
@@ -152,12 +152,14 @@ export function ShareCard({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-[#FF5CA8] border-4 border-black shadow-[5px_5px_0_#000] px-[18px] py-[8px]">
-              <div className="w-5 h-5 rounded-full bg-black shrink-0" />
-              <span className="font-['Space_Mono',monospace] font-bold text-[20px] text-black">
-                {username}
-              </span>
-            </div>
+            {username ? (
+              <div className="flex items-center gap-3 bg-[#FF5CA8] border-4 border-black shadow-[5px_5px_0_#000] px-[18px] py-[8px]">
+                <div className="w-5 h-5 rounded-full bg-black shrink-0" />
+                <span className="font-['Space_Mono',monospace] font-bold text-[20px] text-black">
+                  {username}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-col mt-7 grow">

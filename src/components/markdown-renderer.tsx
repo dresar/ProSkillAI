@@ -1,15 +1,41 @@
+"use client";
+
+import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import { highlightCode } from "@/lib/shiki";
 
-async function ShikiCodeBlock({ code, className }: { code: string; className?: string }) {
-  const html = await highlightCode(code, className);
+function ShikiCodeBlock({ code, className }: { code: string; className?: string }) {
+  const [html, setHtml] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let active = true;
+    highlightCode(code, className)
+      .then((res) => {
+        if (active) setHtml(res);
+      })
+      .catch(() => {
+        if (active) setHtml(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [code, className]);
+
+  if (html) {
+    return (
+      <div
+        className="my-3 overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-xs p-3 font-mono [&_pre]:bg-transparent! [&_pre]:m-0! [&_pre]:p-0!"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  }
+
   return (
-    <div
-      className="my-3 overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-xs p-3 font-mono [&_pre]:bg-transparent! [&_pre]:m-0! [&_pre]:p-0!"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <pre className="my-3 overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 text-xs p-3 font-mono text-neutral-800 dark:text-neutral-200">
+      <code>{code}</code>
+    </pre>
   );
 }
 

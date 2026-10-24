@@ -70,7 +70,7 @@ export function TrendingClient({
   const [currentPage, setCurrentPage] = React.useState(1);
   const [selectedRange, setSelectedRange] = React.useState<TrendingTimeRange>("all");
   const [selectedLanguage, setSelectedLanguage] = React.useState<string>("All");
-  const [statusFilter, setStatusFilter] = React.useState<"all" | "active" | "archived">("all");
+  const [statusFilter, setStatusFilter] = React.useState<"all" | "active" | "archived">("active");
   const [archivedRepos, setArchivedRepos] = React.useState<Set<string>>(
     () => new Set(["morluto/rea", "openclaw/openclaw"])
   );
@@ -456,27 +456,14 @@ export function TrendingClient({
                       className="object-cover group-hover/cover:scale-103 transition-transform duration-300"
                       unoptimized
                     />
-                    <div className="absolute top-2 left-2 flex items-center gap-1.5 z-10">
-                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[4px] bg-background/90 border border-border/80 text-foreground backdrop-blur-xs shadow-2xs">
-                        #{repo.rank}
-                      </span>
-                      {isArchived ? (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] bg-amber-500/90 text-black text-[9px] font-mono font-bold uppercase tracking-wider backdrop-blur-xs">
-                          <Archive className="w-2.5 h-2.5" />
-                          {isEn ? "Archived" : "Diarsipkan"}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] bg-emerald-500/90 text-black text-[9px] font-mono font-bold uppercase tracking-wider backdrop-blur-xs">
-                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-                          {isEn ? "Active" : "Aktif"}
-                        </span>
-                      )}
-                    </div>
                   </Link>
 
                   <div className="p-3 sm:p-3.5 space-y-2.5">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[4px] bg-muted border border-border text-foreground shrink-0">
+                          #{repo.rank}
+                        </span>
                         <div className="relative w-7 h-7 rounded-[5px] overflow-hidden border border-border/80 shrink-0 bg-muted">
                           <Image
                             src={repo.owner.avatarUrl}

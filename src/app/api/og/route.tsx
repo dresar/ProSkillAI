@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     const rawStars = searchParams.get("stars");
     const rawForks = searchParams.get("forks");
     const rawRank = searchParams.get("rank");
-    const rawUsername = searchParams.get("username") || searchParams.get("user") || "proskillai";
+    const rawUsername = searchParams.get("username") || searchParams.get("user") || "";
     const rawDomain = searchParams.get("domain") || "skills.biz.id";
 
     let owner = rawOwner.trim().replace(/^@/, "");
@@ -95,7 +95,9 @@ export async function GET(request: NextRequest) {
     const formattedStars = formatCompactNumber(rawStars ?? "555.7k");
     const formattedForks = formatCompactNumber(rawForks ?? "52k");
     const formattedRank = rawRank ? (rawRank.startsWith("#") ? rawRank : `#${rawRank}`) : "#1";
-    const username = rawUsername.startsWith("@") ? rawUsername : `@${rawUsername}`;
+    const username = rawUsername.trim()
+      ? (rawUsername.trim().startsWith("@") ? rawUsername.trim() : `@${rawUsername.trim()}`)
+      : null;
     const domain = rawDomain.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
     const requestedWidth = parseInt(searchParams.get("w") || "1200", 10);
@@ -160,8 +162,8 @@ export async function GET(request: NextRequest) {
               >
                 <div
                   style={{
-                    width: Math.round(60 * scale),
-                    height: Math.round(60 * scale),
+                    width: Math.round(72 * scale),
+                    height: Math.round(72 * scale),
                     borderRadius: 9999,
                     border: `${Math.round(4 * scale)}px solid #000000`,
                     backgroundColor: "#FFD23F",
@@ -173,8 +175,8 @@ export async function GET(request: NextRequest) {
                 >
                   <img
                     src={logoDataUri}
-                    width={Math.round(40 * scale)}
-                    height={Math.round(40 * scale)}
+                    width={Math.round(52 * scale)}
+                    height={Math.round(52 * scale)}
                     style={{ objectFit: "contain" }}
                     alt="Logo"
                   />
@@ -211,36 +213,38 @@ export async function GET(request: NextRequest) {
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: Math.round(12 * scale),
-                  backgroundColor: "#FF5CA8",
-                  border: `${Math.round(4 * scale)}px solid #000000`,
-                  boxShadow: `${Math.round(5 * scale)}px ${Math.round(5 * scale)}px 0 #000000`,
-                  padding: `${Math.round(8 * scale)}px ${Math.round(18 * scale)}px`,
-                }}
-              >
+              {username ? (
                 <div
                   style={{
-                    width: Math.round(20 * scale),
-                    height: Math.round(20 * scale),
-                    borderRadius: 9999,
-                    backgroundColor: "#000000",
-                  }}
-                />
-                <span
-                  style={{
-                    fontFamily: "Space Mono",
-                    fontWeight: 700,
-                    fontSize: Math.round(20 * scale),
-                    color: "#000000",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: Math.round(12 * scale),
+                    backgroundColor: "#FF5CA8",
+                    border: `${Math.round(4 * scale)}px solid #000000`,
+                    boxShadow: `${Math.round(5 * scale)}px ${Math.round(5 * scale)}px 0 #000000`,
+                    padding: `${Math.round(8 * scale)}px ${Math.round(18 * scale)}px`,
                   }}
                 >
-                  {username}
-                </span>
-              </div>
+                  <div
+                    style={{
+                      width: Math.round(20 * scale),
+                      height: Math.round(20 * scale),
+                      borderRadius: 9999,
+                      backgroundColor: "#000000",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "Space Mono",
+                      fontWeight: 700,
+                      fontSize: Math.round(20 * scale),
+                      color: "#000000",
+                    }}
+                  >
+                    {username}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             <div

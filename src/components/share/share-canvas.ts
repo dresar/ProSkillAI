@@ -51,8 +51,6 @@ export async function fetchShareCardBlob(
 
   if (options?.userAttribution?.show && options.userAttribution.username) {
     params.set("username", options.userAttribution.username);
-  } else {
-    params.set("username", "proskillai");
   }
 
   params.set("domain", displayDomain);
