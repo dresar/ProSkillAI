@@ -60,7 +60,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
       const res = await cleanOrphanedMediaAction();
       const updated = await getUploadedMediaList();
       setItems(updated);
-      setCleanMessage(`Pembersihan selesai: ${res.deletedFiles} file dan ${res.deletedRecords} data yatim dibersihkan.`);
+      setCleanMessage(`Sinkronisasi selesai: ${res.deletedFiles} file dan ${res.deletedRecords} data tidak valid dibersihkan.`);
       setTimeout(() => setCleanMessage(null), 4000);
     } catch {
       setCleanMessage("Pembersihan gagal dilakukan.");
@@ -95,10 +95,10 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             disabled={isCleaning}
             onClick={handleCleanOrphans}
             className="inline-flex h-8.5 items-center gap-1.5 rounded-[6px] border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-muted active:scale-95 transition-all shadow-xs disabled:opacity-50 cursor-pointer"
-            title="Hapus file atau data yang tidak sinkron antara disk dan database"
+            title="Sinkronkan database dan penyimpanan file"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isCleaning ? "animate-spin" : ""}`} />
-            <span>{isCleaning ? "Membersihkan..." : "Bersihkan Yatim"}</span>
+            <span>{isCleaning ? "Menyinkronkan..." : "Sinkronkan"}</span>
           </button>
 
           <button
