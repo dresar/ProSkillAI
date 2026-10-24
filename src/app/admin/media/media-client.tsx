@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { UploadCloud, Copy, Check, Trash2, Search, X, Image as ImageIcon, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
+import { UploadCloud, Copy, Check, Trash2, Search, X, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
 import { deleteMediaAction, cleanOrphanedMediaAction, getUploadedMediaList, type MediaFileItem } from "./actions";
 import { UploadModal } from "@/components/admin/upload-modal";
 import { formatShortMediaName } from "@/lib/media-utils";
@@ -119,20 +119,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
         </div>
       )}
 
-      <div
-        onClick={() => setUploadModalOpen(true)}
-        className="border-2 border-dashed border-border/80 hover:border-foreground/40 rounded-[8px] bg-surface/50 p-6 text-center cursor-pointer transition-colors"
-      >
-        <div className="flex flex-col items-center justify-center space-y-1.5 pointer-events-none">
-          <ImageIcon className="w-6 h-6 text-muted-foreground" />
-          <span className="text-xs font-medium text-foreground">
-            Klik untuk membuka jendela unggah multi-gambar dengan antrean realtime
-          </span>
-          <span className="text-[11px] text-muted-foreground font-mono">
-            Nama otomatis 4 karakter unik &middot; Multi-file &middot; Langsung siap salin CDN
-          </span>
-        </div>
-      </div>
+      
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-1 max-w-md">
