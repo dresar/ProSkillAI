@@ -1,4 +1,6 @@
-import { codeToHtml } from "shiki";
+import { createHighlighterCore } from "shiki/core";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { bundledLanguages } from "shiki/langs";
 
 const monochromeTheme = {
   name: "proskill-monochrome",
@@ -43,6 +45,29 @@ const monochromeTheme = {
   ],
 };
 
+let highlighterPromise: ReturnType<typeof createHighlighterCore> | null = null;
+
+function getHighlighter() {
+  if (!highlighterPromise) {
+    highlighterPromise = createHighlighterCore({
+      themes: [monochromeTheme],
+      langs: [
+        bundledLanguages.typescript,
+        bundledLanguages.javascript,
+        bundledLanguages.bash,
+        bundledLanguages.json,
+        bundledLanguages.markdown,
+        bundledLanguages.yaml,
+        bundledLanguages.html,
+        bundledLanguages.css,
+        bundledLanguages.python,
+      ],
+      engine: createJavaScriptRegexEngine(),
+    });
+  }
+  return highlighterPromise;
+}
+
 export async function highlightCode(code: string, lang = "text"): Promise<string> {
   const cleanLang = lang.replace(/^language-/, "").toLowerCase();
   const supportedLangs = [
@@ -62,9 +87,10 @@ export async function highlightCode(code: string, lang = "text"): Promise<string
   const targetLang = supportedLangs.includes(cleanLang) ? cleanLang : "text";
 
   try {
-    return await codeToHtml(code, {
+    const highlighter = await getHighlighter();
+    return highlighter.codeToHtml(code, {
       lang: targetLang,
-      theme: monochromeTheme,
+      theme: "proskill-monochrome",
     });
   } catch {
     return `<pre><code>${code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>`;
