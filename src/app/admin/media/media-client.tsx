@@ -176,12 +176,12 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             >
               <div
                 onClick={() => setPreviewItem(item)}
-                className="relative aspect-square w-full bg-muted/20 cursor-pointer overflow-hidden flex items-center justify-center p-2.5"
+                className="relative aspect-square w-full cursor-pointer overflow-hidden bg-background"
               >
                 <img
                   src={item.url}
                   alt={item.name}
-                  className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
               </div>
@@ -246,11 +246,11 @@ export function MediaClient({ initialItems }: MediaClientProps) {
               </button>
             </div>
 
-            <div className="relative aspect-video w-full bg-muted/20 rounded-[6px] overflow-hidden flex items-center justify-center p-2">
+            <div className="relative aspect-video w-full bg-background rounded-[6px] overflow-hidden flex items-center justify-center">
               <img
                 src={previewItem.url}
                 alt={previewItem.name}
-                className="max-h-full max-w-full object-contain"
+                className="w-full h-full object-contain"
               />
             </div>
 

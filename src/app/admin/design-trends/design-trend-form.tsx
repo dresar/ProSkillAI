@@ -399,11 +399,11 @@ export function DesignTrendForm({ initialData, action, title }: DesignTrendFormP
         </div>
 
         {previewImageUrl && (
-          <div className="relative aspect-video max-w-xs rounded-[6px] border border-border bg-muted/20 overflow-hidden flex items-center justify-center p-2">
+          <div className="relative aspect-video max-w-xs rounded-[6px] border border-border overflow-hidden bg-background">
             <img
               src={previewImageUrl}
               alt="Pratinjau Pola"
-              className="max-h-full max-w-full object-contain"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
