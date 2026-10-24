@@ -68,6 +68,7 @@ export default async function HomePage({ params }: PageProps) {
         prompts={publishedPrompts}
         categories={allCategories}
         locale={locale}
+        maxSkills={20}
       />
 
       <BetaSections />

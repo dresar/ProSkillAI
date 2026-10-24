@@ -13,6 +13,7 @@ interface OnePageCatalogProps {
   prompts: Array<{ prompt: Prompt; category: Category | null }>;
   categories: Category[];
   locale: string;
+  maxSkills?: number;
 }
 
 export function OnePageCatalog({
@@ -20,6 +21,7 @@ export function OnePageCatalog({
   prompts,
   categories,
   locale,
+  maxSkills,
 }: OnePageCatalogProps) {
   const isEn = locale === "en";
 
@@ -201,6 +203,20 @@ export function OnePageCatalog({
     setSelectedIndex(-1);
     inputRef.current?.focus();
   };
+
+  const displayedSkills = React.useMemo(() => {
+    if (typeof maxSkills === "number" && maxSkills > 0 && !cleanQuery && selectedCategory === "all") {
+      return filteredSkills.slice(0, maxSkills);
+    }
+    return filteredSkills;
+  }, [filteredSkills, maxSkills, cleanQuery, selectedCategory]);
+
+  const hasMoreSkills =
+    typeof maxSkills === "number" &&
+    maxSkills > 0 &&
+    !cleanQuery &&
+    selectedCategory === "all" &&
+    filteredSkills.length > maxSkills;
 
   const totalResults =
     activeTab === "skills"
@@ -438,7 +454,7 @@ export function OnePageCatalog({
                 {isEn ? "Curated Agent Skills" : "Skill Agen AI Terkurasi"}
               </h2>
               <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted text-muted-foreground border border-border/60">
-                {filteredSkills.length}
+                {displayedSkills.length}{hasMoreSkills ? ` / ${filteredSkills.length}` : ""}
               </span>
             </div>
             <Link
@@ -457,16 +473,34 @@ export function OnePageCatalog({
                 : "Tidak ada skill agen yang cocok dengan filter."}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-              {filteredSkills.map(({ skill, category }) => (
-                <SkillCard
-                  key={skill.id}
-                  skill={skill}
-                  category={category}
-                  locale={locale}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
+                {displayedSkills.map(({ skill, category }) => (
+                  <SkillCard
+                    key={skill.id}
+                    skill={skill}
+                    category={category}
+                    locale={locale}
+                  />
+                ))}
+              </div>
+
+              {hasMoreSkills && (
+                <div className="pt-2 flex justify-center">
+                  <Link
+                    href={`/${locale}/skills`}
+                    className="inline-flex items-center gap-2 h-9 px-4 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-semibold tracking-tight shadow-2xs transition-all active:scale-95 cursor-pointer"
+                  >
+                    <span>
+                      {isEn
+                        ? `View all ${filteredSkills.length} skills`
+                        : `Lihat semua ${filteredSkills.length} skill`}
+                    </span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+            </>
           )}
         </section>
       )}

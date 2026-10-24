@@ -9,6 +9,7 @@ import {
   Terminal,
   Copy,
   Check,
+  ChevronDown,
   ExternalLink,
   ShieldCheck,
   Server,
@@ -56,6 +57,30 @@ export function McpClient({ servers, locale }: McpClientProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [activeModalServer, setActiveModalServer] = React.useState<McpServerItem | null>(null);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = React.useState(false);
+  const categoryDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(e.target as Node)
+      ) {
+        setCategoryDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setCategoryDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -72,6 +97,28 @@ export function McpClient({ servers, locale }: McpClientProps) {
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  const categoryCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const s of servers) {
+      counts[s.category] = (counts[s.category] || 0) + 1;
+    }
+    return counts;
+  }, [servers]);
+
+  const selectedCategoryObj = MCP_CATEGORIES.find((c) => c.key === selectedCategory);
+  const SelectedCatIcon =
+    selectedCategory === "all"
+      ? Layers
+      : CATEGORY_ICONS[selectedCategory as McpCategoryKey] || Layers;
+  const selectedCategoryCount =
+    selectedCategory === "all"
+      ? servers.length
+      : categoryCounts[selectedCategory] || 0;
+  const selectedCategoryLabel =
+    selectedCategory === "all"
+      ? (isEn ? "All Categories" : "Semua Kategori")
+      : (selectedCategoryObj?.label || selectedCategory);
 
   const filteredServers = React.useMemo(() => {
     return servers.filter((s) => {
@@ -153,10 +200,10 @@ export function McpClient({ servers, locale }: McpClientProps) {
         </div>
       </div>
 
-      <div className="space-y-4 pt-2">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="space-y-3 pt-2">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 p-2 rounded-xl border border-border/80 bg-surface/60 backdrop-blur-xs">
           <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -166,78 +213,136 @@ export function McpClient({ servers, locale }: McpClientProps) {
                   ? "Search 139 MCP servers by name, vendor, tool capability, or description..."
                   : "Cari 139 server MCP berdasarkan nama, pembuat, kapabilitas tool, atau deskripsi..."
               }
-              className="w-full h-9 pl-9 pr-3 rounded-[6px] border border-border bg-surface text-foreground text-xs focus:outline-2 focus:outline-foreground placeholder:text-muted-foreground"
+              className="w-full h-8.5 pl-8.5 pr-3 rounded-[6px] border border-border bg-background text-foreground text-xs focus:outline-2 focus:outline-foreground placeholder:text-muted-foreground"
             />
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => setFilterType("all")}
-              className={`h-9 px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
-                filterType === "all"
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border bg-surface text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {isEn ? "All Servers" : "Semua Server"} ({servers.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterType("open-source")}
-              className={`h-9 px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
-                filterType === "open-source"
-                  ? "border-emerald-500 bg-emerald-500 text-white font-semibold"
-                  : "border-border bg-surface text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {isEn ? "Open Source" : "Sumber Terbuka"} ({MCP_CATALOG_STATS.openSourceCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilterType("self-hostable")}
-              className={`h-9 px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
-                filterType === "self-hostable"
-                  ? "border-cyan-500 bg-cyan-500 text-white font-semibold"
-                  : "border-border bg-surface text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {isEn ? "Self-Hostable" : "Self-Hostable"} ({MCP_CATALOG_STATS.selfHostableCount})
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2">
-          <button
-            type="button"
-            onClick={() => setSelectedCategory("all")}
-            className={`h-7 px-2.5 rounded-[5px] border text-[11px] whitespace-nowrap transition-colors cursor-pointer shrink-0 ${
-              selectedCategory === "all"
-                ? "border-foreground bg-foreground text-background font-semibold"
-                : "border-border bg-surface text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {isEn ? "All Categories" : "Semua Kategori"}
-          </button>
-
-          {MCP_CATEGORIES.map((cat) => {
-            const IconComponent = CATEGORY_ICONS[cat.key] || Layers;
-            return (
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative flex-1 sm:flex-initial" ref={categoryDropdownRef}>
               <button
-                key={cat.key}
                 type="button"
-                onClick={() => setSelectedCategory(cat.key)}
-                className={`h-7 px-2.5 rounded-[5px] border text-[11px] whitespace-nowrap transition-colors cursor-pointer shrink-0 inline-flex items-center gap-1.5 ${
-                  selectedCategory === cat.key
+                onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+                className="w-full sm:w-auto h-8.5 px-3 rounded-[6px] border border-border bg-background hover:bg-muted text-foreground text-xs font-medium inline-flex items-center justify-between sm:justify-start gap-2 cursor-pointer transition-colors shadow-2xs"
+                aria-expanded={categoryDropdownOpen}
+                aria-haspopup="listbox"
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <SelectedCatIcon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <span className="truncate max-w-[140px] sm:max-w-[200px] font-semibold">
+                    {selectedCategoryLabel}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded-[4px] border border-border/60">
+                    {selectedCategoryCount}
+                  </span>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${
+                      categoryDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {categoryDropdownOpen && (
+                <div className="absolute right-0 sm:right-auto sm:left-0 z-40 mt-1.5 w-72 sm:w-80 rounded-xl border border-border bg-surface/98 backdrop-blur-md p-1.5 shadow-xl space-y-0.5 max-h-84 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      setCategoryDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                      selectedCategory === "all"
+                        ? "bg-muted text-foreground font-semibold"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-3.5 h-3.5 text-foreground" />
+                      <span>{isEn ? "All Categories" : "Semua Kategori"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-[4px] border border-border/50">
+                        {servers.length}
+                      </span>
+                      {selectedCategory === "all" && <Check className="w-3.5 h-3.5 text-foreground" />}
+                    </div>
+                  </button>
+
+                  <div className="h-px bg-border/60 my-1" />
+
+                  {MCP_CATEGORIES.map((cat) => {
+                    const IconComponent = CATEGORY_ICONS[cat.key] || Layers;
+                    const count = categoryCounts[cat.key] || 0;
+                    const isSelected = selectedCategory === cat.key;
+                    return (
+                      <button
+                        key={cat.key}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(cat.key);
+                          setCategoryDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                          isSelected
+                            ? "bg-muted text-foreground font-semibold"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <IconComponent className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+                          <span className="truncate">{cat.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="font-mono text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded-[4px] border border-border/50">
+                            {count}
+                          </span>
+                          {isSelected && <Check className="w-3.5 h-3.5 text-foreground shrink-0" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setFilterType("all")}
+                className={`h-8.5 px-2.5 sm:px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
+                  filterType === "all"
                     ? "border-foreground bg-foreground text-background font-semibold"
-                    : "border-border/80 bg-background text-muted-foreground hover:text-foreground"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <IconComponent className="w-3 h-3" />
-                <span>{cat.label}</span>
+                {isEn ? "All" : "Semua"} ({servers.length})
               </button>
-            );
-          })}
+              <button
+                type="button"
+                onClick={() => setFilterType("open-source")}
+                className={`h-8.5 px-2.5 sm:px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
+                  filterType === "open-source"
+                    ? "border-emerald-500 bg-emerald-500 text-white font-semibold"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {isEn ? "Open Source" : "Sumber Terbuka"} ({MCP_CATALOG_STATS.openSourceCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterType("self-hostable")}
+                className={`h-8.5 px-2.5 sm:px-3 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer ${
+                  filterType === "self-hostable"
+                    ? "border-cyan-500 bg-cyan-500 text-white font-semibold"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {isEn ? "Self-Hostable" : "Self-Hostable"} ({MCP_CATALOG_STATS.selfHostableCount})
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
