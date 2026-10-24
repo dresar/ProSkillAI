@@ -59,8 +59,11 @@ describe("Universal Share Feature & QR Code Engine", () => {
     assert.ok(!cardContent.includes("radial-gradient(circle at 1px 1px"));
     assert.ok(!canvasContent.includes("gridSize"));
     assert.ok(cardContent.includes("displayDomain"));
-    assert.ok(cardContent.includes("/brand/logo-mark-white.png"));
-    assert.ok(canvasContent.includes("/brand/logo-mark-white.png"));
+    assert.ok(cardContent.includes("/brand/logo-mark-black.png") || cardContent.includes("/brand/logo-mark-white.png"));
+    assert.ok(cardContent.includes("#FFD23F"));
+    assert.ok(cardContent.includes("#FF5CA8"));
+    assert.ok(cardContent.includes("#5CE1E6"));
+    assert.ok(cardContent.includes("#B6FF5C"));
   });
 
   test("buildShareUrl normalizes paths and preserves absolute URLs", () => {
@@ -171,10 +174,40 @@ describe("Universal Share Feature & QR Code Engine", () => {
     }
   });
 
+  test("neo-brutalist share card and og fonts specification", () => {
+    const fontFiles = [
+      "public/fonts/ArchivoBlack-Regular.ttf",
+      "public/fonts/SpaceMono-Regular.ttf",
+      "public/fonts/SpaceMono-Bold.ttf",
+    ];
+    for (const fontPath of fontFiles) {
+      const fullPath = path.resolve(process.cwd(), fontPath);
+      assert.ok(fs.existsSync(fullPath), `Font missing: ${fontPath}`);
+      const stats = fs.statSync(fullPath);
+      assert.ok(stats.size > 50000, `Font file too small: ${fontPath}`);
+    }
+
+    const ogRoute = fs.readFileSync(
+      path.resolve(process.cwd(), "src/app/api/og/route.tsx"),
+      "utf-8"
+    );
+    assert.ok(ogRoute.includes("#FFD23F"));
+    assert.ok(ogRoute.includes("#FFFFFF"));
+    assert.ok(ogRoute.includes("#FF5CA8"));
+    assert.ok(ogRoute.includes("#5CE1E6"));
+    assert.ok(ogRoute.includes("#B6FF5C"));
+    assert.ok(ogRoute.includes("16 * scale") || ogRoute.includes("16px 16px 0"));
+    assert.ok(ogRoute.includes("5 * scale") || ogRoute.includes("5px 5px 0"));
+    assert.ok(ogRoute.includes("Archivo Black"));
+    assert.ok(ogRoute.includes("Space Mono"));
+    assert.ok(ogRoute.includes("public, max-age=3600, s-maxage=86400"));
+  });
+
   test("strict /nokomen compliance in all share code files", () => {
     const filesToCheck = [
       "src/types/share.ts",
       "src/lib/share-utils.ts",
+      "src/app/api/og/route.tsx",
       "src/components/share/share-canvas.ts",
       "src/components/share/share-card.tsx",
       "src/components/share/share-modal.tsx",

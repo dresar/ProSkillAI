@@ -58,7 +58,18 @@ export async function generateMetadata({
       ? `Explore ${repoData.fullName} with documentation, clone instructions, and metrics.`
       : `Jelajahi ${repoData.fullName} lengkap dengan dokumentasi, perintah clone, dan metrik.`);
 
-  const ogImage = `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+  const ogParams = new URLSearchParams({
+    owner,
+    repo,
+    title: repoData.fullName,
+    description: repoData.description || "",
+    stars: String(repoData.stars || "0"),
+    forks: String(repoData.forks || "0"),
+    rank: repoData.rank ? String(repoData.rank) : "1",
+    w: "1200",
+    h: "630",
+  });
+  const ogImage = `${SITE_URL}/api/og?${ogParams.toString()}`;
   const canonicalUrl = `${SITE_URL}/${locale}/trending/${owner}/${repo}`;
 
   return {
@@ -76,12 +87,12 @@ export async function generateMetadata({
       description,
       url: canonicalUrl,
       siteName: "Skills",
-      type: "article",
+      type: "website",
       images: [
         {
           url: ogImage,
           width: 1200,
-          height: 600,
+          height: 630,
           alt: repoData.fullName,
         },
       ],

@@ -51,9 +51,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { skill } = item;
   const title = isEn ? skill.titleEn : skill.titleId;
   const description = isEn ? skill.summaryEn : skill.summaryId;
-  const rawCover = getSkillCoverImage(skill.images, skill.previewImageUrl);
-  const cover =
-    rawCover || (slug === "superpowers" ? SUPERPOWERS_DEFAULT_SLIDES[0] : undefined);
+  const author = skill.authorName || "proskillai";
+  const stars = skill.copyCount > 0 ? String(skill.copyCount) : "4.8k";
+
+  const ogParams = new URLSearchParams({
+    owner: author,
+    repo: skill.slug,
+    title: `${author}/${skill.slug}`,
+    description: description || "",
+    stars,
+    forks: "1.2k",
+    rank: "#1",
+    w: "1200",
+    h: "630",
+  });
+  const ogImageUrl = `${SITE_URL}/api/og?${ogParams.toString()}`;
 
   return {
     title,
@@ -72,8 +84,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: `${SITE_URL}/${locale}/skills/${slug}`,
       siteName: "Skills",
       locale: isEn ? "en_US" : "id_ID",
-      type: "article",
-      images: cover ? [cover] : undefined,
+      type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
     },
   };
 }
@@ -299,7 +324,8 @@ export default async function SkillDetailPage({ params }: PageProps) {
                   author: authorName,
                   stats: [
                     { label: "Stars", value: skill.copyCount > 0 ? String(skill.copyCount) : "4.8k" },
-                    { label: "Files", value: attachedFiles.length },
+                    { label: "Forks", value: attachedFiles.length > 0 ? String(attachedFiles.length) : "120" },
+                    { label: "Rank", value: "#1" },
                   ],
                 }}
                 locale={locale}

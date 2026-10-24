@@ -209,6 +209,44 @@ export function extractUsernameFromEmail(email?: string | null): string {
   return clean.replace(/@.*$/, "");
 }
 
+export function formatCompactNumber(value: number | string | undefined | null): string {
+  if (value === undefined || value === null || value === "") return "0";
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (/[a-zA-Z#]/.test(trimmed)) return trimmed;
+    const parsed = Number(trimmed);
+    if (isNaN(parsed)) return trimmed;
+    value = parsed;
+  }
+  const num = Number(value);
+  if (isNaN(num)) return "0";
+  if (num < 1000) return String(num);
+  if (num < 1_000_000) {
+    const k = num / 1000;
+    return k % 1 === 0 ? `${k}k` : `${k.toFixed(1)}k`;
+  }
+  const m = num / 1_000_000;
+  return m % 1 === 0 ? `${m}M` : `${m.toFixed(1)}M`;
+}
+
+export function extractOwnerAndRepo(item: ShareItemData): { owner: string; repo: string; title: string } {
+  let owner = (item.author || "").replace(/^@/, "").trim();
+  let repo = (item.slug || "").trim();
+  let title = (item.title || "").trim();
+
+  if (title.includes("/")) {
+    const parts = title.split("/");
+    if (!owner) owner = parts[0].trim();
+    if (!repo) repo = parts.slice(1).join("/").trim();
+  }
+
+  if (!owner) owner = "proskillai";
+  if (!repo) repo = title || "skills";
+  if (!title) title = `${owner}/${repo}`;
+
+  return { owner, repo, title };
+}
+
 export function buildShareUrl(rawUrl: string, origin?: string): string {
   if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
     return rawUrl;
@@ -218,20 +256,37 @@ export function buildShareUrl(rawUrl: string, origin?: string): string {
   return `${base}${normalizedPath}`;
 }
 
+export function buildShareCaption(
+  owner: string,
+  repo: string,
+  description: string,
+  link: string
+): string {
+  const cleanOwner = owner.replace(/^@/, "").trim();
+  const cleanRepo = repo.trim();
+  const title = cleanOwner && cleanRepo ? `${cleanOwner}/${cleanRepo}` : (cleanRepo || cleanOwner || "ProSkillAI");
+  const cleanDesc = (description || "").trim();
+  return `${title} — ${cleanDesc}\n\n${link}\n\n#opensource #coding #github #developer`;
+}
+
 export function buildSocialShareUrls(item: ShareItemData, canonicalUrl: string) {
+  const { owner, repo, title } = extractOwnerAndRepo(item);
   const rawDesc = (item.description || "").trim();
   const shortDesc = rawDesc.length > 120
     ? `${rawDesc.slice(0, 117)}...`
     : rawDesc;
   const shareText = shortDesc
-    ? `${item.title} — ${shortDesc} via @Skills`
-    : `${item.title} via @Skills`;
+    ? `${title} — ${shortDesc} via @Skills`
+    : `${title} via @Skills`;
+  const caption = buildShareCaption(owner, repo, rawDesc, canonicalUrl);
 
   return {
     twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(canonicalUrl)}`,
+    threads: `https://www.threads.net/intent/post?text=${encodeURIComponent(caption)}`,
     whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(`${shareText}\n${canonicalUrl}`)}`,
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonicalUrl)}`,
     telegram: `https://t.me/share/url?url=${encodeURIComponent(canonicalUrl)}&text=${encodeURIComponent(shareText)}`,
+    caption,
   };
 }
 
