@@ -190,15 +190,14 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                   />
                 </div>
 
-                <div className="p-3 space-y-2.5 border-t border-border/80">
-                  <div className="space-y-0.5">
-                    <div className="text-xs font-bold text-foreground font-mono tracking-tight" title={item.name}>
+                <div className="p-3 space-y-2 border-t border-border/80">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="font-bold text-foreground tracking-tight" title={item.name}>
                       {shortName}
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
-                      <span>{item.folder}</span>
-                      <span>{formatBytes(item.size)}</span>
-                    </div>
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-normal">
+                      {formatBytes(item.size)}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-1.5 pt-0.5">
@@ -244,7 +243,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                   {formatShortMediaName(previewItem.name)}
                 </span>
                 <span className="text-[11px] text-muted-foreground font-mono block truncate">
-                  {previewItem.name} &middot; {previewItem.folder} &middot; {formatBytes(previewItem.size)}
+                  {previewItem.name} &middot; {formatBytes(previewItem.size)}
                 </span>
               </div>
               <button
