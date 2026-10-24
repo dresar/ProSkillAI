@@ -38,12 +38,28 @@ const assetsDir = path.join(openNextDir, "assets");
 console.log("[build-pages] Copying static assets from .open-next/assets...");
 copyDirSync(assetsDir, distDir);
 
-console.log("[build-pages] Bundling and minifying worker into single _worker.js...");
+console.log("[build-pages] Preparing static worker entrypoint...");
 const workerEntry = path.join(openNextDir, "worker.js");
+let workerContent = fs.readFileSync(workerEntry, "utf8");
+
+workerContent = `import { handler as serverHandler } from "./server-functions/default/handler.mjs";\n` + workerContent;
+workerContent = workerContent.replace(
+  /const\s*\{\s*handler\s*\}\s*=\s*await\s+import\([^)]+\);/g,
+  ""
+);
+workerContent = workerContent.replace(
+  /return\s+handler\(/g,
+  "return serverHandler("
+);
+
+const patchedWorkerEntry = path.join(openNextDir, "worker.static.js");
+fs.writeFileSync(patchedWorkerEntry, workerContent, "utf8");
+
+console.log("[build-pages] Bundling and minifying worker into single _worker.js...");
 const workerOutput = path.join(distDir, "_worker.js");
 
 await esbuild.build({
-  entryPoints: [workerEntry],
+  entryPoints: [patchedWorkerEntry],
   outfile: workerOutput,
   bundle: true,
   minify: true,
