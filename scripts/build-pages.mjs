@@ -67,6 +67,9 @@ await esbuild.build({
   format: "esm",
   platform: "node",
   target: "es2022",
+  banner: {
+    js: `import { createRequire as __cr } from "node:module";\nconst require = __cr(import.meta.url);\n`,
+  },
   loader: {
     ".bin": "binary",
     ".wasm": "binary",
