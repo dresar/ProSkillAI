@@ -60,6 +60,7 @@ const workerOutput = path.join(distDir, "_worker.js");
 const emptyShim = path.resolve(process.cwd(), "scripts/empty-shim.mjs");
 const timersShim = path.resolve(process.cwd(), "scripts/timers-shim.mjs");
 const timersPromisesShim = path.resolve(process.cwd(), "scripts/timers-promises-shim.mjs");
+const fastSetImmediateShim = path.resolve(process.cwd(), "scripts/fast-set-immediate-shim.mjs");
 
 await esbuild.build({
   entryPoints: [patchedWorkerEntry],
@@ -73,6 +74,16 @@ await esbuild.build({
   banner: {
     js: `import { createRequire as __cr } from "node:module";\nconst require = __cr("/index.js");\n`,
   },
+  plugins: [
+    {
+      name: "cloudflare-shims",
+      setup(build) {
+        build.onResolve({ filter: /fast-set-immediate/ }, () => ({
+          path: fastSetImmediateShim,
+        }));
+      },
+    },
+  ],
   alias: {
     "node:timers": timersShim,
     "timers": timersShim,
