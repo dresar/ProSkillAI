@@ -3,6 +3,7 @@
 import * as React from "react";
 import { X, Search, UploadCloud, Copy, Check, Image as ImageIcon, AlertCircle, Loader2 } from "lucide-react";
 import { getUploadedMediaList, type MediaFileItem } from "@/app/admin/media/actions";
+import { UploadModal } from "@/components/admin/upload-modal";
 
 interface MediaGalleryDialogProps {
   open: boolean;
@@ -25,11 +26,8 @@ export function MediaGalleryDialog({
   const [loading, setLoading] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [activeFolder, setActiveFolder] = React.useState(defaultFolder);
-  const [uploadFolder, setUploadFolder] = React.useState(defaultFolder === "all" ? "general" : defaultFolder);
-  const [isUploading, setIsUploading] = React.useState(false);
-  const [uploadError, setUploadError] = React.useState<string | null>(null);
+  const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const loadMedia = React.useCallback(async () => {
     setLoading(true);
@@ -54,53 +52,6 @@ export function MediaGalleryDialog({
       return matchesFolder && matchesSearch;
     });
   }, [items, activeFolder, search]);
-
-  const handleUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setIsUploading(true);
-    setUploadError(null);
-
-    const formData = new FormData();
-    formData.append("folder", uploadFolder);
-    formData.append("slug", "gallery");
-    for (let i = 0; i < Math.min(files.length, 5); i++) {
-      formData.append("files", files[i]);
-    }
-
-    try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok || data?.error) {
-        setUploadError(data?.error || "Gagal mengunggah gambar.");
-      } else if (data?.images) {
-        const newMedia: MediaFileItem[] = data.images.map((img: any, idx: number) => ({
-          id: `new-${Date.now()}-${idx}`,
-          name: img.path.split("/").pop() || "image.png",
-          url: img.path,
-          cdnUrl: img.cdnUrl || img.url,
-          rawUrl: img.rawUrl || img.url,
-          path: img.path.replace(/^\/+/, "").replace(/^public\//, ""),
-          size: 0,
-          updatedAt: new Date().toISOString(),
-          folder: uploadFolder,
-        }));
-        setItems((prev) => [...newMedia, ...prev]);
-        if (newMedia[0] && onSelect) {
-          onSelect(newMedia[0].cdnUrl, newMedia[0]);
-          onClose();
-        }
-      }
-    } catch {
-      setUploadError("Gagal menghubungi server upload.");
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
 
   const handleCopy = async (item: MediaFileItem) => {
     try {
@@ -132,34 +83,13 @@ export function MediaGalleryDialog({
         <div className="p-4 space-y-3 border-b border-border bg-muted/20">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
-              <select
-                value={uploadFolder}
-                onChange={(e) => setUploadFolder(e.target.value)}
-                className="h-8 px-2.5 rounded-[6px] border border-border bg-surface text-xs text-foreground focus:outline-none"
-              >
-                <option value="skills">Folder: skills</option>
-                <option value="prompts">Folder: prompts</option>
-                <option value="ui">Folder: ui</option>
-                <option value="general">Folder: general</option>
-              </select>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-                className="hidden"
-                onChange={(e) => handleUpload(e.target.files)}
-              />
-
               <button
                 type="button"
-                disabled={isUploading}
-                onClick={() => fileInputRef.current?.click()}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-foreground px-3 text-xs font-semibold text-background hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+                onClick={() => setUploadModalOpen(true)}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[6px] bg-foreground px-3.5 text-xs font-semibold text-background hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
               >
-                {isUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                <span>{isUploading ? "Mengunggah..." : "Unggah Gambar"}</span>
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>Unggah Media Baru</span>
               </button>
             </div>
 
@@ -174,13 +104,6 @@ export function MediaGalleryDialog({
               />
             </div>
           </div>
-
-          {uploadError && (
-            <div className="p-2.5 rounded-[6px] border border-rose-500/30 bg-rose-500/10 text-rose-500 text-xs flex items-center gap-2">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{uploadError}</span>
-            </div>
-          )}
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
             {FOLDERS.map((f) => (
@@ -219,7 +142,7 @@ export function MediaGalleryDialog({
               {filteredItems.map((item) => (
                 <div
                   key={item.id}
-                  className="group rounded-[6px] border border-border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-all shadow-2xs"
+                  className="group rounded-[8px] border border-border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-all shadow-2xs"
                 >
                   <div
                     onClick={() => {
@@ -228,7 +151,7 @@ export function MediaGalleryDialog({
                         onClose();
                       }
                     }}
-                    className="relative aspect-square w-full bg-muted/20 cursor-pointer overflow-hidden flex items-center justify-center p-2"
+                    className="relative aspect-square w-full bg-muted/20 cursor-pointer overflow-hidden flex items-center justify-center p-2.5"
                   >
                     <img
                       src={item.url}
@@ -236,17 +159,14 @@ export function MediaGalleryDialog({
                       className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-200"
                       loading="lazy"
                     />
-                    <span className="absolute top-1 left-1 px-1 py-0.2 rounded bg-background/90 text-[9px] font-mono border border-border text-muted-foreground">
-                      {item.folder}
-                    </span>
                   </div>
 
                   <div className="p-2 space-y-1.5 border-t border-border/80">
-                    <div className="text-[11px] font-medium text-foreground truncate" title={item.name}>
+                    <div className="text-[11px] font-semibold text-foreground truncate" title={item.name}>
                       {item.name}
                     </div>
 
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       {onSelect && (
                         <button
                           type="button"
@@ -254,7 +174,7 @@ export function MediaGalleryDialog({
                             onSelect(item.cdnUrl, item);
                             onClose();
                           }}
-                          className="flex-1 h-6 inline-flex items-center justify-center rounded-[4px] bg-foreground text-background text-[11px] font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs"
+                          className="flex-1 h-7 inline-flex items-center justify-center rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs whitespace-nowrap"
                         >
                           Pilih
                         </button>
@@ -263,20 +183,20 @@ export function MediaGalleryDialog({
                       <button
                         type="button"
                         onClick={() => handleCopy(item)}
-                        className={`h-6 px-2 inline-flex items-center justify-center gap-1 rounded-[4px] border border-border bg-background text-[11px] font-medium transition-all active:scale-95 cursor-pointer ${
+                        className={`h-7 px-2.5 inline-flex items-center justify-center gap-1 rounded-[5px] border border-border bg-background text-xs font-medium transition-all active:scale-95 cursor-pointer whitespace-nowrap shadow-2xs ${
                           onSelect ? "" : "w-full"
                         }`}
                         title="Salin CDN URL"
                       >
                         {copiedId === item.id ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-500" />
-                            <span className="text-emerald-500 text-[10px]">Tersalin</span>
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                            <span className="text-emerald-500">Tersalin</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3 h-3 text-muted-foreground" />
-                            <span className="text-[10px]">Salin CDN</span>
+                            <Copy className="w-3.5 h-3.5 text-muted-foreground" />
+                            <span>Salin CDN</span>
                           </>
                         )}
                       </button>
@@ -301,6 +221,19 @@ export function MediaGalleryDialog({
           </button>
         </div>
       </div>
+
+      <UploadModal
+        open={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        defaultFolder={activeFolder === "all" ? "general" : activeFolder}
+        onSuccess={(newItems) => {
+          setItems((prev) => [...newItems, ...prev]);
+          if (newItems[0] && onSelect) {
+            onSelect(newItems[0].cdnUrl, newItems[0]);
+            onClose();
+          }
+        }}
+      />
     </div>
   );
 }

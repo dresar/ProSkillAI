@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 10 * 1024 * 1024;
 
 const MIME_EXTENSIONS: Record<string, string> = {
   "image/png": "png",
@@ -16,6 +16,10 @@ export interface UploadedImage {
   path: string;
   rawUrl: string;
   cdnUrl: string;
+  fileName: string;
+  folder: string;
+  size: number;
+  mimeType: string;
 }
 
 export function getStorageConfig() {
@@ -45,92 +49,6 @@ export function toGithubCdnUrl(pathOrUrl: string): { cdnUrl: string; rawUrl: str
   return { cdnUrl, rawUrl, localUrl };
 }
 
-export async function uploadImageToGitHub({
-  file,
-  folder,
-  slug,
-}: {
-  file: File;
-  folder: "skills" | "prompts" | "ui" | "general" | string;
-  slug: string;
-}): Promise<UploadedImage> {
-  const { owner, repo, branch, token, configured } = getStorageConfig();
-
-  if (!configured || !owner || !repo || !token) {
-    throw new Error(
-      "Konfigurasi GITHUB_STORAGE_OWNER, GITHUB_STORAGE_REPO, GITHUB_STORAGE_BRANCH, dan GITHUB_TOKEN belum lengkap."
-    );
-  }
-
-  const extension = MIME_EXTENSIONS[file.type] || "png";
-  if (!MIME_EXTENSIONS[file.type]) {
-    throw new Error("Format gambar harus PNG, JPG, WEBP, GIF, atau SVG.");
-  }
-  if (file.size > MAX_BYTES) {
-    throw new Error("Ukuran setiap gambar maksimal 5 MB.");
-  }
-
-  const safeFolder = ["prompts", "skills", "ui", "general"].includes(folder) ? folder : "general";
-  const safeSlug =
-    slug
-      .toLowerCase()
-      .replace(/[^a-z0-9-]+/g, "-")
-      .replace(/(^-|-$)/g, "") || "misc";
-  const fileName = `${Date.now()}-${randomBytes(4).toString("hex")}.${extension}`;
-  const path = `public/images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
-  const content = Buffer.from(await file.arrayBuffer()).toString("base64");
-  const encodedPath = path.split("/").map(encodeURIComponent).join("/");
-
-  const response = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "ProSkillAI-Admin",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message: `chore: upload ${safeFolder} asset ${fileName}`,
-        content,
-        branch,
-      }),
-    }
-  );
-
-  if (!response.ok) {
-    let detail = "";
-    try {
-      const data = (await response.json()) as { message?: string };
-      detail = data.message || "";
-    } catch {
-      detail = "";
-    }
-
-    if (response.status === 401) {
-      throw new Error("Token GitHub tidak valid atau tidak memiliki izin Contents: write.");
-    }
-    if (response.status === 403) {
-      throw new Error(`Akses upload ke GitHub ditolak. ${detail}`.trim());
-    }
-    if (response.status === 404) {
-      throw new Error("Repo atau branch CDN tidak ditemukan. Periksa konfigurasi GITHUB_STORAGE_*.");
-    }
-    throw new Error(`Upload ke GitHub gagal (${response.status}). ${detail}`.trim());
-  }
-
-  const localRelative = `images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
-  const { cdnUrl, rawUrl, localUrl } = toGithubCdnUrl(localRelative);
-
-  return {
-    path: localUrl,
-    rawUrl,
-    cdnUrl,
-  };
-}
-
 export async function uploadImageToStorage({
   file,
   folder,
@@ -145,7 +63,7 @@ export async function uploadImageToStorage({
     throw new Error("Format gambar harus PNG, JPG, WEBP, GIF, atau SVG.");
   }
   if (file.size > MAX_BYTES) {
-    throw new Error("Ukuran setiap gambar maksimal 5 MB.");
+    throw new Error("Ukuran setiap gambar maksimal 10 MB.");
   }
 
   const safeFolder = ["prompts", "skills", "ui", "general"].includes(folder) ? folder : "general";
@@ -196,5 +114,55 @@ export async function uploadImageToStorage({
     path: localUrl,
     rawUrl,
     cdnUrl,
+    fileName,
+    folder: safeFolder,
+    size: file.size,
+    mimeType: file.type,
   };
+}
+
+export async function deleteImageFromGitHub(path: string): Promise<boolean> {
+  const { owner, repo, branch, token, configured } = getStorageConfig();
+  if (!configured || !owner || !repo || !token) return false;
+
+  const cleanPath = path.replace(/^\/+/, "").replace(/^public\//, "");
+  const gitPath = `public/${cleanPath}`;
+  const encodedPath = gitPath.split("/").map(encodeURIComponent).join("/");
+
+  try {
+    const getRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}?ref=${branch}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "ProSkillAI-Admin",
+        },
+      }
+    );
+    if (!getRes.ok) return false;
+    const data = (await getRes.json()) as { sha?: string };
+    if (!data?.sha) return false;
+
+    const delRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "User-Agent": "ProSkillAI-Admin",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: `chore: delete media ${cleanPath}`,
+          sha: data.sha,
+          branch,
+        }),
+      }
+    );
+    return delRes.ok;
+  } catch {
+    return false;
+  }
 }

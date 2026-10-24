@@ -208,6 +208,24 @@ export const uiInspirations = pgTable("ui_inspirations", {
   index("ui_inspirations_status_idx").on(table.status),
 ]);
 
+export const media = pgTable("media", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  url: text("url").notNull(),
+  cdnUrl: text("cdn_url").notNull(),
+  rawUrl: text("raw_url").notNull(),
+  path: text("path").notNull(),
+  folder: text("folder").notNull().default("general"),
+  size: integer("size").notNull().default(0),
+  mimeType: text("mime_type"),
+  uploadedBy: text("uploaded_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index("media_folder_idx").on(table.folder),
+  index("media_cdn_url_idx").on(table.cdnUrl),
+]);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -223,3 +241,5 @@ export type Feedback = typeof feedbacks.$inferSelect;
 export type NewFeedback = typeof feedbacks.$inferInsert;
 export type UiInspiration = typeof uiInspirations.$inferSelect;
 export type NewUiInspiration = typeof uiInspirations.$inferInsert;
+export type Media = typeof media.$inferSelect;
+export type NewMedia = typeof media.$inferInsert;
