@@ -1,6 +1,6 @@
 import { getAdminStats, getAdminActivityLogs } from "@/db/queries";
 import Link from "next/link";
-import { Layers, FileCode, Tag, Users as UsersIcon, Plus, DownloadCloud } from "lucide-react";
+import { Layers, FileCode, Tag, Users as UsersIcon, Plus, DownloadCloud, Palette } from "lucide-react";
 
 export default async function AdminOverviewPage() {
   const [stats, recentLogs] = await Promise.all([
@@ -25,6 +25,13 @@ export default async function AdminOverviewPage() {
       detail: `${stats.prompts.published} terbit, ${stats.prompts.draft} draft`,
       href: "/admin/prompts",
       icon: FileCode,
+    },
+    {
+      label: "Design Trends",
+      value: stats.uiInspirations.total,
+      detail: `${stats.uiInspirations.published} terbit, ${stats.uiInspirations.draft} draft`,
+      href: "/admin/design-trends",
+      icon: Palette,
     },
     {
       label: "Kategori",
@@ -72,7 +79,7 @@ export default async function AdminOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {statCards.map((c) => {
           const Icon = c.icon;
           return (

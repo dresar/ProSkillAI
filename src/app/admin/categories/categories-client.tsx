@@ -2,14 +2,36 @@
 
 import * as React from "react";
 import { useActionState } from "react";
-import { createCategoryAction, deleteCategoryAction } from "./actions";
-import { Plus, Trash2, AlertCircle } from "lucide-react";
+import { createCategoryAction, updateCategoryAction, deleteCategoryAction } from "./actions";
+import { Plus, Trash2, Edit, AlertCircle, CheckCircle2, X } from "lucide-react";
 import type { Category } from "@/db/schema";
 
 export function CategoriesClient({ categoriesList }: { categoriesList: Category[] }) {
-  const [state, formAction, isPending] = useActionState(createCategoryAction, null);
+  const [createState, createAction, isCreating] = useActionState(createCategoryAction, null);
   const [openNew, setOpenNew] = React.useState(false);
+  const [editingCategory, setEditingCategory] = React.useState<Category | null>(null);
+  const [editState, setEditState] = React.useState<{ error?: string; success?: boolean } | null>(null);
+  const [isEditing, setIsEditing] = React.useState(false);
   const [confirmId, setConfirmId] = React.useState<string | null>(null);
+
+  const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!editingCategory) return;
+    setIsEditing(true);
+    setEditState(null);
+    const formData = new FormData(e.currentTarget);
+    const res = await updateCategoryAction(editingCategory.id, null, formData);
+    setIsEditing(false);
+    if (res?.error) {
+      setEditState({ error: res.error });
+    } else {
+      setEditState({ success: true });
+      setTimeout(() => {
+        setEditingCategory(null);
+        setEditState(null);
+      }, 1000);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -18,15 +40,18 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
           <h2 className="text-base font-semibold text-foreground tracking-tight">
             Kategori Konten
           </h2>
-          <p className="text-xs text-neutral-500">
-            Kategori yang digunakan untuk mengelompokkan skill dan prompt.
+          <p className="text-xs text-muted-foreground">
+            Kategori yang digunakan untuk mengelompokkan skill dan prompt di direktori publik.
           </p>
         </div>
 
         <button
           type="button"
-          onClick={() => setOpenNew(!openNew)}
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded text-xs font-medium bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 cursor-pointer"
+          onClick={() => {
+            setOpenNew(!openNew);
+            setEditingCategory(null);
+          }}
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] text-xs font-semibold bg-foreground text-background hover:opacity-90 transition-transform active:scale-95 cursor-pointer shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Tambah Kategori</span>
@@ -35,15 +60,24 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
 
       {openNew && (
         <form
-          action={formAction}
-          className="p-4 rounded-md border border-neutral-200 dark:border-neutral-800 bg-surface space-y-4 text-xs animate-in fade-in"
+          action={createAction}
+          className="p-4 rounded-[8px] border border-border bg-surface space-y-4 text-xs animate-in fade-in"
         >
-          <h3 className="font-semibold text-foreground">Kategori Baru</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-foreground">Kategori Baru</h3>
+            <button
+              type="button"
+              onClick={() => setOpenNew(false)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
-          {state?.error && (
-            <div className="p-2.5 rounded border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-foreground flex items-center gap-2">
+          {createState?.error && (
+            <div className="p-2.5 rounded-[6px] border border-rose-500/30 bg-rose-500/10 text-rose-500 flex items-center gap-2">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>{state.error}</span>
+              <span>{createState.error}</span>
             </div>
           )}
 
@@ -57,7 +91,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                 name="nameId"
                 type="text"
                 required
-                className="w-full h-8 px-2.5 rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
 
@@ -70,7 +104,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                 name="nameEn"
                 type="text"
                 required
-                className="w-full h-8 px-2.5 rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
 
@@ -84,7 +118,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                 type="text"
                 required
                 placeholder="e.g. prompt-engineering"
-                className="w-full h-8 px-2.5 font-mono rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               />
             </div>
 
@@ -96,7 +130,7 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                 id="cat-type"
                 name="type"
                 defaultValue="all"
-                className="w-full h-8 px-2 rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                className="w-full h-8 px-2 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
               >
                 <option value="all">Semua (Skill & Prompt)</option>
                 <option value="skill">Skill Saja</option>
@@ -109,41 +143,151 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
             <button
               type="button"
               onClick={() => setOpenNew(false)}
-              className="h-8 px-3 rounded border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-foreground"
+              className="h-8 px-3 rounded-[6px] border border-border hover:bg-muted text-foreground transition-colors"
             >
               Batal
             </button>
             <button
               type="submit"
-              disabled={isPending}
-              className="h-8 px-4 rounded bg-foreground text-background font-medium hover:opacity-90 disabled:opacity-50"
+              disabled={isCreating}
+              className="h-8 px-4 rounded-[6px] bg-foreground text-background font-semibold hover:opacity-90 disabled:opacity-50 transition-all shadow-xs"
             >
-              {isPending ? "Menyimpan..." : "Simpan Kategori"}
+              {isCreating ? "Menyimpan..." : "Simpan Kategori"}
             </button>
           </div>
         </form>
       )}
 
-      <div className="rounded-md border border-border bg-surface overflow-hidden">
+      {editingCategory && (
+        <form
+          onSubmit={handleEditSubmit}
+          className="p-4 rounded-[8px] border border-cyan-500/40 bg-surface space-y-4 text-xs animate-in fade-in"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Edit className="w-4 h-4 text-cyan-500" />
+              <h3 className="font-semibold text-foreground">
+                Edit Kategori: {editingCategory.nameEn}
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditingCategory(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {editState?.error && (
+            <div className="p-2.5 rounded-[6px] border border-rose-500/30 bg-rose-500/10 text-rose-500 flex items-center gap-2">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{editState.error}</span>
+            </div>
+          )}
+
+          {editState?.success && (
+            <div className="p-2.5 rounded-[6px] border border-emerald-500/30 bg-emerald-500/10 text-emerald-500 flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              <span>Kategori berhasil diperbarui.</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Nama (Bahasa Indonesia) *
+              </label>
+              <input
+                name="nameId"
+                type="text"
+                required
+                defaultValue={editingCategory.nameId}
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Name (English) *
+              </label>
+              <input
+                name="nameEn"
+                type="text"
+                required
+                defaultValue={editingCategory.nameEn}
+                className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Slug URL *
+              </label>
+              <input
+                name="slug"
+                type="text"
+                required
+                defaultValue={editingCategory.slug}
+                className="w-full h-8 px-2.5 font-mono rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block font-medium text-foreground">
+                Tipe Penerapan
+              </label>
+              <select
+                name="type"
+                defaultValue={editingCategory.type}
+                className="w-full h-8 px-2 rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+              >
+                <option value="all">Semua (Skill & Prompt)</option>
+                <option value="skill">Skill Saja</option>
+                <option value="prompt">Prompt Saja</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setEditingCategory(null)}
+              className="h-8 px-3 rounded-[6px] border border-border hover:bg-muted text-foreground transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={isEditing}
+              className="h-8 px-4 rounded-[6px] bg-foreground text-background font-semibold hover:opacity-90 disabled:opacity-50 transition-all shadow-xs"
+            >
+              {isEditing ? "Memperbarui..." : "Perbarui Kategori"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="rounded-[8px] border border-border bg-surface overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="border-b border-border bg-muted/60 text-muted-foreground">
+          <thead className="border-b border-border bg-muted/50 text-muted-foreground">
             <tr>
-              <th className="p-3 font-medium text-foreground">Nama (ID / EN)</th>
-              <th className="p-3 font-medium text-foreground">Slug</th>
-              <th className="p-3 font-medium text-foreground">Tipe</th>
-              <th className="p-3 font-medium text-foreground text-right">Aksi</th>
+              <th className="p-3 font-semibold text-foreground">Nama (ID / EN)</th>
+              <th className="p-3 font-semibold text-foreground">Slug</th>
+              <th className="p-3 font-semibold text-foreground">Tipe</th>
+              <th className="p-3 font-semibold text-foreground text-right">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {categoriesList.map((cat) => (
-              <tr key={cat.id} className="hover:bg-muted/40 transition-colors">
+              <tr key={cat.id} className="hover:bg-muted/30 transition-colors">
                 <td className="p-3">
-                  <span className="font-medium text-foreground">{cat.nameId}</span>
+                  <span className="font-semibold text-foreground">{cat.nameId}</span>
                   <span className="text-muted-foreground ml-1.5 font-normal">/ {cat.nameEn}</span>
                 </td>
                 <td className="p-3 font-mono text-muted-foreground">{cat.slug}</td>
                 <td className="p-3">
-                  <span className="px-2 py-0.5 rounded border border-border bg-muted text-foreground text-[11px] font-mono">
+                  <span className="px-2 py-0.5 rounded-[4px] border border-border bg-muted text-foreground text-[11px] font-mono">
                     {cat.type}
                   </span>
                 </td>
@@ -157,27 +301,40 @@ export function CategoriesClient({ categoriesList }: { categoriesList: Category[
                           await deleteCategoryAction(cat.id);
                           setConfirmId(null);
                         }}
-                        className="px-2 py-0.5 rounded bg-foreground text-background font-medium"
+                        className="px-2 py-0.5 rounded-[4px] bg-rose-600 text-white font-medium hover:bg-rose-700"
                       >
                         Ya
                       </button>
                       <button
                         type="button"
                         onClick={() => setConfirmId(null)}
-                        className="px-2 py-0.5 rounded border border-border text-foreground hover:bg-muted"
+                        className="px-2 py-0.5 rounded-[4px] border border-border text-foreground hover:bg-muted"
                       >
                         Batal
                       </button>
                     </div>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmId(cat.id)}
-                      className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                      title="Hapus Kategori"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="inline-flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCategory(cat);
+                          setOpenNew(false);
+                        }}
+                        className="p-1 rounded-[4px] text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                        title="Edit Kategori"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmId(cat.id)}
+                        className="p-1 rounded-[4px] text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Hapus Kategori"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>

@@ -421,11 +421,12 @@ export async function getAllPublishedPromptsList(): Promise<Array<{ id: string; 
 }
 
 export async function getAdminStats() {
-  const [skillCounts, promptCounts, categoryCount, userCount] = await Promise.all([
-    db.select({ status: skills.status, count: sql<number>`count(*)` }).from(skills).groupBy(skills.status),
-    db.select({ status: prompts.status, count: sql<number>`count(*)` }).from(prompts).groupBy(prompts.status),
-    db.select({ count: sql<number>`count(*)` }).from(categories),
-    db.select({ count: sql<number>`count(*)` }).from(users),
+  const [skillCounts, promptCounts, categoryCount, userCount, uiCounts] = await Promise.all([
+    db.select({ status: skills.status, count: sql<number>`count(*)` }).from(skills).groupBy(skills.status).catch(() => []),
+    db.select({ status: prompts.status, count: sql<number>`count(*)` }).from(prompts).groupBy(prompts.status).catch(() => []),
+    db.select({ count: sql<number>`count(*)` }).from(categories).catch(() => []),
+    db.select({ count: sql<number>`count(*)` }).from(users).catch(() => []),
+    db.select({ status: uiInspirations.status, count: sql<number>`count(*)` }).from(uiInspirations).groupBy(uiInspirations.status).catch(() => []),
   ]);
 
   const skillsByStatus = { draft: 0, published: 0, archived: 0 };
@@ -442,9 +443,23 @@ export async function getAdminStats() {
     }
   }
 
+  const uiByStatus = { draft: 0, published: 0, archived: 0 };
+  let totalUi = 0;
+  for (const row of uiCounts) {
+    if (row.status in uiByStatus) {
+      uiByStatus[row.status as keyof typeof uiByStatus] = Number(row.count);
+    }
+    totalUi += Number(row.count);
+  }
+  if (totalUi === 0) {
+    totalUi = FALLBACK_UI_INSPIRATIONS.length;
+    uiByStatus.published = FALLBACK_UI_INSPIRATIONS.length;
+  }
+
   return {
     skills: skillsByStatus,
     prompts: promptsByStatus,
+    uiInspirations: { ...uiByStatus, total: totalUi },
     totalCategories: Number(categoryCount[0]?.count ?? 0),
     totalUsers: Number(userCount[0]?.count ?? 0),
   };
@@ -695,4 +710,75 @@ export async function incrementUiInspirationLike(id: string): Promise<void> {
       .set({ likesCount: sql`${uiInspirations.likesCount} + 1` })
       .where(eq(uiInspirations.id, id));
   } catch {}
+}
+
+export async function getAdminUiInspirations(params?: {
+  search?: string;
+  category?: string;
+  status?: string;
+}): Promise<UiInspiration[]> {
+  try {
+    const conditions = [];
+    if (params?.status && params.status !== "all") {
+      conditions.push(eq(uiInspirations.status, params.status));
+    }
+    if (params?.category && params.category !== "all") {
+      conditions.push(eq(uiInspirations.category, params.category));
+    }
+    if (params?.search && params.search.trim()) {
+      const q = `%${params.search.trim().toLowerCase()}%`;
+      conditions.push(
+        or(
+          sql`lower(${uiInspirations.titleId}) like ${q}`,
+          sql`lower(${uiInspirations.titleEn}) like ${q}`,
+          sql`lower(${uiInspirations.slug}) like ${q}`
+        )
+      );
+    }
+
+    const rows = await db
+      .select()
+      .from(uiInspirations)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(uiInspirations.createdAt));
+
+    if (rows && rows.length > 0) {
+      return rows;
+    }
+  } catch {}
+
+  let filtered = [...FALLBACK_UI_INSPIRATIONS];
+  if (params?.status && params.status !== "all") {
+    filtered = filtered.filter((i) => i.status === params.status);
+  }
+  if (params?.category && params.category !== "all") {
+    filtered = filtered.filter((i) => i.category === params.category);
+  }
+  if (params?.search && params.search.trim()) {
+    const q = params.search.trim().toLowerCase();
+    filtered = filtered.filter(
+      (i) =>
+        i.titleEn.toLowerCase().includes(q) ||
+        i.titleId.toLowerCase().includes(q) ||
+        i.slug.toLowerCase().includes(q)
+    );
+  }
+  return filtered;
+}
+
+export async function getAdminUiInspirationById(id: string): Promise<UiInspiration | null> {
+  try {
+    const rows = await db
+      .select()
+      .from(uiInspirations)
+      .where(eq(uiInspirations.id, id))
+      .limit(1);
+
+    if (rows && rows.length > 0) {
+      return rows[0];
+    }
+  } catch {}
+
+  const fallback = FALLBACK_UI_INSPIRATIONS.find((item) => item.id === id);
+  return fallback || null;
 }

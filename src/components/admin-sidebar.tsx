@@ -14,6 +14,7 @@ import {
   History,
   MessageSquare,
   Bot,
+  Palette,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -37,6 +38,7 @@ export function AdminSidebar({ userRole }: AdminSidebarProps) {
       ? [{ href: "/admin/github-import", label: "Impor GitHub", icon: DownloadCloud }]
       : []),
     { href: "/admin/prompts", label: "Prompts", icon: FileCode },
+    { href: "/admin/design-trends", label: "Design Trends", icon: Palette },
     { href: "/admin/categories", label: "Kategori", icon: Tag },
   ];
 

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { categories, auditLog } from "@/db/schema";
 import { requireAdmin, requireAdminOrEditor } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 const categorySchema = z.object({
   slug: z.string().min(2, "Slug minimal 2 karakter"),
@@ -77,4 +77,57 @@ export async function deleteCategoryAction(id: string) {
   });
 
   revalidatePath("/admin/categories");
+}
+
+export async function updateCategoryAction(id: string, prevState: unknown, formData: FormData) {
+  const user = await requireAdminOrEditor();
+
+  const raw = {
+    slug: formData.get("slug") as string,
+    nameId: formData.get("nameId") as string,
+    nameEn: formData.get("nameEn") as string,
+    descriptionId: (formData.get("descriptionId") as string) || undefined,
+    descriptionEn: (formData.get("descriptionEn") as string) || undefined,
+    type: (formData.get("type") as "skill" | "prompt" | "all") || "all",
+  };
+
+  const val = categorySchema.safeParse(raw);
+  if (!val.success) {
+    return { error: val.error.issues[0]?.message || "Validasi gagal" };
+  }
+
+  const duplicate = await db
+    .select()
+    .from(categories)
+    .where(and(eq(categories.slug, val.data.slug), ne(categories.id, id)))
+    .limit(1);
+
+  if (duplicate.length > 0) {
+    return { error: "Slug kategori sudah digunakan oleh kategori lain." };
+  }
+
+  await db
+    .update(categories)
+    .set({
+      ...val.data,
+    })
+    .where(eq(categories.id, id));
+
+  await db.insert(auditLog).values({
+    id: randomBytes(16).toString("hex"),
+    userId: user.id,
+    userEmail: user.email,
+    action: "UPDATE_CATEGORY",
+    entityType: "category",
+    entityId: id,
+    details: { name: val.data.nameId, slug: val.data.slug },
+    createdAt: new Date(),
+  });
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/id/skills");
+  revalidatePath("/en/skills");
+  revalidatePath("/id/prompts");
+  revalidatePath("/en/prompts");
+  return { success: true };
 }
