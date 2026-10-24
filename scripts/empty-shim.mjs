@@ -76,6 +76,21 @@ export class Script {
   runInThisContext() {}
 }
 
+export class Agent {
+  constructor() {}
+  destroy() {}
+}
+export class EventEmitter {
+  on() { return this; }
+  once() { return this; }
+  emit() { return false; }
+  removeListener() { return this; }
+}
+export const request = () => ({ on: () => {}, write: () => {}, end: () => {} });
+export const get = () => ({ on: () => {}, write: () => {}, end: () => {} });
+export const METHODS = ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "PATCH"];
+export const STATUS_CODES = { 200: "OK", 404: "Not Found", 500: "Internal Server Error" };
+
 export const cpus = () => [{ model: "CPU", speed: 2000, times: { user: 0, nice: 0, sys: 0, idle: 0, irq: 0 } }];
 export const totalmem = () => 1024 * 1024 * 1024;
 export const freemem = () => 1024 * 1024 * 1024;
@@ -154,6 +169,12 @@ const known = {
   loadavg,
   constants,
   EOL,
+  Agent,
+  EventEmitter,
+  request,
+  get,
+  METHODS,
+  STATUS_CODES,
 };
 
 const dummy = new Proxy(function () {}, {
