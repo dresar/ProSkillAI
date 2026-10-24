@@ -11,6 +11,7 @@ import {
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ShareButton } from "@/components/share";
 import { RepoCloneBox } from "./repo-clone-box";
+import { getTrendingPreviewUrl } from "@/lib/trending-previews";
 import {
   ArrowLeft,
   Star,
@@ -111,7 +112,7 @@ export default async function RepoDetailPage({ params }: RepoDetailPageProps) {
   }
 
   const isEn = locale === "en";
-  const ogImage = `https://opengraph.githubassets.com/1/${owner}/${repo}`;
+  const ogImage = getTrendingPreviewUrl(repoData.fullName);
   const canonicalUrl = `${SITE_URL}/${locale}/trending/${owner}/${repo}`;
 
   const jsonLd = {
@@ -208,14 +209,14 @@ export default async function RepoDetailPage({ params }: RepoDetailPageProps) {
           </div>
         </div>
 
-        <div className="relative aspect-[2/1] max-w-3xl mx-auto w-full rounded-2xl overflow-hidden border border-border/80 bg-muted/40 shadow-sm flex items-center justify-center">
+        <div className="relative aspect-[16/9] max-w-4xl mx-auto w-full rounded-xl overflow-hidden border border-border/80 bg-[#070a14] shadow-sm flex items-center justify-center">
           <Image
             src={ogImage}
             alt={repoData.fullName}
             fill
             priority
             unoptimized
-            className="object-contain w-full h-full"
+            className="object-cover w-full h-full"
           />
         </div>
 

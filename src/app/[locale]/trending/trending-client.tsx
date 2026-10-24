@@ -22,11 +22,15 @@ import {
   CircleAlert,
   ChevronLeft,
   ChevronRight,
+  Archive,
+  ShieldCheck,
+  Activity,
 } from "lucide-react";
 import type { TrendingRepo, TrendingTimeRange } from "@/lib/github-trending";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ShareButton } from "@/components/share";
+import { getTrendingPreviewUrl } from "@/lib/trending-previews";
 
 interface TrendingClientProps {
   initialRepos: TrendingRepo[];
@@ -66,6 +70,12 @@ export function TrendingClient({
   const [currentPage, setCurrentPage] = React.useState(1);
   const [selectedRange, setSelectedRange] = React.useState<TrendingTimeRange>("all");
   const [selectedLanguage, setSelectedLanguage] = React.useState<string>("All");
+  const [statusFilter, setStatusFilter] = React.useState<"all" | "active" | "archived">("all");
+  const [archivedRepos, setArchivedRepos] = React.useState<Set<string>>(
+    () => new Set(["morluto/rea", "openclaw/openclaw"])
+  );
+  const [isCheckingHealth, setIsCheckingHealth] = React.useState(false);
+  const [healthScanDone, setHealthScanDone] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
   const [isFetching, setIsFetching] = React.useState(false);
@@ -75,6 +85,41 @@ export function TrendingClient({
   const [readmeContent, setReadmeContent] = React.useState<string | null>(null);
   const [isLoadingReadme, setIsLoadingReadme] = React.useState(false);
   const [copiedClone, setCopiedClone] = React.useState(false);
+
+  const isRepoArchived = React.useCallback(
+    (fullName: string) => archivedRepos.has(fullName.toLowerCase()),
+    [archivedRepos]
+  );
+
+  const handleRunHealthCheck = async () => {
+    setIsCheckingHealth(true);
+    try {
+      const namesToCheck = repos.map((r) => r.fullName);
+      const res = await fetch("/api/github/health-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repos: namesToCheck }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.results) {
+          setArchivedRepos((prev) => {
+            const next = new Set(prev);
+            for (const [name, info] of Object.entries<any>(data.results)) {
+              if (info.isArchived) {
+                next.add(name.toLowerCase());
+              }
+            }
+            return next;
+          });
+          setHealthScanDone(true);
+        }
+      }
+    } catch {
+    } finally {
+      setIsCheckingHealth(false);
+    }
+  };
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -155,9 +200,17 @@ export function TrendingClient({
   };
 
   const filteredRepos = React.useMemo(() => {
+    let list = repos;
+
+    if (statusFilter === "active") {
+      list = list.filter((r) => !archivedRepos.has(r.fullName.toLowerCase()));
+    } else if (statusFilter === "archived") {
+      list = list.filter((r) => archivedRepos.has(r.fullName.toLowerCase()));
+    }
+
     const q = searchQuery.trim().toLowerCase();
-    if (!q) return repos;
-    return repos.filter(
+    if (!q) return list;
+    return list.filter(
       (r) =>
         r.name.toLowerCase().includes(q) ||
         r.fullName.toLowerCase().includes(q) ||
@@ -165,7 +218,7 @@ export function TrendingClient({
         r.language.toLowerCase().includes(q) ||
         r.topics.some((t) => t.toLowerCase().includes(q))
     );
-  }, [repos, searchQuery]);
+  }, [repos, searchQuery, statusFilter, archivedRepos]);
 
   const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE) || 1;
   const paginatedRepos = React.useMemo(() => {
@@ -283,6 +336,76 @@ export function TrendingClient({
             </button>
           ))}
         </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/60">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("all");
+                setCurrentPage(1);
+              }}
+              className={`h-7 px-2.5 rounded-[5px] text-[11px] font-medium transition-all cursor-pointer ${
+                statusFilter === "all"
+                  ? "bg-foreground text-background font-semibold shadow-2xs"
+                  : "border border-border/80 bg-surface text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {isEn ? "All Repos" : "Semua Repo"} ({repos.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("active");
+                setCurrentPage(1);
+              }}
+              className={`h-7 px-2.5 rounded-[5px] text-[11px] font-medium transition-all cursor-pointer ${
+                statusFilter === "active"
+                  ? "bg-foreground text-background font-semibold shadow-2xs"
+                  : "border border-border/80 bg-surface text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 inline-block" />
+              {isEn ? "Active" : "Aktif"} ({repos.filter((r) => !isRepoArchived(r.fullName)).length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusFilter("archived");
+                setCurrentPage(1);
+              }}
+              className={`h-7 px-2.5 rounded-[5px] text-[11px] font-medium transition-all cursor-pointer ${
+                statusFilter === "archived"
+                  ? "bg-foreground text-background font-semibold shadow-2xs"
+                  : "border border-border/80 bg-surface text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Archive className="w-3 h-3 text-amber-500 mr-1.5 inline-block" />
+              {isEn ? "Auto-Archived" : "Diarsipkan"} ({repos.filter((r) => isRepoArchived(r.fullName)).length})
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleRunHealthCheck}
+            disabled={isCheckingHealth}
+            className="h-7 px-2.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-mono text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+            title={isEn ? "Check all links for validity and auto-archive deleted/private repos" : "Deteksi validitas link & auto-arsipkan jika dihapus/private"}
+          >
+            {isCheckingHealth ? (
+              <Loader2 className="w-3 h-3 animate-spin text-cyan-500" />
+            ) : (
+              <ShieldCheck className="w-3 h-3 text-emerald-500" />
+            )}
+            <span>
+              {isCheckingHealth
+                ? (isEn ? "Scanning Health..." : "Memindai Link...")
+                : healthScanDone
+                ? (isEn ? "Health Verified ✓" : "Link Terverifikasi ✓")
+                : (isEn ? "Auto-Detect Link Health" : "Deteksi Otomatis Link")}
+            </span>
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center justify-between text-xs text-muted-foreground border-b border-border/70 pb-3">
@@ -310,158 +433,180 @@ export function TrendingClient({
           </p>
         </div>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
-          {paginatedRepos.map((repo) => (
-            <div
-              key={repo.id}
-              className="group rounded-xl border border-border bg-surface p-3 sm:p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs relative"
-            >
-              <div className="space-y-2.5 sm:space-y-3">
-                <Link
-                  href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
-                  className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/80 bg-muted group/cover hover:opacity-95 transition-opacity"
-                >
-                  <Image
-                    src={`https://opengraph.githubassets.com/1/${repo.fullName}`}
-                    alt={repo.fullName}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
-                    unoptimized
-                  />
-                </Link>
-
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-[4px] bg-muted border border-border text-foreground shrink-0">
-                      #{repo.rank}
-                    </span>
-                    <div className="relative w-7 h-7 rounded-[5px] overflow-hidden border border-border/80 shrink-0 bg-muted">
-                      <Image
-                        src={repo.owner.avatarUrl}
-                        alt={repo.owner.login}
-                        width={28}
-                        height={28}
-                        className="object-cover"
-                        unoptimized
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <Link
-                        href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
-                        className="text-xs font-semibold text-foreground hover:underline truncate block"
-                      >
-                        {repo.name}
-                      </Link>
-                      <span className="text-[10px] text-muted-foreground truncate block font-mono">
-                        {repo.owner.login}
-                      </span>
-                    </div>
-                  </div>
-
-                  <a
-                    href={repo.htmlUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1 rounded-[4px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                    title={isEn ? "Open in GitHub" : "Buka di GitHub"}
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
-                  {repo.description}
-                </p>
-
-                {repo.topics.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {repo.topics.slice(0, 3).map((topic) => (
-                      <span
-                        key={topic}
-                        className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-background border border-border/80 text-muted-foreground"
-                      >
-                        {topic}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-3 mt-3 border-t border-border/70 space-y-2.5">
-                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: repo.languageColor }}
-                    />
-                    <span className="truncate">{repo.language}</span>
-                  </div>
-
-                  <div className="flex items-center gap-3 font-mono">
-                    <span className="inline-flex items-center gap-1">
-                      <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
-                      <span>{formatCompactNumber(repo.stars)}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <GitFork className="w-3 h-3" />
-                      <span>{formatCompactNumber(repo.forks)}</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-1.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {paginatedRepos.map((repo) => {
+            const isArchived = isRepoArchived(repo.fullName);
+            return (
+              <div
+                key={repo.id}
+                className={`group rounded-xl border bg-surface overflow-hidden flex flex-col justify-between hover:border-foreground/40 transition-all shadow-2xs relative ${
+                  isArchived ? "border-amber-500/40 bg-surface/80" : "border-border"
+                }`}
+              >
+                <div>
                   <Link
                     href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
-                    className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                    className="block relative aspect-[16/9] w-full overflow-hidden bg-[#070a14] group/cover border-b border-border/80"
                   >
-                    <ExternalLink className="w-3 h-3" />
-                    <span>{isEn ? "Detail" : "Detail"}</span>
+                    <Image
+                      src={getTrendingPreviewUrl(repo.fullName)}
+                      alt={repo.fullName}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover group-hover/cover:scale-103 transition-transform duration-300"
+                      unoptimized
+                    />
+                    <div className="absolute top-2 left-2 flex items-center gap-1.5 z-10">
+                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-[4px] bg-background/90 border border-border/80 text-foreground backdrop-blur-xs shadow-2xs">
+                        #{repo.rank}
+                      </span>
+                      {isArchived ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] bg-amber-500/90 text-black text-[9px] font-mono font-bold uppercase tracking-wider backdrop-blur-xs">
+                          <Archive className="w-2.5 h-2.5" />
+                          {isEn ? "Archived" : "Diarsipkan"}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px] bg-emerald-500/90 text-black text-[9px] font-mono font-bold uppercase tracking-wider backdrop-blur-xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+                          {isEn ? "Active" : "Aktif"}
+                        </span>
+                      )}
+                    </div>
                   </Link>
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenReadme(repo)}
-                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <BookOpen className="w-3 h-3" />
-                    <span>README</span>
-                  </button>
+                  <div className="p-3 sm:p-3.5 space-y-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="relative w-7 h-7 rounded-[5px] overflow-hidden border border-border/80 shrink-0 bg-muted">
+                          <Image
+                            src={repo.owner.avatarUrl}
+                            alt={repo.owner.login}
+                            width={28}
+                            height={28}
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <Link
+                            href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
+                            className="text-xs font-semibold text-foreground hover:underline truncate block"
+                          >
+                            {repo.name}
+                          </Link>
+                          <span className="text-[10px] text-muted-foreground truncate block font-mono">
+                            {repo.owner.login}
+                          </span>
+                        </div>
+                      </div>
 
-                  <button
-                    type="button"
-                    onClick={() => handleCopyClone(repo.fullName)}
-                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                  >
-                    <Copy className="w-3 h-3" />
-                    <span>Clone</span>
-                  </button>
+                      <a
+                        href={repo.htmlUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1 rounded-[4px] hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                        title={isEn ? "Open in GitHub" : "Buka di GitHub"}
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
 
-                  <ShareButton
-                    item={{
-                      type: "repo",
-                      slug: repo.name,
-                      title: repo.fullName,
-                      description: repo.description,
-                      url: repo.htmlUrl,
-                      category: repo.language || "Open Source",
-                      author: repo.owner.login,
-                      cover: `https://opengraph.githubassets.com/1/${repo.fullName}`,
-                      stats: [
-                        { label: "Stars", value: formatCompactNumber(repo.stars) },
-                        { label: "Forks", value: formatCompactNumber(repo.forks) },
-                        { label: "Rank", value: `#${repo.rank}` },
-                      ],
-                    }}
-                    locale={locale}
-                    showLabel
-                    label={isEn ? "Share" : "Bagi"}
-                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                  />
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                      {repo.description}
+                    </p>
+
+                    {repo.topics.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {repo.topics.slice(0, 3).map((topic) => (
+                          <span
+                            key={topic}
+                            className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-background border border-border/80 text-muted-foreground"
+                          >
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3 sm:p-3.5 pt-0 space-y-2.5">
+                  <div className="pt-2.5 border-t border-border/70 space-y-2.5">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: repo.languageColor }}
+                        />
+                        <span className="truncate">{repo.language}</span>
+                      </div>
+
+                      <div className="flex items-center gap-3 font-mono">
+                        <span className="inline-flex items-center gap-1">
+                          <Star className="w-3 h-3 text-amber-500 fill-amber-400" />
+                          <span>{formatCompactNumber(repo.stars)}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <GitFork className="w-3 h-3" />
+                          <span>{formatCompactNumber(repo.forks)}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-1.5 pt-1">
+                      <Link
+                        href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
+                        className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                        <span>{isEn ? "Detail" : "Detail"}</span>
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenReadme(repo)}
+                        className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <BookOpen className="w-3 h-3" />
+                        <span>README</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleCopyClone(repo.fullName)}
+                        className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Copy className="w-3 h-3" />
+                        <span>Clone</span>
+                      </button>
+
+                      <ShareButton
+                        item={{
+                          type: "repo",
+                          slug: repo.name,
+                          title: repo.fullName,
+                          description: repo.description,
+                          url: repo.htmlUrl,
+                          category: repo.language || "Open Source",
+                          author: repo.owner.login,
+                          cover: getTrendingPreviewUrl(repo.fullName),
+                          stats: [
+                            { label: "Stars", value: formatCompactNumber(repo.stars) },
+                            { label: "Forks", value: formatCompactNumber(repo.forks) },
+                            { label: "Rank", value: `#${repo.rank}` },
+                          ],
+                        }}
+                        locale={locale}
+                        showLabel
+                        label={isEn ? "Share" : "Bagi"}
+                        className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="border border-border rounded-xl overflow-hidden bg-surface shadow-2xs">

@@ -8,6 +8,10 @@ import {
   fetchRepoDetails,
   FALLBACK_TRENDING_REPOSITORIES,
 } from "../src/lib/github-trending";
+import { getTrendingPreviewUrl } from "../src/lib/trending-previews";
+import { checkRepoHealth } from "../src/lib/github-health-check";
+import fs from "node:fs";
+import path from "node:path";
 
 describe("GitHub Trending & Readme Engine", () => {
   test("formats compact numbers accurately", () => {
@@ -82,5 +86,29 @@ describe("GitHub Trending & Readme Engine", () => {
     assert.ok(typeof details.stars === "number");
     assert.ok(typeof details.forks === "number");
     assert.ok(details.owner.avatarUrl.length > 0);
+  });
+
+  test("resolves local GitHub preview image without CDN dependency", () => {
+    const previewUrl = getTrendingPreviewUrl("codecrafters-io/build-your-own-x");
+    assert.equal(previewUrl, "/images/trending/codecrafters-io--build-your-own-x.png");
+
+    const pngFile = path.resolve(process.cwd(), "public", "images", "trending", "codecrafters-io--build-your-own-x.png");
+    assert.ok(fs.existsSync(pngFile), "Local GitHub PNG preview must exist");
+  });
+
+  test("auto-detects repository health and archival status", async () => {
+    const active = await checkRepoHealth("codecrafters-io/build-your-own-x");
+    assert.equal(active.fullName, "codecrafters-io/build-your-own-x");
+    assert.equal(active.isArchived, false);
+    assert.equal(active.status, "active");
+
+    const archived = await checkRepoHealth("morluto/rea");
+    assert.equal(archived.fullName, "morluto/rea");
+    assert.equal(archived.isArchived, true);
+    assert.equal(archived.status, "archived");
+
+    const deleted = await checkRepoHealth("nonexistent-user-12345/nonexistent-repo-98765");
+    assert.equal(deleted.isArchived, true);
+    assert.equal(deleted.status, "deleted");
   });
 });
