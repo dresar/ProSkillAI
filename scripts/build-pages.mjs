@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
+import * as esbuild from "esbuild";
 
 console.log("[build-pages] Starting OpenNext build for Cloudflare Pages...");
 execSync("pnpm exec opennextjs-cloudflare build || npx @opennextjs/cloudflare build", {
@@ -37,31 +38,25 @@ const assetsDir = path.join(openNextDir, "assets");
 console.log("[build-pages] Copying static assets from .open-next/assets...");
 copyDirSync(assetsDir, distDir);
 
-console.log("[build-pages] Copying OpenNext worker dependencies into .pages-dist...");
-const dirsToCopy = [
-  "cloudflare",
-  "cloudflare-templates",
-  "middleware",
-  "server-functions",
-  ".build",
-  "dynamodb-provider",
-  "cache",
-];
+console.log("[build-pages] Bundling and minifying worker into single _worker.js...");
+const workerEntry = path.join(openNextDir, "worker.js");
+const workerOutput = path.join(distDir, "_worker.js");
 
-for (const dir of dirsToCopy) {
-  const src = path.join(openNextDir, dir);
-  if (fs.existsSync(src)) {
-    copyDirSync(src, path.join(distDir, dir));
-  }
-}
+await esbuild.build({
+  entryPoints: [workerEntry],
+  outfile: workerOutput,
+  bundle: true,
+  minify: true,
+  format: "esm",
+  platform: "node",
+  target: "es2022",
+  external: [
+    "node:*",
+    "cloudflare:*",
+  ],
+  logLevel: "info",
+});
 
-const workerSrc = path.join(openNextDir, "worker.js");
-const workerDest = path.join(distDir, "_worker.js");
-if (fs.existsSync(workerSrc)) {
-  fs.copyFileSync(workerSrc, workerDest);
-  console.log("[build-pages] Copied worker.js to _worker.js successfully!");
-} else {
-  throw new Error("[build-pages] Missing .open-next/worker.js!");
-}
-
+const stat = fs.statSync(workerOutput);
+console.log(`[build-pages] Single _worker.js bundled successfully: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
 console.log("[build-pages] Build for Cloudflare Pages ready in .pages-dist!");
