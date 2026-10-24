@@ -12,7 +12,6 @@ import { logoutAction } from "@/app/login/actions";
 import {
   Menu,
   X,
-  Search,
   Sparkles,
   Layers,
   Terminal,
@@ -185,29 +184,6 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                const el = document.getElementById("catalog-search-input");
-                if (el) {
-                  el.focus();
-                  el.scrollIntoView({ behavior: "smooth", block: "center" });
-                } else {
-                  window.location.href = `/${locale}/skills`;
-                }
-              }}
-              className="hidden xl:inline-flex items-center gap-2 h-8 px-2.5 rounded-[6px] border border-border bg-surface text-muted-foreground hover:text-foreground text-xs whitespace-nowrap transition-colors cursor-pointer"
-              title={isEn ? "Search skills (⌘K)" : "Cari skill (⌘K)"}
-            >
-              <Search className="w-3.5 h-3.5" />
-              <span className="text-[11px] text-muted-foreground">
-                {isEn ? "Search 27+ skills..." : "Cari 27+ skill..."}
-              </span>
-              <kbd className="text-[9px] font-mono px-1 py-0.2 rounded bg-muted border border-border/70 text-muted-foreground ml-1">
-                ⌘K
-              </kbd>
-            </button>
-
             <Link
               href={`/${locale}/skills/submit`}
               className="hidden sm:inline-flex items-center justify-center h-8 px-3 rounded-[6px] bg-foreground text-background text-[11px] font-bold tracking-wider uppercase hover:opacity-90 transition-all active:scale-95 shadow-xs shrink-0"
