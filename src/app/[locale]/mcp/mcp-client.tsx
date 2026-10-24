@@ -30,19 +30,34 @@ interface McpClientProps {
   locale: string;
 }
 
-const CATEGORY_ICONS: Record<McpCategoryKey, React.ComponentType<{ className?: string }>> = {
-  frameworks: Layers,
-  sandboxes: Cpu,
-  observability: Eye,
-  memory: Sparkles,
-  "dev-tools": Terminal,
-  databases: Database,
-  browsing: Globe,
-  filesystem: HardDrive,
-  "ai-gateways": Boxes,
-  collaboration: MessageSquare,
-  search: FileSearch,
-};
+function getCategoryIcon(category: string): React.ComponentType<{ className?: string }> {
+  switch (category) {
+    case "frameworks":
+      return Layers;
+    case "sandboxes":
+      return Cpu;
+    case "observability":
+      return Eye;
+    case "memory":
+      return Sparkles;
+    case "dev-tools":
+      return Terminal;
+    case "databases":
+      return Database;
+    case "browsing":
+      return Globe;
+    case "filesystem":
+      return HardDrive;
+    case "ai-gateways":
+      return Boxes;
+    case "collaboration":
+      return MessageSquare;
+    case "search":
+      return FileSearch;
+    default:
+      return Layers;
+  }
+}
 
 export function McpClient({ servers, locale }: McpClientProps) {
   const isEn = locale === "en";
@@ -86,7 +101,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
   const SelectedCatIcon =
     selectedCategory === "all"
       ? Layers
-      : CATEGORY_ICONS[selectedCategory as McpCategoryKey] || Layers;
+      : getCategoryIcon(selectedCategory);
   const selectedCategoryCount =
     selectedCategory === "all"
       ? servers.length
@@ -249,7 +264,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
                   <div className="h-px bg-border/60 my-1" />
 
                   {MCP_CATEGORIES.map((cat) => {
-                    const IconComponent = CATEGORY_ICONS[cat.key] || Layers;
+                    const IconComponent = getCategoryIcon(cat.key);
                     const count = categoryCounts[cat.key] || 0;
                     const isSelected = selectedCategory === cat.key;
                     return (
@@ -346,7 +361,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
           {filteredServers.map((server) => {
-            const IconComponent = CATEGORY_ICONS[server.category] || Layers;
+            const IconComponent = getCategoryIcon(server.category);
             return (
               <div
                 key={server.id}
