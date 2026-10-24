@@ -7,6 +7,7 @@ import { MCP_SERVERS_CATALOG, type McpServerItem } from "@/data/mcp-catalog";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { ShareButton } from "@/components/share";
 import { getMcpCoverImage } from "@/lib/images";
+import { getMcpLogo } from "@/lib/mcp-logos";
 import { McpInstallTabs } from "./mcp-install-tabs";
 import { McpImageGallery } from "@/components/mcp-image-gallery";
 import {
@@ -114,6 +115,7 @@ export default async function McpDetailPage({ params }: McpDetailPageProps) {
   const isEn = locale === "en";
   const ogImage = `/images/mcp/${server.category}.svg`;
   const canonicalUrl = `${SITE_URL}/${locale}/mcp/${server.slug}`;
+  const serverLogo = getMcpLogo(server);
 
   const relatedServers = MCP_SERVERS_CATALOG.filter(
     (s) => s.category === server.category && s.slug !== server.slug
@@ -220,13 +222,14 @@ export default async function McpDetailPage({ params }: McpDetailPageProps) {
         <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 space-y-4 shadow-2xs">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex items-start gap-3 min-w-0">
-              {server.logoUrl ? (
-                <div className="w-12 h-12 rounded-xl border border-border bg-background p-1.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+              {serverLogo ? (
+                <div className="w-12 h-12 rounded-xl border border-border bg-white p-1.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
                   <Image
-                    src={server.logoUrl}
+                    src={serverLogo}
                     alt={server.name}
                     width={40}
                     height={40}
+                    unoptimized
                     className="w-full h-full object-contain"
                   />
                 </div>

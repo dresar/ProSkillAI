@@ -27,6 +27,7 @@ import { MCP_CATEGORIES, MCP_CATALOG_STATS } from "@/data/mcp-catalog";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { ShareButton } from "@/components/share";
 import { getMcpCoverImage, DEFAULT_MCP_COVER } from "@/lib/images";
+import { getMcpLogo } from "@/lib/mcp-logos";
 
 interface McpClientProps {
   servers: McpServerItem[];
@@ -379,6 +380,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
             {paginatedServers.map((server) => {
               const IconComponent = getCategoryIcon(server.category);
+              const serverLogo = getMcpLogo(server);
               return (
                 <div
                   key={server.id}
@@ -408,9 +410,22 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     <div className="space-y-2 sm:space-y-2.5">
                       <div className="flex items-start justify-between gap-1.5 sm:gap-2">
                         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
-                            <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
-                          </div>
+                          {serverLogo ? (
+                            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-white border border-border/80 p-0.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                              <Image
+                                src={serverLogo}
+                                alt={server.name}
+                                width={24}
+                                height={24}
+                                unoptimized
+                                className="w-full h-full object-contain"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
+                              <IconComponent className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-background" />
+                            </div>
+                          )}
                           <div className="min-w-0">
                             <Link
                               href={`/${locale}/mcp/${server.slug}`}
