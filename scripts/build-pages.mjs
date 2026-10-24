@@ -58,6 +58,8 @@ fs.writeFileSync(patchedWorkerEntry, workerContent, "utf8");
 console.log("[build-pages] Bundling and minifying worker into single _worker.js...");
 const workerOutput = path.join(distDir, "_worker.js");
 const emptyShim = path.resolve(process.cwd(), "scripts/empty-shim.mjs");
+const timersShim = path.resolve(process.cwd(), "scripts/timers-shim.mjs");
+const timersPromisesShim = path.resolve(process.cwd(), "scripts/timers-promises-shim.mjs");
 
 await esbuild.build({
   entryPoints: [patchedWorkerEntry],
@@ -72,6 +74,10 @@ await esbuild.build({
     js: `import { createRequire as __cr } from "node:module";\nconst require = __cr("/index.js");\n`,
   },
   alias: {
+    "node:timers": timersShim,
+    "timers": timersShim,
+    "node:timers/promises": timersPromisesShim,
+    "timers/promises": timersPromisesShim,
     "node:fs": emptyShim,
     "fs": emptyShim,
     "node:fs/promises": emptyShim,
