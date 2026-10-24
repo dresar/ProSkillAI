@@ -50,6 +50,10 @@ await esbuild.build({
   format: "esm",
   platform: "node",
   target: "es2022",
+  loader: {
+    ".bin": "binary",
+    ".wasm": "binary",
+  },
   external: [
     "node:*",
     "cloudflare:*",
