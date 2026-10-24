@@ -3,7 +3,13 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 
 console.log("[build-pages] Starting OpenNext build for Cloudflare Pages...");
-execSync("pnpm exec opennextjs-cloudflare build || npx @opennextjs/cloudflare build", { stdio: "inherit" });
+execSync("pnpm exec opennextjs-cloudflare build || npx @opennextjs/cloudflare build", {
+  stdio: "inherit",
+  env: {
+    ...process.env,
+    SKIP_WRANGLER_CONFIG_CHECK: "yes",
+  },
+});
 
 const distDir = path.resolve(process.cwd(), ".pages-dist");
 if (fs.existsSync(distDir)) {
