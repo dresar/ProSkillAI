@@ -28,14 +28,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Maksimal 5 gambar per upload." }, { status: 400 });
   }
 
-  const folder = formData.get("folder") === "prompts" ? "prompts" : "skills";
+  const rawFolder = String(formData.get("folder") || "skills");
+  const folder = ["skills", "prompts", "ui", "general"].includes(rawFolder) ? rawFolder : "general";
   const slug = String(formData.get("slug") || "misc");
 
   try {
-    const images: Array<{ url: string; path: string }> = [];
+    const images: Array<{ url: string; cdnUrl: string; rawUrl: string; path: string }> = [];
     for (const file of files) {
       const uploaded = await uploadImageToStorage({ file, folder, slug });
-      images.push({ url: uploaded.cdnUrl, path: uploaded.path });
+      images.push({
+        url: uploaded.cdnUrl,
+        cdnUrl: uploaded.cdnUrl,
+        rawUrl: uploaded.rawUrl,
+        path: uploaded.path,
+      });
     }
     return NextResponse.json({ images });
   } catch (error) {

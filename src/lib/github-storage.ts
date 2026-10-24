@@ -9,6 +9,7 @@ const MIME_EXTENSIONS: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/webp": "webp",
   "image/gif": "gif",
+  "image/svg+xml": "svg",
 };
 
 export interface UploadedImage {
@@ -18,8 +19,8 @@ export interface UploadedImage {
 }
 
 export function getStorageConfig() {
-  const owner = process.env.GITHUB_STORAGE_OWNER;
-  const repo = process.env.GITHUB_STORAGE_REPO;
+  const owner = process.env.GITHUB_STORAGE_OWNER || process.env.GITHUB_OWNER || "dresar";
+  const repo = process.env.GITHUB_STORAGE_REPO || process.env.GITHUB_REPO || "ProSkillAI";
   const branch = process.env.GITHUB_STORAGE_BRANCH || "main";
   const token = process.env.GITHUB_TOKEN;
   return { owner, repo, branch, token, configured: Boolean(owner && repo && token) };
@@ -29,13 +30,28 @@ export function isStorageConfigured(): boolean {
   return getStorageConfig().configured;
 }
 
+export function toGithubCdnUrl(pathOrUrl: string): { cdnUrl: string; rawUrl: string; localUrl: string } {
+  const { owner, repo, branch } = getStorageConfig();
+  const clean = (pathOrUrl || "").trim();
+  if (clean.startsWith("http://") || clean.startsWith("https://")) {
+    if (clean.includes("githubusercontent.com") || clean.includes("jsdelivr.net")) {
+      return { cdnUrl: clean, rawUrl: clean, localUrl: clean };
+    }
+  }
+  const cleanPath = clean.replace(/^\/+/, "").replace(/^public\//, "");
+  const localUrl = `/${cleanPath}`;
+  const cdnUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/public/${cleanPath}`;
+  const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/public/${cleanPath}`;
+  return { cdnUrl, rawUrl, localUrl };
+}
+
 export async function uploadImageToGitHub({
   file,
   folder,
   slug,
 }: {
   file: File;
-  folder: "skills" | "prompts";
+  folder: "skills" | "prompts" | "ui" | "general" | string;
   slug: string;
 }): Promise<UploadedImage> {
   const { owner, repo, branch, token, configured } = getStorageConfig();
@@ -46,22 +62,22 @@ export async function uploadImageToGitHub({
     );
   }
 
-  const extension = MIME_EXTENSIONS[file.type];
-  if (!extension) {
-    throw new Error("Format gambar harus PNG, JPG, WEBP, atau GIF.");
+  const extension = MIME_EXTENSIONS[file.type] || "png";
+  if (!MIME_EXTENSIONS[file.type]) {
+    throw new Error("Format gambar harus PNG, JPG, WEBP, GIF, atau SVG.");
   }
   if (file.size > MAX_BYTES) {
     throw new Error("Ukuran setiap gambar maksimal 5 MB.");
   }
 
-  const safeFolder = folder === "prompts" ? "prompts" : "skills";
+  const safeFolder = ["prompts", "skills", "ui", "general"].includes(folder) ? folder : "general";
   const safeSlug =
     slug
       .toLowerCase()
       .replace(/[^a-z0-9-]+/g, "-")
       .replace(/(^-|-$)/g, "") || "misc";
   const fileName = `${Date.now()}-${randomBytes(4).toString("hex")}.${extension}`;
-  const path = `assets/${safeFolder}/${safeSlug}/${fileName}`;
+  const path = `public/images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
   const content = Buffer.from(await file.arrayBuffer()).toString("base64");
   const encodedPath = path.split("/").map(encodeURIComponent).join("/");
 
@@ -77,7 +93,7 @@ export async function uploadImageToGitHub({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        message: `chore: upload ${safeFolder} image ${fileName}`,
+        message: `chore: upload ${safeFolder} asset ${fileName}`,
         content,
         branch,
       }),
@@ -105,10 +121,13 @@ export async function uploadImageToGitHub({
     throw new Error(`Upload ke GitHub gagal (${response.status}). ${detail}`.trim());
   }
 
+  const localRelative = `images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
+  const { cdnUrl, rawUrl, localUrl } = toGithubCdnUrl(localRelative);
+
   return {
-    path,
-    rawUrl: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`,
-    cdnUrl: `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${path}`,
+    path: localUrl,
+    rawUrl,
+    cdnUrl,
   };
 }
 
@@ -118,22 +137,18 @@ export async function uploadImageToStorage({
   slug,
 }: {
   file: File;
-  folder: "skills" | "prompts";
+  folder: "skills" | "prompts" | "ui" | "general" | string;
   slug: string;
 }): Promise<UploadedImage> {
-  const extension = MIME_EXTENSIONS[file.type];
-  if (!extension) {
-    throw new Error("Format gambar harus PNG, JPG, WEBP, atau GIF.");
+  const extension = MIME_EXTENSIONS[file.type] || "png";
+  if (!MIME_EXTENSIONS[file.type]) {
+    throw new Error("Format gambar harus PNG, JPG, WEBP, GIF, atau SVG.");
   }
   if (file.size > MAX_BYTES) {
     throw new Error("Ukuran setiap gambar maksimal 5 MB.");
   }
 
-  if (isStorageConfigured()) {
-    return uploadImageToGitHub({ file, folder, slug });
-  }
-
-  const safeFolder = folder === "prompts" ? "prompts" : "skills";
+  const safeFolder = ["prompts", "skills", "ui", "general"].includes(folder) ? folder : "general";
   const safeSlug =
     slug
       .toLowerCase()
@@ -147,10 +162,39 @@ export async function uploadImageToStorage({
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(filePath, buffer);
 
-  const localUrl = `/images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
+  const localRelative = `images/uploads/${safeFolder}/${safeSlug}/${fileName}`;
+  const { cdnUrl, rawUrl, localUrl } = toGithubCdnUrl(localRelative);
+
+  const { configured, owner, repo, branch, token } = getStorageConfig();
+  if (configured && token) {
+    try {
+      const gitPath = `public/${localRelative}`;
+      const content = buffer.toString("base64");
+      const encodedPath = gitPath.split("/").map(encodeURIComponent).join("/");
+      await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/contents/${encodedPath}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+            "User-Agent": "ProSkillAI-Admin",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `chore: upload ${safeFolder} asset ${fileName}`,
+            content,
+            branch,
+          }),
+        }
+      );
+    } catch {}
+  }
+
   return {
-    path: `assets/${safeFolder}/${safeSlug}/${fileName}`,
-    rawUrl: localUrl,
-    cdnUrl: localUrl,
+    path: localUrl,
+    rawUrl,
+    cdnUrl,
   };
 }

@@ -3,8 +3,9 @@
 import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, AlertCircle, CheckCircle2, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Save, AlertCircle, CheckCircle2, Sparkles, ChevronDown, ChevronRight, Images, X } from "lucide-react";
 import type { UiInspiration } from "@/db/schema";
+import { MediaGalleryDialog } from "@/components/admin/media-gallery-dialog";
 
 interface DesignTrendFormProps {
   initialData?: UiInspiration | null;
@@ -30,6 +31,8 @@ export function DesignTrendForm({ initialData, action, title }: DesignTrendFormP
   const [titleEn, setTitleEn] = React.useState(initialData?.titleEn || "");
   const [descriptionId, setDescriptionId] = React.useState(initialData?.descriptionId || "");
   const [descriptionEn, setDescriptionEn] = React.useState(initialData?.descriptionEn || "");
+  const [previewImageUrl, setPreviewImageUrl] = React.useState(initialData?.previewImageUrl || "");
+  const [galleryOpen, setGalleryOpen] = React.useState(false);
   const [showAdvancedLocale, setShowAdvancedLocale] = React.useState(false);
   const [isTranslating, setIsTranslating] = React.useState(false);
 
@@ -359,16 +362,57 @@ export function DesignTrendForm({ initialData, action, title }: DesignTrendFormP
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-xs font-semibold text-foreground">
-          Preview Image URL (Opsional)
-        </label>
-        <input
-          name="previewImageUrl"
-          type="url"
-          defaultValue={initialData?.previewImageUrl || ""}
-          placeholder="https://..."
-          className="w-full h-8 px-2.5 rounded-[6px] border border-border bg-surface text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-xs font-semibold text-foreground">
+            Preview Image URL (Opsional)
+          </label>
+          <button
+            type="button"
+            onClick={() => setGalleryOpen(true)}
+            className="inline-flex items-center gap-1.5 h-6 px-2 rounded-[5px] bg-foreground text-background text-[11px] font-semibold hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
+          >
+            <Images className="w-3 h-3" />
+            <span>Pustaka Galeri</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <input
+            name="previewImageUrl"
+            type="url"
+            value={previewImageUrl}
+            onChange={(e) => setPreviewImageUrl(e.target.value)}
+            placeholder="https://cdn.jsdelivr.net/... atau pilih dari galeri"
+            className="flex-1 h-8 px-2.5 font-mono text-xs rounded-[6px] border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-foreground"
+          />
+          {previewImageUrl && (
+            <button
+              type="button"
+              onClick={() => setPreviewImageUrl("")}
+              className="h-8 px-2 rounded-[6px] border border-border text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+              title="Hapus tautan gambar"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {previewImageUrl && (
+          <div className="relative aspect-video max-w-xs rounded-[6px] border border-border bg-muted/20 overflow-hidden flex items-center justify-center p-2">
+            <img
+              src={previewImageUrl}
+              alt="Pratinjau Pola"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
+        )}
+
+        <MediaGalleryDialog
+          open={galleryOpen}
+          onClose={() => setGalleryOpen(false)}
+          defaultFolder="ui"
+          onSelect={(url) => setPreviewImageUrl(url)}
         />
       </div>
 

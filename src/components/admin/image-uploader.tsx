@@ -2,19 +2,20 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { ImagePlus, Link2, Loader2, Star, X } from "lucide-react";
+import { ImagePlus, Images, Link2, Loader2, Star, X } from "lucide-react";
+import { MediaGalleryDialog } from "./media-gallery-dialog";
 
 interface ImageUploaderProps {
   value: string[];
   onChange: (urls: string[]) => void;
   max?: number;
-  folder: "skills" | "prompts";
+  folder: "skills" | "prompts" | "ui" | "general" | string;
   slug: string;
   label?: string;
   endpoint?: string;
 }
 
-const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export function ImageUploader({
@@ -31,6 +32,7 @@ export function ImageUploader({
   const [dragging, setDragging] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [urlInput, setUrlInput] = React.useState("");
+  const [galleryOpen, setGalleryOpen] = React.useState(false);
 
   const remaining = Math.max(0, max - value.length);
 
@@ -52,7 +54,7 @@ export function ImageUploader({
 
     for (const file of accepted) {
       if (!ACCEPTED_TYPES.includes(file.type)) {
-        setError("Format gambar harus PNG, JPG, WEBP, atau GIF.");
+        setError("Format gambar harus PNG, JPG, WEBP, GIF, atau SVG.");
         return;
       }
       if (file.size > MAX_BYTES) {
@@ -70,14 +72,14 @@ export function ImageUploader({
     try {
       const response = await fetch(endpoint, { method: "POST", body: formData });
       const data = (await response.json()) as {
-        images?: Array<{ url: string }>;
+        images?: Array<{ url: string; cdnUrl?: string }>;
         error?: string;
       };
       if (!response.ok) {
         setError(data.error || "Upload gagal.");
         return;
       }
-      const urls = (data.images || []).map((image) => image.url);
+      const urls = (data.images || []).map((img) => img.cdnUrl || img.url);
       onChange([...value, ...urls].slice(0, max));
     } catch {
       setError("Tidak dapat menghubungi server upload.");
@@ -128,7 +130,7 @@ export function ImageUploader({
 
       <div className="flex items-center justify-between">
         <span className="text-xs font-semibold text-foreground">{label}</span>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-[10px] text-muted-foreground font-mono">
           {value.length}/{max}
         </span>
       </div>
@@ -151,28 +153,40 @@ export function ImageUploader({
         <input
           ref={inputRef}
           type="file"
-          accept="image/png,image/jpeg,image/webp,image/gif"
+          accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
           multiple
           className="hidden"
           onChange={(event) => {
             if (event.target.files) void uploadFiles(event.target.files);
           }}
         />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading || remaining <= 0}
-          className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded border border-border bg-surface hover:bg-muted disabled:opacity-50 cursor-pointer"
-        >
-          {uploading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <ImagePlus className="w-3.5 h-3.5" />
-          )}
-          <span>{uploading ? "Mengunggah..." : "Pilih / Seret Gambar"}</span>
-        </button>
-        <p className="mt-1.5 text-[10px] text-muted-foreground">
-          PNG, JPG, WEBP, GIF &middot; maks 5 MB &middot; sisa {remaining} slot
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading || remaining <= 0}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[5px] border border-border bg-surface hover:bg-muted disabled:opacity-50 cursor-pointer shadow-xs"
+          >
+            {uploading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <ImagePlus className="w-3.5 h-3.5" />
+            )}
+            <span>{uploading ? "Mengunggah..." : "Pilih Gambar"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setGalleryOpen(true)}
+            disabled={remaining <= 0}
+            className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-[5px] bg-foreground text-background hover:opacity-90 disabled:opacity-50 cursor-pointer shadow-xs font-semibold"
+          >
+            <Images className="w-3.5 h-3.5" />
+            <span>Pustaka Galeri</span>
+          </button>
+        </div>
+        <p className="mt-1.5 text-[10px] text-muted-foreground font-mono">
+          PNG, JPG, WEBP, SVG &middot; maks 5 MB &middot; sisa {remaining} slot
         </p>
       </div>
 
@@ -228,20 +242,31 @@ export function ImageUploader({
             type="url"
             value={urlInput}
             onChange={(event) => setUrlInput(event.target.value)}
-            placeholder="Tempel URL gambar (CDN)"
-            className="w-full h-7 pl-6 pr-2 text-[11px] rounded border border-border bg-surface text-foreground"
+            placeholder="Tempel URL gambar (CDN GitHub)"
+            className="w-full h-7 pl-6 pr-2 text-[11px] font-mono rounded border border-border bg-surface text-foreground"
           />
         </div>
         <button
           type="button"
           onClick={addUrl}
-          className="h-7 px-2 rounded border border-border bg-surface hover:bg-muted text-[11px] cursor-pointer"
+          className="h-7 px-2.5 rounded border border-border bg-surface hover:bg-muted text-[11px] font-medium cursor-pointer"
         >
           Tambah URL
         </button>
       </div>
 
       {error && <p className="text-[10px] text-red-500 leading-relaxed">{error}</p>}
+
+      <MediaGalleryDialog
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        defaultFolder={folder}
+        onSelect={(url) => {
+          if (!value.includes(url) && remaining > 0) {
+            onChange([...value, url].slice(0, max));
+          }
+        }}
+      />
     </div>
   );
 }

@@ -65,6 +65,8 @@ test("UI/UX Inspiration & Serverless Suite", async (t) => {
       "src/app/admin/media/page.tsx",
       "src/app/admin/media/actions.ts",
       "src/app/admin/media/media-client.tsx",
+      "src/components/admin/media-gallery-dialog.tsx",
+      "src/components/admin/image-uploader.tsx",
       "src/app/api/inspirations/route.ts",
       "src/app/api/inspirations/[slug]/route.ts",
       "src/app/api/inspirations/[slug]/copy/route.ts",

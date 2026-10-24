@@ -4,11 +4,14 @@ import { revalidatePath } from "next/cache";
 import { readdir, stat, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { requireAdminOrEditor } from "@/lib/auth";
+import { toGithubCdnUrl } from "@/lib/github-storage";
 
 export interface MediaFileItem {
   id: string;
   name: string;
   url: string;
+  cdnUrl: string;
+  rawUrl: string;
   path: string;
   size: number;
   updatedAt: string;
@@ -40,11 +43,15 @@ export async function getUploadedMediaList(): Promise<MediaFileItem[]> {
             ext.endsWith(".gif")
           ) {
             const stats = await stat(fullPath);
-            const urlPath = `/images/uploads/${rel.replace(/\\/g, "/")}`;
+            const normalizedRel = rel.replace(/\\/g, "/");
+            const urlPath = `/images/uploads/${normalizedRel}`;
+            const { cdnUrl, rawUrl } = toGithubCdnUrl(urlPath);
             items.push({
               id: rel.replace(/[\\/]/g, "-"),
               name: entry.name,
               url: urlPath,
+              cdnUrl,
+              rawUrl,
               path: rel,
               size: stats.size,
               updatedAt: stats.mtime.toISOString(),

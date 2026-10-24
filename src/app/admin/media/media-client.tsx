@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import { UploadCloud, Copy, Check, Trash2, Search, Eye, X, Image as ImageIcon, AlertCircle } from "lucide-react";
+import { UploadCloud, Copy, Check, Trash2, Search, X, Image as ImageIcon, AlertCircle, ExternalLink } from "lucide-react";
 import { deleteMediaAction, type MediaFileItem } from "./actions";
 
 interface MediaClientProps {
@@ -16,6 +15,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
   const [isUploading, setIsUploading] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
+  const [copiedType, setCopiedType] = React.useState<string | null>(null);
   const [previewItem, setPreviewItem] = React.useState<MediaFileItem | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -53,8 +53,10 @@ export function MediaClient({ initialItems }: MediaClientProps) {
         const newMedia: MediaFileItem[] = data.images.map((img: any, idx: number) => ({
           id: `new-${Date.now()}-${idx}`,
           name: img.path.split("/").pop() || "image.png",
-          url: img.url,
-          path: img.path.replace("assets/", ""),
+          url: img.path,
+          cdnUrl: img.cdnUrl || img.url,
+          rawUrl: img.rawUrl || img.url,
+          path: img.path.replace(/^\/+/, "").replace(/^public\//, ""),
           size: 0,
           updatedAt: new Date().toISOString(),
           folder: targetFolder,
@@ -69,9 +71,17 @@ export function MediaClient({ initialItems }: MediaClientProps) {
     }
   };
 
-  const handleCopyUrl = async (item: MediaFileItem) => {
+  const copyToClipboard = async (text: string, identifier: string) => {
     try {
-      await navigator.clipboard.writeText(item.url);
+      await navigator.clipboard.writeText(text);
+      setCopiedType(identifier);
+      setTimeout(() => setCopiedType(null), 2000);
+    } catch {}
+  };
+
+  const handleCopyCdn = async (item: MediaFileItem) => {
+    try {
+      await navigator.clipboard.writeText(item.cdnUrl || item.rawUrl || item.url);
       setCopiedId(item.id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch {}
@@ -96,10 +106,10 @@ export function MediaClient({ initialItems }: MediaClientProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-foreground tracking-tight">
-            Pustaka Media
+            Pustaka Media & CDN GitHub
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Kelola aset gambar direktori publik dan salin URL untuk form konten.
+            Penyimpanan gambar publik yang disinkronkan langsung ke CDN GitHub (jsDelivr & Raw).
           </p>
         </div>
 
@@ -158,7 +168,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
             Tarik & lepaskan file gambar ke sini atau klik untuk memilih
           </span>
           <span className="text-[11px] text-muted-foreground font-mono">
-            PNG, JPG, WEBP, SVG hingga 5MB
+            PNG, JPG, WEBP, SVG hingga 5MB &middot; Otomatis dibuatkan tautan CDN GitHub
           </span>
         </div>
       </div>
@@ -219,7 +229,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                 <div className="grid grid-cols-2 gap-1 pt-1">
                   <button
                     type="button"
-                    onClick={() => handleCopyUrl(item)}
+                    onClick={() => handleCopyCdn(item)}
                     className="h-7 inline-flex items-center justify-center gap-1 rounded-[5px] border border-border bg-background text-[11px] font-medium text-foreground hover:bg-muted active:scale-95 transition-all cursor-pointer"
                   >
                     {copiedId === item.id ? (
@@ -230,7 +240,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                     ) : (
                       <>
                         <Copy className="w-3 h-3 text-muted-foreground" />
-                        <span>Salin</span>
+                        <span>Salin CDN</span>
                       </>
                     )}
                   </button>
@@ -258,7 +268,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
               <button
                 type="button"
                 onClick={() => setPreviewItem(null)}
-                className="p-1 text-muted-foreground hover:text-foreground"
+                className="p-1 text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -272,26 +282,76 @@ export function MediaClient({ initialItems }: MediaClientProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between pt-2 text-xs">
-              <span className="font-mono text-[11px] text-muted-foreground truncate max-w-md">
-                {previewItem.url}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleCopyUrl(previewItem)}
-                  className="h-7 px-3 rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90"
-                >
-                  Salin URL
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewItem(null)}
-                  className="h-7 px-3 rounded-[5px] border border-border text-xs text-foreground hover:bg-muted"
-                >
-                  Tutup
-                </button>
+            <div className="space-y-2.5 pt-1">
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-foreground">CDN jsDelivr (GitHub):</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    readOnly
+                    value={previewItem.cdnUrl}
+                    className="flex-1 h-7 px-2 font-mono text-[11px] rounded-[5px] border border-border bg-background text-foreground select-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(previewItem.cdnUrl, "cdn")}
+                    className="h-7 px-2.5 inline-flex items-center gap-1 rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 active:scale-95 cursor-pointer"
+                  >
+                    {copiedType === "cdn" ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedType === "cdn" ? "Tersalin" : "Salin"}</span>
+                  </button>
+                </div>
               </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-foreground">GitHub Raw URL:</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    readOnly
+                    value={previewItem.rawUrl}
+                    className="flex-1 h-7 px-2 font-mono text-[11px] rounded-[5px] border border-border bg-background text-foreground select-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(previewItem.rawUrl, "raw")}
+                    className="h-7 px-2.5 inline-flex items-center gap-1 rounded-[5px] border border-border bg-background text-foreground text-xs font-medium hover:bg-muted active:scale-95 cursor-pointer"
+                  >
+                    {copiedType === "raw" ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedType === "raw" ? "Tersalin" : "Salin"}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[11px] font-semibold text-foreground">Path Lokal Project:</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    readOnly
+                    value={previewItem.url}
+                    className="flex-1 h-7 px-2 font-mono text-[11px] rounded-[5px] border border-border bg-background text-foreground select-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(previewItem.url, "local")}
+                    className="h-7 px-2.5 inline-flex items-center gap-1 rounded-[5px] border border-border bg-background text-foreground text-xs font-medium hover:bg-muted active:scale-95 cursor-pointer"
+                  >
+                    {copiedType === "local" ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedType === "local" ? "Tersalin" : "Salin"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end pt-3 border-t border-border gap-2">
+              <button
+                type="button"
+                onClick={() => setPreviewItem(null)}
+                className="h-7 px-3 rounded-[5px] border border-border text-xs text-foreground hover:bg-muted cursor-pointer"
+              >
+                Tutup
+              </button>
             </div>
           </div>
         </div>
@@ -311,7 +371,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
               <button
                 type="button"
                 onClick={() => setConfirmDeleteId(null)}
-                className="h-8 px-3 rounded-[6px] border border-border text-xs text-foreground hover:bg-muted"
+                className="h-8 px-3 rounded-[6px] border border-border text-xs text-foreground hover:bg-muted cursor-pointer"
               >
                 Batal
               </button>
@@ -321,7 +381,7 @@ export function MediaClient({ initialItems }: MediaClientProps) {
                   const target = items.find((i) => i.id === confirmDeleteId);
                   if (target) handleDelete(target);
                 }}
-                className="h-8 px-3 rounded-[6px] bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700"
+                className="h-8 px-3 rounded-[6px] bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 cursor-pointer"
               >
                 Hapus
               </button>

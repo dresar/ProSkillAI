@@ -4,11 +4,12 @@ import * as React from "react";
 import { useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code, Sparkles, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Save, RefreshCw, AlertCircle, Eye, Code, Sparkles, Loader2, ShieldCheck, Images } from "lucide-react";
 import { createSkillAction, updateSkillAction } from "./actions";
 import { resyncSkillAction } from "../github-import/actions";
 import { ClientMarkdownRenderer } from "@/components/client-markdown-renderer";
 import { ImageUploader } from "@/components/admin/image-uploader";
+import { MediaGalleryDialog } from "@/components/admin/media-gallery-dialog";
 import { GitHubImportPanel } from "@/components/admin/github-import-panel";
 import { SkillFilesManager } from "@/components/skill-files-manager";
 import { AiAuditModal } from "@/components/admin/ai-audit-modal";
@@ -43,6 +44,7 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
   const [previewType, setPreviewType] = React.useState<string>(initialSkill?.previewType || "none");
   const [previewHtml, setPreviewHtml] = React.useState(initialSkill?.previewHtml || "");
   const [previewImageUrl, setPreviewImageUrl] = React.useState(initialSkill?.previewImageUrl || "");
+  const [previewGalleryOpen, setPreviewGalleryOpen] = React.useState(false);
   const [previewVideoUrl, setPreviewVideoUrl] = React.useState(initialSkill?.previewVideoUrl || "");
   const [images, setImages] = React.useState<string[]>(() => {
     const gallery = Array.isArray(initialSkill?.images) ? (initialSkill.images as string[]) : [];
@@ -616,22 +618,38 @@ export function SkillForm({ initialSkill, categories }: SkillFormProps) {
             )}
 
             {previewType === "image" && (
-              <div className="space-y-1">
-                <label htmlFor="previewImageUrl" className="block font-medium text-neutral-700 dark:text-neutral-300">
-                  URL Gambar
-                </label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="previewImageUrl" className="block font-medium text-neutral-700 dark:text-neutral-300">
+                    URL Gambar
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewGalleryOpen(true)}
+                    className="inline-flex items-center gap-1 h-5 px-1.5 rounded-[4px] bg-foreground text-background text-[10px] font-semibold hover:opacity-90 active:scale-95 cursor-pointer shadow-xs"
+                  >
+                    <Images className="w-3 h-3" />
+                    <span>Galeri</span>
+                  </button>
+                </div>
                 <input
                   id="previewImageUrl"
                   type="url"
                   value={previewImageUrl}
                   onChange={(e) => setPreviewImageUrl(e.target.value)}
                   placeholder="https://cdn.jsdelivr.net/gh/owner/repo@main/public/img.png"
-                  className="w-full h-8 px-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
+                  className="w-full h-8 px-2 font-mono text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-surface text-foreground"
                 />
-                <p className="text-[10px] text-neutral-400 leading-relaxed">
-                  Didukung aset GitHub CDN via jsDelivr:
-                  <span className="font-mono"> cdn.jsdelivr.net/gh/owner/repo@main/...</span>
+                <p className="text-[10px] text-neutral-400 leading-relaxed font-mono">
+                  Didukung tautan CDN GitHub (jsDelivr / Raw).
                 </p>
+
+                <MediaGalleryDialog
+                  open={previewGalleryOpen}
+                  onClose={() => setPreviewGalleryOpen(false)}
+                  defaultFolder="skills"
+                  onSelect={(url) => setPreviewImageUrl(url)}
+                />
               </div>
             )}
 
