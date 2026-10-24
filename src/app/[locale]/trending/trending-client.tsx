@@ -301,6 +301,20 @@ export function TrendingClient({
               className="group rounded-xl border border-border bg-surface p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs relative"
             >
               <div className="space-y-3">
+                <Link
+                  href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
+                  className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/80 bg-muted group/cover hover:opacity-95 transition-opacity"
+                >
+                  <Image
+                    src={`https://opengraph.githubassets.com/1/${repo.fullName}`}
+                    alt={repo.fullName}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
+                    unoptimized
+                  />
+                </Link>
+
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-[4px] bg-muted border border-border text-foreground shrink-0">
@@ -317,14 +331,12 @@ export function TrendingClient({
                       />
                     </div>
                     <div className="min-w-0">
-                      <a
-                        href={repo.htmlUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
                         className="text-xs font-semibold text-foreground hover:underline truncate block"
                       >
                         {repo.name}
-                      </a>
+                      </Link>
                       <span className="text-[10px] text-muted-foreground truncate block font-mono">
                         {repo.owner.login}
                       </span>
@@ -382,23 +394,31 @@ export function TrendingClient({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-1.5 pt-1">
+                <div className="grid grid-cols-4 gap-1.5 pt-1">
+                  <Link
+                    href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
+                    className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    <span>{isEn ? "Detail" : "Detail"}</span>
+                  </Link>
+
                   <button
                     type="button"
                     onClick={() => handleOpenReadme(repo)}
-                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                   >
                     <BookOpen className="w-3 h-3" />
-                    <span>{isEn ? "README" : "README"}</span>
+                    <span>README</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleCopyClone(repo.fullName)}
-                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>{isEn ? "Clone" : "Clone"}</span>
+                    <span>Clone</span>
                   </button>
 
                   <ShareButton
@@ -419,7 +439,7 @@ export function TrendingClient({
                     locale={locale}
                     showLabel
                     label={isEn ? "Share" : "Bagi"}
-                    className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                   />
                 </div>
               </div>
@@ -459,14 +479,12 @@ export function TrendingClient({
                           />
                         </div>
                         <div className="min-w-0">
-                          <a
-                            href={repo.htmlUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <Link
+                            href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
                             className="font-semibold text-foreground hover:underline truncate block"
                           >
                             {repo.fullName}
-                          </a>
+                          </Link>
                           <p className="text-[11px] text-muted-foreground truncate max-w-md">
                             {repo.description}
                           </p>
@@ -490,6 +508,13 @@ export function TrendingClient({
                     </td>
                     <td className="py-3 px-3 text-center whitespace-nowrap">
                       <div className="inline-flex items-center gap-1.5">
+                        <Link
+                          href={`/${locale}/trending/${repo.owner.login}/${repo.name}`}
+                          className="h-7 px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center gap-1 hover:opacity-90 transition-opacity"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>{isEn ? "Detail" : "Detail"}</span>
+                        </Link>
                         <button
                           type="button"
                           onClick={() => handleOpenReadme(repo)}

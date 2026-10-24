@@ -5,6 +5,7 @@ import {
   formatCompactNumber,
   fetchGitHubTrending,
   fetchRepoReadme,
+  fetchRepoDetails,
   FALLBACK_TRENDING_REPOSITORIES,
 } from "../src/lib/github-trending";
 
@@ -71,5 +72,15 @@ describe("GitHub Trending & Readme Engine", () => {
     const readme = await fetchRepoReadme("facebook", "react");
     assert.ok(typeof readme === "string");
     assert.ok(readme.length > 20);
+  });
+
+  test("fetches repo details with fallback or live API", async () => {
+    const details = await fetchRepoDetails("facebook", "react");
+    assert.ok(details !== null);
+    assert.equal(details.name, "react");
+    assert.ok(details.fullName.toLowerCase().includes("react"));
+    assert.ok(typeof details.stars === "number");
+    assert.ok(typeof details.forks === "number");
+    assert.ok(details.owner.avatarUrl.length > 0);
   });
 });

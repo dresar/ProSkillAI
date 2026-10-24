@@ -72,7 +72,7 @@ export default async function TrendingPage({ params }: TrendingPageProps) {
 
   const { repos, isLive } = await fetchGitHubTrending({ range: "all" });
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
   const jsonLdItemList = {
     "@context": "https://schema.org",

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Boxes,
   Layers,
@@ -374,18 +375,34 @@ export function McpClient({ servers, locale }: McpClientProps) {
             return (
               <div
                 key={server.id}
-                className="group rounded-xl border border-border bg-surface p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-4"
+                className="group rounded-xl border border-border bg-surface p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
               >
                 <div className="space-y-3">
+                  <Link
+                    href={`/${locale}/mcp/${server.slug}`}
+                    className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
+                  >
+                    <Image
+                      src={`/images/mcp/${server.category}.svg`}
+                      alt={server.categoryLabel}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
+                    />
+                  </Link>
+
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-8 h-8 rounded-[6px] bg-foreground text-background flex items-center justify-center shrink-0">
                         <IconComponent className="w-4 h-4 text-background" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-xs font-semibold text-foreground truncate">
+                        <Link
+                          href={`/${locale}/mcp/${server.slug}`}
+                          className="text-xs font-semibold text-foreground hover:underline truncate block"
+                        >
                           {server.name}
-                        </h3>
+                        </Link>
                         <p className="text-[10px] text-muted-foreground font-mono truncate">
                           {server.vendor}
                         </p>
@@ -442,11 +459,19 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    <Link
+                      href={`/${locale}/mcp/${server.slug}`}
+                      className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>{isEn ? "Detail" : "Detail"}</span>
+                    </Link>
+
                     <button
                       type="button"
                       onClick={() => handleCopy(server.installSnippet, server.id)}
-                      className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     >
                       {copiedId === server.id ? (
                         <>
@@ -456,7 +481,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       ) : (
                         <>
                           <Copy className="w-3 h-3" />
-                          <span>{isEn ? "npx" : "npx"}</span>
+                          <span>npx</span>
                         </>
                       )}
                     </button>
@@ -464,10 +489,10 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     <button
                       type="button"
                       onClick={() => setActiveModalServer(server)}
-                      className="h-7 px-1.5 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity cursor-pointer"
+                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     >
                       <SlidersHorizontal className="w-3 h-3" />
-                      <span>{isEn ? "JSON" : "JSON"}</span>
+                      <span>JSON</span>
                     </button>
 
                     <ShareButton
@@ -476,7 +501,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
                         slug: server.id,
                         title: server.name,
                         description: server.description,
-                        url: `/${locale}/mcp#${server.id}`,
+                        url: `/${locale}/mcp/${server.slug}`,
                         category: server.categoryLabel,
                         author: server.vendor,
                         stats: [
@@ -488,7 +513,7 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       locale={locale}
                       showLabel
                       label={isEn ? "Share" : "Bagi"}
-                      className="h-7 px-1.5 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     />
                   </div>
                 </div>

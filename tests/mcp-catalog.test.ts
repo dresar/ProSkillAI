@@ -59,4 +59,16 @@ describe("MCP Servers Directory & Agent Stack Index", () => {
       assert.equal(parsedConfig.mcpServers[server.slug].command, "npx");
     }
   });
+
+  test("verifies all 11 category SVG cover banners exist in public/images/mcp/", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+
+    for (const cat of MCP_CATEGORIES) {
+      const svgPath = path.join(process.cwd(), "public", "images", "mcp", `${cat.key}.svg`);
+      assert.ok(fs.existsSync(svgPath), `Missing SVG banner for category: ${cat.key}`);
+      const content = fs.readFileSync(svgPath, "utf8");
+      assert.ok(content.includes("<svg"), `Invalid SVG file for category: ${cat.key}`);
+    }
+  });
 });

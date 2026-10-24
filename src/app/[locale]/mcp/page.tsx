@@ -70,7 +70,7 @@ export default async function McpPage({ params }: McpPageProps) {
     notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://proskillai.dev";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
   const jsonLdItemList = {
     "@context": "https://schema.org",
