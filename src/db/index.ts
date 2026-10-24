@@ -2,7 +2,26 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-const connectionString = process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED || "";
+type DrizzleDb = ReturnType<typeof drizzle<typeof schema>>;
 
-const sql = neon(connectionString);
-export const db = drizzle(sql, { schema });
+let cachedDb: DrizzleDb | null = null;
+let lastConnectionString = "";
+
+export function getDb(): DrizzleDb {
+  const connectionString =
+    process.env.DATABASE_URL || process.env.DATABASE_URL_UNPOOLED || "";
+  if (!cachedDb || lastConnectionString !== connectionString) {
+    lastConnectionString = connectionString;
+    const sql = neon(connectionString);
+    cachedDb = drizzle(sql, { schema });
+  }
+  return cachedDb;
+}
+
+export const db: DrizzleDb = new Proxy({} as DrizzleDb, {
+  get(target, prop, receiver) {
+    const realDb = getDb();
+    const val = Reflect.get(realDb, prop, receiver);
+    return typeof val === "function" ? val.bind(realDb) : val;
+  },
+});
