@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     ? "Skills | Curated Directory of AI Agent Skills (skills.biz.id)"
     : "Skills | Direktori Terkurasi Skill AI Agent (skills.biz.id)";
   const description = isEn
-    ? "Discover the best AI agent skills for Claude Code, Antigravity, Cursor, and Codex. Verified S-rank art direction, system architecture, and 1-click CLI commands."
-    : "Temukan koleksi skill AI agent terbaik untuk Claude Code, Antigravity, Cursor, dan Codex. Standar S-rank, arsitektur sistem, dan instalasi 1-klik.";
+    ? "Discover the best AI agent skills for Claude Code, Antigravity, Cursor, and Codex. Verified art direction, system architecture, and 1-click CLI commands."
+    : "Temukan koleksi skill AI agent terbaik untuk Claude Code, Antigravity, Cursor, dan Codex. Arsitektur sistem andal dan instalasi 1-klik.";
 
   return {
     title,

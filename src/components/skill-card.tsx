@@ -88,7 +88,6 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
                   author: authorName,
                   stats: [
                     { label: "Stars", value: starCount },
-                    ...(fm?.rank ? [{ label: "Rank", value: fm.rank }] : []),
                   ],
                 }}
                 locale={locale}
@@ -116,18 +115,6 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
               <span className={`text-[11px] sm:text-xs font-medium tracking-tight truncate ${colorClass}`}>
                 {categoryName}
               </span>
-              <div className="flex items-center gap-1 shrink-0">
-                {fm?.rank && (
-                  <span className="text-[9px] sm:text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0 font-semibold">
-                    {fm.rank}
-                  </span>
-                )}
-                {skill.sourceType === "github" && (
-                  <span className="text-[9px] sm:text-[10px] uppercase font-mono px-1 sm:px-1.5 py-0.2 rounded bg-muted text-muted-foreground border border-border/50 shrink-0">
-                    gh
-                  </span>
-                )}
-              </div>
             </div>
 
             <h3 className="text-xs sm:text-[14px] font-semibold text-foreground tracking-tight leading-snug group-hover:text-foreground/90 transition-colors line-clamp-1">

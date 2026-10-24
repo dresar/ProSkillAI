@@ -90,7 +90,6 @@ export function OnePageCatalog({
         category: category ? (isEn ? category.nameEn : category.nameId) : "Agent Skill",
         author: skill.authorName || (skill.sourceType === "github" ? "GitHub" : "ProSkillAI"),
         stars: (skill.frontmatter as { stars?: number } | null)?.stars || skill.copyCount,
-        rank: (skill.frontmatter as { rank?: string } | null)?.rank,
         href: `/${locale}/skills/${skill.slug}`,
       }));
 
@@ -119,7 +118,6 @@ export function OnePageCatalog({
         category: category ? (isEn ? category.nameEn : category.nameId) : "Prompt",
         author: "ProSkillAI",
         stars: prompt.copyCount || 3200,
-        rank: undefined,
         href: `/${locale}/prompts/${prompt.slug}`,
       }));
 
@@ -311,17 +309,6 @@ export function OnePageCatalog({
                         >
                           {item.type}
                         </span>
-                        {item.rank && (
-                          <span
-                            className={`text-[9px] font-mono px-1 py-0.2 rounded font-semibold ${
-                              isSelected
-                                ? "bg-background/20 text-background"
-                                : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                            }`}
-                          >
-                            {item.rank}
-                          </span>
-                        )}
                         <span
                           className={`text-[10px] truncate ${
                             isSelected ? "text-background/80" : "text-muted-foreground"

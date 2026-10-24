@@ -138,12 +138,12 @@ export function AgenticHero({
               </div>
 
               <p className="text-zinc-500">Resolving package...</p>
-              <p className="text-emerald-400 font-medium">Installed Taste Skill (S-Rank)</p>
+              <p className="text-emerald-400 font-medium">Installed Taste Skill</p>
               <p className="text-zinc-400 text-[10px]">Compatible with Claude Code, Cursor, Codex</p>
 
               <div className="pt-2 text-zinc-100 font-semibold">$ npx skills list</div>
               <ul className="space-y-0.5 text-zinc-300 text-[10px] pl-1">
-                <li>taste-skill <span className="text-zinc-500 font-mono">(⭐ 101k · S-Rank)</span></li>
+                <li>taste-skill <span className="text-zinc-500 font-mono">(⭐ 101k · Design)</span></li>
                 <li>superpowers <span className="text-zinc-500 font-mono">(⭐ 304k · Engineering)</span></li>
                 <li>ecc-backend-patterns <span className="text-zinc-500 font-mono">(⭐ 287k · Systems)</span></li>
                 <li>anthropic-frontend <span className="text-zinc-500 font-mono">(⭐ 183k · Official)</span></li>
