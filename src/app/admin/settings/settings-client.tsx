@@ -64,7 +64,7 @@ export function SettingsClient({
     { key: "guides", label: "Panduan & Buku Pegangan", desc: "Aktifkan rute dan katalog modul Guides" },
     { key: "glossary", label: "Glosarium Istilah", desc: "Aktifkan rute dan glosarium istilah AI" },
     { key: "tools", label: "Katalog Alat & Ekstensi", desc: "Aktifkan direktori perkakas dan MCP server" },
-    { key: "inspirations", label: "Inspirasi UI", desc: "Aktifkan galeri inspirasi antarmuka" },
+    { key: "inspirations", label: "Design Trends", desc: "Aktifkan galeri Design Trends antarmuka" },
   ];
 
   return (

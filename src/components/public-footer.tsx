@@ -84,11 +84,11 @@ export async function PublicFooter({
               </li>
               <li>
                 <Link
-                  href={`/${locale}/inspirasi`}
+                  href={`/${locale}/ui`}
                   className="hover:text-foreground transition-colors inline-flex items-center gap-1.5"
                 >
                   <Palette className="w-3 h-3 text-foreground" />
-                  <span>{isEn ? "UI/UX Inspiration" : "Inspirasi UI/UX"}</span>
+                  <span>Design Trends</span>
                 </Link>
               </li>
               <li>

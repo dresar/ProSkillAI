@@ -4,7 +4,7 @@
     "prompts": "Prompts",
     "trending": "Trending",
     "mcp": "Server MCP",
-    "inspirasi": "Inspirasi UI/UX",
+    "inspirasi": "Design Trends",
     "admin": "Panel Admin",
     "login": "Masuk",
     "logout": "Keluar",
@@ -95,8 +95,8 @@
     "glossaryDesc": "Kamus istilah teknis AI agent, LLM, dan rekayasa prompt.",
     "tools": "Katalog Alat & Ekstensi",
     "toolsDesc": "Daftar perkakas CLI, MCP server, dan plugin produktivitas.",
-    "inspirations": "Inspirasi UI",
-    "inspirationsDesc": "Kurasi antarmuka bersih dan sistem desain dari produk terkemuka."
+    "inspirations": "Design Trends",
+    "inspirationsDesc": "Kurasi antarmuka bersih dan sistem desain modern dari produk terkemuka."
   },
   "theme": {
     "toggle": "Ganti Tema",

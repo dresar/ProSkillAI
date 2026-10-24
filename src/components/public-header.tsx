@@ -41,7 +41,7 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
   const isPrompts = pathname === `/${locale}/prompts` || (pathname.startsWith(`/${locale}/prompts/`) && !pathname.includes("/submit"));
   const isTrending = pathname === `/${locale}/trending` || pathname.startsWith(`/${locale}/trending/`);
   const isMcp = pathname === `/${locale}/mcp` || pathname.startsWith(`/${locale}/mcp/`);
-  const isInspirasi = pathname === `/${locale}/inspirasi` || pathname.startsWith(`/${locale}/inspirasi/`);
+  const isDesignTrends = pathname === `/${locale}/ui` || pathname.startsWith(`/${locale}/ui/`) || pathname === `/${locale}/inspirasi` || pathname.startsWith(`/${locale}/inspirasi/`);
   const isFavorites = pathname === `/${locale}/favorites`;
 
   React.useEffect(() => {
@@ -100,9 +100,9 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
       icon: Server,
     },
     {
-      href: `/${locale}/inspirasi`,
-      label: isEn ? "UI/UX Inspiration" : "Inspirasi UI/UX",
-      active: isInspirasi,
+      href: `/${locale}/ui`,
+      label: "Design Trends",
+      active: isDesignTrends,
       icon: Palette,
     },
     ...(user

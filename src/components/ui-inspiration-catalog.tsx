@@ -78,7 +78,7 @@ export function UiInspirationCatalog({ initialItems, locale }: UiInspirationCata
               <span>{isEn ? "100% Full Serverless Neon & Edge" : "100% Serverless Neon & Edge"}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {isEn ? "UI/UX Inspiration & Design Patterns" : "Inspirasi Desain UI/UX & Pola Komponen"}
+              Design Trends
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
               {isEn

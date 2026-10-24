@@ -54,6 +54,8 @@ test("UI/UX Inspiration & Serverless Suite", async (t) => {
       "src/components/ui-inspiration-preview-renderer.tsx",
       "src/app/[locale]/inspirasi/page.tsx",
       "src/app/[locale]/inspirasi/[slug]/page.tsx",
+      "src/app/[locale]/ui/page.tsx",
+      "src/app/[locale]/ui/[slug]/page.tsx",
       "src/app/api/inspirations/route.ts",
       "src/app/api/inspirations/[slug]/route.ts",
       "src/app/api/inspirations/[slug]/copy/route.ts",

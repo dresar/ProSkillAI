@@ -79,7 +79,7 @@ export function UiInspirationCard({ item, locale, onOpenQuickView }: UiInspirati
             </span>
           </div>
 
-          <Link href={`/${locale}/inspirasi/${item.slug}`} className="block group-hover:text-cyan-500 transition-colors">
+          <Link href={`/${locale}/ui/${item.slug}`} className="block group-hover:text-cyan-500 transition-colors">
             <h3 className="text-xs sm:text-[13px] font-semibold tracking-tight text-foreground line-clamp-1">
               {title}
             </h3>
@@ -111,7 +111,7 @@ export function UiInspirationCard({ item, locale, onOpenQuickView }: UiInspirati
         </button>
 
         <Link
-          href={`/${locale}/inspirasi/${item.slug}`}
+          href={`/${locale}/ui/${item.slug}`}
           className="inline-flex h-[34px] items-center justify-center gap-1 rounded-[6px] bg-foreground px-2.5 text-[11px] font-semibold text-background hover:opacity-90 active:scale-95 transition-all shadow-2xs text-center"
         >
           <span>{isEn ? "UX Guide" : "Panduan UX"}</span>

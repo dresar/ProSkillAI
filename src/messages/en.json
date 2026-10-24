@@ -4,7 +4,7 @@
     "prompts": "Prompts",
     "trending": "Trending",
     "mcp": "MCP Servers",
-    "inspirasi": "UI/UX Inspiration",
+    "inspirasi": "Design Trends",
     "admin": "Admin Panel",
     "login": "Sign In",
     "logout": "Sign Out",
@@ -95,8 +95,8 @@
     "glossaryDesc": "Comprehensive glossary of AI agents, LLMs, and prompt engineering terms.",
     "tools": "Tools & Extension Directory",
     "toolsDesc": "Curated directory of productivity CLIs, MCP servers, and agent plugins.",
-    "inspirations": "UI Inspirations",
-    "inspirationsDesc": "Curated collection of calm interfaces and design systems from leading software products."
+    "inspirations": "Design Trends",
+    "inspirationsDesc": "Curated collection of calm interfaces and modern design systems from leading software products."
   },
   "theme": {
     "toggle": "Toggle Theme",

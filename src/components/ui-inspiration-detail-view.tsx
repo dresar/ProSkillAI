@@ -60,11 +60,11 @@ export function UiInspirationDetailView({ item, relatedItems, locale }: DetailVi
     <div className="w-full space-y-10">
       <div className="space-y-4">
         <Link
-          href={`/${locale}/inspirasi`}
+          href={`/${locale}/ui`}
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>{isEn ? "Back to UI/UX Inspiration Catalog" : "Kembali ke Katalog Inspirasi UI/UX"}</span>
+          <span>{isEn ? "Back to Design Trends" : "Kembali ke Design Trends"}</span>
         </Link>
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -266,13 +266,13 @@ export function UiInspirationDetailView({ item, relatedItems, locale }: DetailVi
         <div className="space-y-4 pt-6 border-t border-border/80">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-foreground">
-              {isEn ? "Related UI/UX Inspirations" : "Inspirasi UI/UX Terkait"}
+              {isEn ? "Related Design Trends" : "Design Trends Terkait"}
             </h3>
             <Link
-              href={`/${locale}/inspirasi`}
+              href={`/${locale}/ui`}
               className="text-xs font-medium text-muted-foreground hover:text-foreground"
             >
-              {isEn ? "View all patterns →" : "Lihat semua pola →"}
+              {isEn ? "View all →" : "Lihat semua →"}
             </Link>
           </div>
 
