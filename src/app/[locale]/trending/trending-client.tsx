@@ -402,6 +402,13 @@ export function TrendingClient({
                       sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       className="object-cover group-hover/cover:scale-103 transition-transform duration-300"
                       unoptimized
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        const fallbackUrl = `https://opengraph.githubassets.com/1/${repo.fullName}`;
+                        if (target.src !== fallbackUrl) {
+                          target.src = fallbackUrl;
+                        }
+                      }}
                     />
                   </Link>
 
