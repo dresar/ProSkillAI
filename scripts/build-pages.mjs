@@ -25,7 +25,13 @@ function patchNextFiles() {
   patchFile(bsPath, [
     [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
     [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
-    [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "")), $1.url).split("?"'],
+    [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "/")), $1.url = ($1.url.startsWith("/") || $1.url.startsWith("http://") || $1.url.startsWith("https://")) ? $1.url : "/" + $1.url, $1.url).split("?"'],
+  ]);
+  const puPath = path.resolve(process.cwd(), "node_modules/next/dist/shared/lib/router/utils/parse-url.js");
+  patchFile(puPath, [
+    [/function\s+parseUrl\s*\(\s*url\s*\)\s*\{/g, `function parseUrl(url) {
+    if (typeof url !== "string" || !url) url = "/";
+    if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
   ]);
 }
 
@@ -48,7 +54,10 @@ patchFile(handlerPath, [
   [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
   [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
   [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
-  [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "")), $1.url).split("?"'],
+  [/function\s+parseUrl\s*\(\s*url\s*\)\s*\{/g, `function parseUrl(url) {
+    if (typeof url !== "string" || !url) url = "/";
+    if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
+  [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "/")), $1.url = ($1.url.startsWith("/") || $1.url.startsWith("http://") || $1.url.startsWith("https://")) ? $1.url : "/" + $1.url, $1.url).split("?"'],
 ]);
 
 const distDir = path.resolve(process.cwd(), ".pages-dist");
@@ -203,7 +212,10 @@ patchFile(workerOutput, [
   [/details:\s*e\b/g, "details: e ? { name: e.name, message: e.message, stack: e.stack } : {}"],
   [/res\.body\(["']Internal Server Error["']\)\.send\(\);/g, "res.body('Internal Server Error: ' + (err && (err.stack || err.message || err))).send();"],
   [/_renderresult\.default\.fromStatic\(["']Internal Server Error["'],\s*["']text\/plain["']\)/g, "_renderresult.default.fromStatic('Internal Server Error: ' + ((typeof renderToHtmlError !== 'undefined' && (renderToHtmlError.stack || renderToHtmlError.message)) || (typeof err !== 'undefined' && (err.stack || err.message)) || 'Unknown'), 'text/plain')"],
-  [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "")), $1.url).split("?"'],
+  [/function\s+parseUrl\s*\(\s*url\s*\)\s*\{/g, `function parseUrl(url) {
+    if (typeof url !== "string" || !url) url = "/";
+    if (!url.startsWith("/") && !url.startsWith("http://") && !url.startsWith("https://")) url = "/" + url;`],
+  [/\(([$a-zA-Z0-9_]+)\.url\s*\|\|\s*["']["']\)\.split\(\s*["']\?["']/g, '($1.url = typeof $1.url === "string" ? $1.url : ($1.url && $1.url.pathname ? $1.url.pathname + ($1.url.search || "") : String($1.url || "/")), $1.url = ($1.url.startsWith("/") || $1.url.startsWith("http://") || $1.url.startsWith("https://")) ? $1.url : "/" + $1.url, $1.url).split("?"'],
 ]);
 
 const stat = fs.statSync(workerOutput);
