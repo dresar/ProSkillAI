@@ -1,0 +1,22 @@
+# Skills (Skills.biz.id)
+
+> Skills is the open-source directory, package registry, and discovery hub for AI Agent Skills, Model Context Protocol (MCP) servers, and developer prompt engineering systems. Engineered for Claude Code, Cursor AI, OpenAI Codex, and autonomous developer workflows.
+
+## Core Directories
+
+- [AI Agent Skills](/en/skills): Production-ready autonomous skills across engineering, SEO, marketing, database management, and architecture.
+- [MCP Servers Directory](/en/mcp): Index of 139 Model Context Protocol (MCP) servers categorized into frameworks, sandboxes, observability, memory, dev-tools, databases, browsing, filesystem, AI gateways, collaboration, and search.
+- [Top 100 Trending GitHub Repositories](/en/trending): Curated daily index of the top 100 open-source repositories and agent toolkits with README previews and clone commands.
+- [Developer System Prompts](/en/prompts): High-precision prompt templates with variable interpolation for multi-CLI commanders and developer pair programmers.
+
+## Machine-Readable Resources
+
+- [Pricing & Usage](/pricing.md): 100% Free and Open Source. No paywalls, no gated documentation.
+- [Agent Setup Instructions](/skill-install/prompt.md): Universal agent onboarding and MCP configuration guide.
+- [Full LLM Knowledge Bundle](/llms-full.txt): Complete consolidated text representation for deep context retrieval.
+
+## MCP Protocol Compatibility
+
+All MCP servers indexed comply with Anthropic Model Context Protocol specification v1.0 and support:
+- Transport mechanisms: stdio and Server-Sent Events (SSE).
+- Client integrations: Claude Desktop (claude_desktop_config.json), Cursor AI (.cursor/mcp.json), and npx command execution.

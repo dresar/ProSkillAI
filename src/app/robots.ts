@@ -26,7 +26,27 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
+        userAgent: "OAI-SearchBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "ChatGPT-User",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
         userAgent: "ClaudeBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Claude-SearchBot",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Claude-User",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },
@@ -36,7 +56,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
-        userAgent: "OAI-SearchBot",
+        userAgent: "Perplexity-User",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },
@@ -51,12 +71,32 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
+        userAgent: "meta-webindexer",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "meta-externalfetcher",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Bytespider",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
         userAgent: "CCBot",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },
       {
         userAgent: "cohere-ai",
+        allow: "/",
+        disallow: ["/admin/", "/login", "/api/"],
+      },
+      {
+        userAgent: "Diffbot",
         allow: "/",
         disallow: ["/admin/", "/login", "/api/"],
       },

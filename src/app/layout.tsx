@@ -30,6 +30,24 @@ export const metadata: Metadata = {
     icon: "/brand/favicon.svg",
     apple: "/brand/favicon.svg",
   },
+  alternates: {
+    types: {
+      "text/markdown": [
+        { url: "/llms.txt", title: "LLM Context" },
+      ],
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

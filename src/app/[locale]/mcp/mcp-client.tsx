@@ -7,18 +7,9 @@ import {
   Boxes,
   Layers,
   Search,
-  Terminal,
-  Copy,
   Check,
   ChevronDown,
   ExternalLink,
-  ShieldCheck,
-  Server,
-  Sparkles,
-  SlidersHorizontal,
-  X,
-  Code,
-  CheckCircle2,
   Cpu,
   Database,
   Globe,
@@ -26,6 +17,8 @@ import {
   Eye,
   MessageSquare,
   FileSearch,
+  Sparkles,
+  Terminal,
 } from "lucide-react";
 import type { McpServerItem, McpCategoryKey } from "@/data/mcp-catalog";
 import { MCP_CATEGORIES, MCP_CATALOG_STATS } from "@/data/mcp-catalog";
@@ -56,8 +49,6 @@ export function McpClient({ servers, locale }: McpClientProps) {
   const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
   const [filterType, setFilterType] = React.useState<"all" | "open-source" | "self-hostable">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [activeModalServer, setActiveModalServer] = React.useState<McpServerItem | null>(null);
-  const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = React.useState(false);
   const categoryDropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -82,22 +73,6 @@ export function McpClient({ servers, locale }: McpClientProps) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && activeModalServer) {
-        setActiveModalServer(null);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeModalServer]);
-
-  const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
 
   const categoryCounts = React.useMemo(() => {
     const counts: Record<string, number> = {};
@@ -369,15 +344,15 @@ export function McpClient({ servers, locale }: McpClientProps) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
           {filteredServers.map((server) => {
             const IconComponent = CATEGORY_ICONS[server.category] || Layers;
             return (
               <div
                 key={server.id}
-                className="group rounded-xl border border-border bg-surface p-4 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
+                className="group rounded-xl border border-border bg-surface p-3.5 flex flex-col justify-between hover:border-foreground/40 transition-colors shadow-2xs space-y-3"
               >
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   <Link
                     href={`/${locale}/mcp/${server.slug}`}
                     className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
@@ -386,15 +361,15 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       src={`/images/mcp/${server.category}.svg`}
                       alt={server.categoryLabel}
                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
                     />
                   </Link>
 
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-[6px] bg-foreground text-background flex items-center justify-center shrink-0">
-                        <IconComponent className="w-4 h-4 text-background" />
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-7 h-7 rounded-[5px] bg-foreground text-background flex items-center justify-center shrink-0">
+                        <IconComponent className="w-3.5 h-3.5 text-background" />
                       </div>
                       <div className="min-w-0">
                         <Link
@@ -426,32 +401,11 @@ export function McpClient({ servers, locale }: McpClientProps) {
                   <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed min-h-[2.5rem]">
                     {server.description}
                   </p>
-
-                  <div className="space-y-1.5 pt-1">
-                    <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">
-                      {isEn ? "Exposed Tools:" : "Fungsi Tool:"}
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {server.tools.slice(0, 3).map((tool) => (
-                        <code
-                          key={tool}
-                          className="text-[10px] font-mono px-1.5 py-0.2 rounded-[4px] bg-background border border-border/70 text-foreground"
-                        >
-                          {tool}()
-                        </code>
-                      ))}
-                      {server.tools.length > 3 && (
-                        <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-muted text-muted-foreground">
-                          +{server.tools.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
                 </div>
 
-                <div className="pt-3 border-t border-border/70 space-y-2">
+                <div className="pt-2.5 border-t border-border/70 space-y-2">
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span className="text-[10px] font-mono truncate max-w-[150px]">
+                    <span className="text-[10px] font-mono truncate max-w-[130px]">
                       {server.categoryLabel}
                     </span>
                     <span className="font-mono text-[10px]">
@@ -459,41 +413,14 @@ export function McpClient({ servers, locale }: McpClientProps) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5 pt-0.5">
                     <Link
                       href={`/${locale}/mcp/${server.slug}`}
-                      className="h-7 px-1 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
+                      className="h-7 px-2 rounded-[5px] border border-foreground bg-foreground text-background text-[11px] font-semibold inline-flex items-center justify-center gap-1 hover:opacity-90 transition-opacity"
                     >
                       <ExternalLink className="w-3 h-3" />
                       <span>{isEn ? "Detail" : "Detail"}</span>
                     </Link>
-
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(server.installSnippet, server.id)}
-                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                    >
-                      {copiedId === server.id ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-500" />
-                          <span className="text-emerald-500 font-semibold">{isEn ? "Copied" : "Disalin"}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" />
-                          <span>npx</span>
-                        </>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveModalServer(server)}
-                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
-                    >
-                      <SlidersHorizontal className="w-3 h-3" />
-                      <span>JSON</span>
-                    </button>
 
                     <ShareButton
                       item={{
@@ -513,154 +440,13 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       locale={locale}
                       showLabel
                       label={isEn ? "Share" : "Bagi"}
-                      className="h-7 px-1 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                      className="h-7 px-2 rounded-[5px] border border-border bg-background hover:bg-muted text-[11px] font-medium text-foreground inline-flex items-center justify-center gap-1 transition-colors cursor-pointer"
                     />
                   </div>
                 </div>
               </div>
             );
           })}
-        </div>
-      )}
-
-      {activeModalServer && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150"
-        >
-          <div
-            className="fixed inset-0"
-            onClick={() => setActiveModalServer(null)}
-            aria-hidden="true"
-          />
-
-          <div className="relative w-full max-w-2xl flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
-            <div className="p-4 border-b border-border/80 bg-muted/30 flex items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-[6px] bg-foreground text-background flex items-center justify-center shrink-0">
-                  <Boxes className="w-4 h-4 text-background" />
-                </div>
-                <div className="min-w-0">
-                  <h2 className="text-sm font-bold text-foreground truncate flex items-center gap-2">
-                    <span>{activeModalServer.name}</span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted border border-border text-muted-foreground font-normal">
-                      {activeModalServer.vendor}
-                    </span>
-                  </h2>
-                  <p className="text-[11px] text-muted-foreground truncate">
-                    {activeModalServer.categoryLabel}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 shrink-0">
-                <ShareButton
-                  item={{
-                    type: "mcp",
-                    slug: activeModalServer.id,
-                    title: activeModalServer.name,
-                    description: activeModalServer.description,
-                    url: `/${locale}/mcp#${activeModalServer.id}`,
-                    category: activeModalServer.categoryLabel,
-                    author: activeModalServer.vendor,
-                    stats: [
-                      { label: "Tools", value: activeModalServer.tools.length },
-                      { label: "Stars", value: formatCompactNumber(activeModalServer.stars) },
-                      { label: "License", value: activeModalServer.isOpenSource ? "OSS" : "Commercial" },
-                    ],
-                  }}
-                  locale={locale}
-                  className="w-8 h-8 rounded-[6px] border border-border hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setActiveModalServer(null)}
-                  className="w-8 h-8 rounded-[6px] border border-border hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
-                  aria-label="Close dialog"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-5 sm:p-6 space-y-5 overflow-y-auto max-h-[75vh]">
-              <div className="space-y-1.5">
-                <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                  {isEn ? "Overview" : "Deskripsi Singkat"}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {activeModalServer.description}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Terminal className="w-3.5 h-3.5" />
-                    <span>claude_desktop_config.json</span>
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(activeModalServer.claudeConfigSnippet, "modal-cfg")}
-                    className="h-6 px-2 rounded-[4px] border border-border bg-background hover:bg-muted text-[10px] font-mono inline-flex items-center gap-1 transition-colors cursor-pointer"
-                  >
-                    {copiedId === "modal-cfg" ? (
-                      <>
-                        <Check className="w-3 h-3 text-emerald-500" />
-                        <span className="text-emerald-500 font-semibold">{isEn ? "Copied" : "Disalin"}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3 h-3" />
-                        <span>{isEn ? "Copy JSON" : "Salin JSON"}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-                <pre className="p-3.5 rounded-lg bg-black text-emerald-400 font-mono text-[11px] overflow-x-auto border border-border">
-                  {activeModalServer.claudeConfigSnippet}
-                </pre>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                  {isEn ? "Provided Tools & Functions" : "Daftar Fungsi Tool"}
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                  {activeModalServer.tools.map((tool) => (
-                    <div
-                      key={tool}
-                      className="p-2 rounded-[6px] border border-border/80 bg-background text-[11px] font-mono flex items-center gap-2 text-foreground"
-                    >
-                      <CheckCircle2 className="w-3 h-3 text-emerald-500 shrink-0" />
-                      <span>{tool}()</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-2 flex flex-wrap gap-2 justify-end border-t border-border/70">
-                <a
-                  href={activeModalServer.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="h-8 px-3 rounded-[6px] border border-border bg-background hover:bg-muted text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  <span>GitHub Repository</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setActiveModalServer(null)}
-                  className="h-8 px-4 rounded-[6px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-opacity cursor-pointer"
-                >
-                  {isEn ? "Done" : "Selesai"}
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>

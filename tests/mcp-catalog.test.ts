@@ -60,9 +60,12 @@ describe("MCP Servers Directory & Agent Stack Index", () => {
     }
   });
 
-  test("verifies all 11 category SVG cover banners exist in public/images/mcp/", async () => {
+  test("verifies all 11 category SVG cover banners and default fallback exist in public/images/mcp/", async () => {
     const fs = await import("node:fs");
     const path = await import("node:path");
+
+    const defaultSvg = path.join(process.cwd(), "public", "images", "mcp", "default.svg");
+    assert.ok(fs.existsSync(defaultSvg), "Missing default.svg fallback banner");
 
     for (const cat of MCP_CATEGORIES) {
       const svgPath = path.join(process.cwd(), "public", "images", "mcp", `${cat.key}.svg`);
@@ -70,5 +73,28 @@ describe("MCP Servers Directory & Agent Stack Index", () => {
       const content = fs.readFileSync(svgPath, "utf8");
       assert.ok(content.includes("<svg"), `Invalid SVG file for category: ${cat.key}`);
     }
+  });
+
+  test("verifies AI SEO machine-readable discovery files exist and follow specifications", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+
+    const llmsTxt = path.join(process.cwd(), "public", "llms.txt");
+    const llmsFullTxt = path.join(process.cwd(), "public", "llms-full.txt");
+    const pricingMd = path.join(process.cwd(), "public", "pricing.md");
+    const aiSeoSkill = path.join(process.cwd(), ".agents", "skills", "ai-seo", "SKILL.md");
+
+    assert.ok(fs.existsSync(llmsTxt), "Missing public/llms.txt");
+    assert.ok(fs.existsSync(llmsFullTxt), "Missing public/llms-full.txt");
+    assert.ok(fs.existsSync(pricingMd), "Missing public/pricing.md");
+    assert.ok(fs.existsSync(aiSeoSkill), "Missing .agents/skills/ai-seo/SKILL.md");
+
+    const llmsContent = fs.readFileSync(llmsTxt, "utf8");
+    assert.ok(llmsContent.includes("# Skills"));
+    assert.ok(llmsContent.includes("/en/mcp"));
+
+    const pricingContent = fs.readFileSync(pricingMd, "utf8");
+    assert.ok(pricingContent.includes("Pricing"));
+    assert.ok(pricingContent.includes("Free"));
   });
 });

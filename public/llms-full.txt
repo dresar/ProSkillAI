@@ -1,0 +1,2236 @@
+# Skills.biz.id — Full LLM Knowledge Bundle
+> Comprehensive agent-readable dataset of AI agent skills, 139 MCP servers, and top 100 developer repositories.
+
+## Platform Metadata
+- Domain: https://skills.biz.id
+- Protocol: Anthropic Model Context Protocol (MCP) 1.0
+- Supported Clients: Claude Desktop, Cursor AI, OpenAI Codex, Aider, OpenCode
+- Machine-Readable Pricing: https://skills.biz.id/pricing.md
+- License: Open Source (MIT / Apache 2.0)
+
+## Model Context Protocol (MCP) Catalog (139 Servers across 11 Categories)
+
+### Category: Agent Frameworks & Orchestrators (frameworks)
+Total Servers: 14
+
+#### LangChain MCP (`langchain-mcp`)
+- Vendor: LangChain AI
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 104200
+- Description: Seamless orchestration layer connecting LangChain chains, agents, and execution tools with standard MCP clients.
+- Install: `npx -y @modelcontextprotocol/server-langchain-mcp`
+- Tools: invoke_chain, execute_agent_step, load_prompt_template, retrieve_runnable
+- Canonical URL: https://skills.biz.id/en/mcp/langchain-mcp
+
+#### LlamaIndex MCP (`llamaindex-mcp`)
+- Vendor: LlamaIndex
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 38900
+- Description: Data framework for LLM-based applications, connecting custom data sources and complex document indexes to MCP.
+- Install: `npx -y @modelcontextprotocol/server-llamaindex-mcp`
+- Tools: query_index, synthesize_response, retrieve_nodes, index_document
+- Canonical URL: https://skills.biz.id/en/mcp/llamaindex-mcp
+
+#### CrewAI MCP (`crewai-mcp`)
+- Vendor: CrewAI
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 26100
+- Description: Framework for orchestrating role-playing, autonomous AI agents in cooperative execution squads.
+- Install: `npx -y @modelcontextprotocol/server-crewai-mcp`
+- Tools: start_crew_run, get_agent_output, delegate_task, assign_tool
+- Canonical URL: https://skills.biz.id/en/mcp/crewai-mcp
+
+#### AutoGen MCP (`autogen-mcp`)
+- Vendor: Microsoft
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 36700
+- Description: Multi-agent conversation framework enabling next-gen LLM applications via conversational agents.
+- Install: `npx -y @modelcontextprotocol/server-autogen-mcp`
+- Tools: initiate_chat, register_reply, evaluate_agent_state
+- Canonical URL: https://skills.biz.id/en/mcp/autogen-mcp
+
+#### Semantic Kernel MCP (`semantic-kernel-mcp`)
+- Vendor: Microsoft
+- License: Commercial
+- Self-Hostable: No
+- Stars: 23100
+- Description: Enterprise SDK that integrates Large Language Models with conventional programming languages.
+- Install: `npx -y @modelcontextprotocol/server-semantic-kernel-mcp`
+- Tools: invoke_plugin, create_kernel_function, get_planner_steps
+- Canonical URL: https://skills.biz.id/en/mcp/semantic-kernel-mcp
+
+#### Mastra MCP (`mastra-mcp`)
+- Vendor: Mastra AI
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 7800
+- Description: TypeScript agent framework with built-in evaluation, workflow graph orchestration, and local sync.
+- Install: `npx -y @modelcontextprotocol/server-mastra-mcp`
+- Tools: run_workflow, evaluate_agent, sync_vector_embeddings
+- Canonical URL: https://skills.biz.id/en/mcp/mastra-mcp
+
+#### ElizaOS MCP (`elizaos-mcp`)
+- Vendor: ai16z
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 14500
+- Description: Autonomous multi-agent operating system for deploying autonomous personas across Discord, X, and web.
+- Install: `npx -y @modelcontextprotocol/server-elizaos-mcp`
+- Tools: process_message, update_character_state, post_social_update
+- Canonical URL: https://skills.biz.id/en/mcp/elizaos-mcp
+
+#### Smolagents MCP (`smolagents-mcp`)
+- Vendor: Hugging Face
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 12800
+- Description: Ultra-lightweight Python library to write agents that write code directly instead of json actions.
+- Install: `npx -y @modelcontextprotocol/server-smolagents-mcp`
+- Tools: execute_code_agent, call_tool, summarize_trajectory
+- Canonical URL: https://skills.biz.id/en/mcp/smolagents-mcp
+
+#### Rig Rust MCP (`rig-rust-mcp`)
+- Vendor: 0xPlaygrounds
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 3400
+- Description: Modular Rust library for building scalable, high-performance LLM-powered applications.
+- Install: `npx -y @modelcontextprotocol/server-rig-rust-mcp`
+- Tools: rig_completion, rig_agent_prompt, vector_search
+- Canonical URL: https://skills.biz.id/en/mcp/rig-rust-mcp
+
+#### LangGraph MCP (`langgraph-mcp`)
+- Vendor: LangChain AI
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 11900
+- Description: Build resilient multi-actor agent systems with cyclic computation graphs and persistent checkpoints.
+- Install: `npx -y @modelcontextprotocol/server-langgraph-mcp`
+- Tools: compile_graph, step_state, restore_checkpoint
+- Canonical URL: https://skills.biz.id/en/mcp/langgraph-mcp
+
+#### PydanticAI MCP (`pydanticai-mcp`)
+- Vendor: Pydantic
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 8400
+- Description: Production grade AI agent framework built by the makers of Pydantic with strict type safety.
+- Install: `npx -y @modelcontextprotocol/server-pydanticai-mcp`
+- Tools: run_agent_sync, stream_agent_typed, validate_output_schema
+- Canonical URL: https://skills.biz.id/en/mcp/pydanticai-mcp
+
+#### Promptflow MCP (`promptflow-mcp`)
+- Vendor: Microsoft
+- License: Commercial
+- Self-Hostable: No
+- Stars: 10200
+- Description: Suite of development tools designed to streamline the end-to-end development cycle of LLM apps.
+- Install: `npx -y @modelcontextprotocol/server-promptflow-mcp`
+- Tools: test_flow, batch_run_metrics, eval_groundedness
+- Canonical URL: https://skills.biz.id/en/mcp/promptflow-mcp
+
+#### Agency Swarm MCP (`agency-swarm-mcp`)
+- Vendor: Agency Enterprise
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4900
+- Description: Hierarchical agent swarms with custom communication protocols, shared state, and task delegation.
+- Install: `npx -y @modelcontextprotocol/server-agency-swarm-mcp`
+- Tools: send_swarm_message, delegate_subtask, retrieve_swarm_log
+- Canonical URL: https://skills.biz.id/en/mcp/agency-swarm-mcp
+
+#### Haystack MCP (`haystack-mcp`)
+- Vendor: deepset
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 17400
+- Description: Open-source NLP framework to build production-ready search, question-answering, and conversational systems.
+- Install: `npx -y @modelcontextprotocol/server-haystack-mcp`
+- Tools: run_pipeline, index_documents, evaluate_pipeline
+- Canonical URL: https://skills.biz.id/en/mcp/haystack-mcp
+
+### Category: Sandboxes & Execution Environments (sandboxes)
+Total Servers: 12
+
+#### E2B Code Interpreter (`e2b-code-interpreter`)
+- Vendor: E2B
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 8200
+- Description: Secure cloud sandboxes for running code generated by AI agents with Python, JS, and shell runtime.
+- Install: `npx -y @modelcontextprotocol/server-e2b-code-interpreter`
+- Tools: run_code, upload_file, download_file, list_processes
+- Canonical URL: https://skills.biz.id/en/mcp/e2b-code-interpreter
+
+#### Docker Engine MCP (`docker-engine-mcp`)
+- Vendor: Docker
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 71200
+- Description: Execute containerized environments, build Dockerfiles, inspect networks, and isolate agent jobs.
+- Install: `npx -y @modelcontextprotocol/server-docker-engine-mcp`
+- Tools: run_container, exec_in_container, stop_container, inspect_image
+- Canonical URL: https://skills.biz.id/en/mcp/docker-engine-mcp
+
+#### Fly.io Machines MCP (`fly-io-machines-mcp`)
+- Vendor: Fly.io
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4800
+- Description: Instant micro-VMs launched on global edge regions with sub-second spin-up time for agent computations.
+- Install: `npx -y @modelcontextprotocol/server-fly-io-machines-mcp`
+- Tools: start_machine, destroy_machine, exec_command, get_status
+- Canonical URL: https://skills.biz.id/en/mcp/fly-io-machines-mcp
+
+#### Modal Labs MCP (`modal-labs-mcp`)
+- Vendor: Modal
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 6900
+- Description: Serverless cloud compute running Python functions in seconds with instant access to high-end GPUs.
+- Install: `npx -y @modelcontextprotocol/server-modal-labs-mcp`
+- Tools: invoke_remote_function, get_job_logs, deploy_app
+- Canonical URL: https://skills.biz.id/en/mcp/modal-labs-mcp
+
+#### Daytona MCP (`daytona-mcp`)
+- Vendor: Daytona
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 15300
+- Description: Standardized development environment manager automating full dev setup with container isolation.
+- Install: `npx -y @modelcontextprotocol/server-daytona-mcp`
+- Tools: create_workspace, run_terminal_command, stop_workspace
+- Canonical URL: https://skills.biz.id/en/mcp/daytona-mcp
+
+#### Cloudflare Sandbox MCP (`cloudflare-sandbox-mcp`)
+- Vendor: Cloudflare
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3100
+- Description: Isolated V8 worker sandboxes for fast and secure code evaluation at global edge locations.
+- Install: `npx -y @modelcontextprotocol/server-cloudflare-sandbox-mcp`
+- Tools: execute_script, read_kv, dispatch_request
+- Canonical URL: https://skills.biz.id/en/mcp/cloudflare-sandbox-mcp
+
+#### Firecracker MicroVM (`firecracker-microvm`)
+- Vendor: AWS Labs
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 26800
+- Description: Minimalist virtualization technology providing secure and fast microVM execution for multi-tenant agents.
+- Install: `npx -y @modelcontextprotocol/server-firecracker-microvm`
+- Tools: launch_microvm, configure_network, shutdown_microvm
+- Canonical URL: https://skills.biz.id/en/mcp/firecracker-microvm
+
+#### Wasmer WASM MCP (`wasmer-wasm-mcp`)
+- Vendor: Wasmer
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 18400
+- Description: Universal WebAssembly runtime executing safe sandboxed native code across any platform.
+- Install: `npx -y @modelcontextprotocol/server-wasmer-wasm-mcp`
+- Tools: run_wasm_package, execute_module, inspect_wasm_exports
+- Canonical URL: https://skills.biz.id/en/mcp/wasmer-wasm-mcp
+
+#### WebContainers MCP (`webcontainers-mcp`)
+- Vendor: StackBlitz
+- License: Commercial
+- Self-Hostable: No
+- Stars: 9600
+- Description: Browser and Node-based micro-operating system executing full-stack Node.js environments instantly.
+- Install: `npx -y @modelcontextprotocol/server-webcontainers-mcp`
+- Tools: spawn_process, mount_filesystem, listen_port
+- Canonical URL: https://skills.biz.id/en/mcp/webcontainers-mcp
+
+#### Deno Subhosting MCP (`deno-subhosting-mcp`)
+- Vendor: Deno
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5200
+- Description: Multi-tenant secure JavaScript/TypeScript runtime with zero cold start and per-tenant hardware isolation.
+- Install: `npx -y @modelcontextprotocol/server-deno-subhosting-mcp`
+- Tools: deploy_deployment, stream_logs, terminate_deployment
+- Canonical URL: https://skills.biz.id/en/mcp/deno-subhosting-mcp
+
+#### CodeX Sandbox MCP (`codex-sandbox-mcp`)
+- Vendor: OpenAI Labs
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 4100
+- Description: Isolated interpreter environment for evaluating multi-step mathematical calculations and data scripts.
+- Install: `npx -y @modelcontextprotocol/server-codex-sandbox-mcp`
+- Tools: eval_code, render_plot, inspect_memory
+- Canonical URL: https://skills.biz.id/en/mcp/codex-sandbox-mcp
+
+#### Microbox MCP (`microbox-mcp`)
+- Vendor: Autonomous Labs
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 2800
+- Description: Lightweight containerized task sandbox for CI pipelines and automated agent code refactoring.
+- Install: `npx -y @modelcontextprotocol/server-microbox-mcp`
+- Tools: create_isolated_box, run_step, collect_artifact
+- Canonical URL: https://skills.biz.id/en/mcp/microbox-mcp
+
+### Category: Observability & Production Tracing (observability)
+Total Servers: 12
+
+#### Langfuse Tracing MCP (`langfuse-tracing-mcp`)
+- Vendor: Langfuse
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 8900
+- Description: Open source LLM engineering platform for observability, metrics, prompt management, and evaluations.
+- Install: `npx -y @modelcontextprotocol/server-langfuse-tracing-mcp`
+- Tools: create_trace, record_span, score_generation, fetch_prompt
+- Canonical URL: https://skills.biz.id/en/mcp/langfuse-tracing-mcp
+
+#### LangSmith MCP (`langsmith-mcp`)
+- Vendor: LangChain AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 7600
+- Description: Platform for building production-grade LLM applications, debug traces, test sets, and monitor drift.
+- Install: `npx -y @modelcontextprotocol/server-langsmith-mcp`
+- Tools: log_run, query_runs, evaluate_dataset, create_feedback
+- Canonical URL: https://skills.biz.id/en/mcp/langsmith-mcp
+
+#### Helicone AI MCP (`helicone-ai-mcp`)
+- Vendor: Helicone
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4300
+- Description: LLM observability platform for monitoring costs, latencies, user rate limits, and caching responses.
+- Install: `npx -y @modelcontextprotocol/server-helicone-ai-mcp`
+- Tools: query_request_logs, get_cost_breakdown, configure_cache
+- Canonical URL: https://skills.biz.id/en/mcp/helicone-ai-mcp
+
+#### Arize Phoenix MCP (`arize-phoenix-mcp`)
+- Vendor: Arize AI
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 5800
+- Description: AI observability and evaluation platform for LLM applications with OpenTelemetry-based tracing.
+- Install: `npx -y @modelcontextprotocol/server-arize-phoenix-mcp`
+- Tools: export_spans, run_evaluators, view_eval_summary
+- Canonical URL: https://skills.biz.id/en/mcp/arize-phoenix-mcp
+
+#### OpenLLMetry MCP (`openllmetry-mcp`)
+- Vendor: Traceloop
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3900
+- Description: OpenTelemetry-compatible extensions for collecting traces and metrics from all major LLM providers.
+- Install: `npx -y @modelcontextprotocol/server-openllmetry-mcp`
+- Tools: init_tracer, flush_spans, instrument_openai
+- Canonical URL: https://skills.biz.id/en/mcp/openllmetry-mcp
+
+#### Traceloop MCP (`traceloop-mcp`)
+- Vendor: Traceloop
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 2700
+- Description: Continuous software testing and production monitoring platform built for LLM systems.
+- Install: `npx -y @modelcontextprotocol/server-traceloop-mcp`
+- Tools: run_test_suite, get_alert_history, create_mock_span
+- Canonical URL: https://skills.biz.id/en/mcp/traceloop-mcp
+
+#### W&B Weave MCP (`w-b-weave-mcp`)
+- Vendor: Weights & Biases
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3200
+- Description: Toolkit for building and evaluating generative AI applications with live interactive tracking.
+- Install: `npx -y @modelcontextprotocol/server-w-b-weave-mcp`
+- Tools: publish_dataset, log_call, compare_models
+- Canonical URL: https://skills.biz.id/en/mcp/w-b-weave-mcp
+
+#### AgentOps MCP (`agentops-mcp`)
+- Vendor: AgentOps
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 2900
+- Description: Observability and testing platform designed specifically for multi-agent workflows and tool calls.
+- Install: `npx -y @modelcontextprotocol/server-agentops-mcp`
+- Tools: start_session, record_action, detect_agent_loop
+- Canonical URL: https://skills.biz.id/en/mcp/agentops-mcp
+
+#### Lunary AI MCP (`lunary-ai-mcp`)
+- Vendor: Lunary
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3600
+- Description: Production monitoring, analytics, and user feedback tracking platform for LLM apps.
+- Install: `npx -y @modelcontextprotocol/server-lunary-ai-mcp`
+- Tools: track_event, record_user_feedback, query_costs
+- Canonical URL: https://skills.biz.id/en/mcp/lunary-ai-mcp
+
+#### OpenTelemetry Collector MCP (`opentelemetry-collector-mcp`)
+- Vendor: CNCF
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 4400
+- Description: Vendor-agnostic proxy providing high-performance telemetry collection, filtering, and routing.
+- Install: `npx -y @modelcontextprotocol/server-opentelemetry-collector-mcp`
+- Tools: send_metrics, send_traces, query_collector_health
+- Canonical URL: https://skills.biz.id/en/mcp/opentelemetry-collector-mcp
+
+#### Datadog LLM Observability (`datadog-llm-observability`)
+- Vendor: Datadog
+- License: Commercial
+- Self-Hostable: No
+- Stars: 1200
+- Description: End-to-end monitoring for LLM pipelines, prompt regressions, and infrastructure dependencies.
+- Install: `npx -y @modelcontextprotocol/server-datadog-llm-observability`
+- Tools: submit_trace, check_apm_status, trigger_incident
+- Canonical URL: https://skills.biz.id/en/mcp/datadog-llm-observability
+
+#### Honeycomb MCP (`honeycomb-mcp`)
+- Vendor: Honeycomb.io
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 1800
+- Description: Observability tool for high-cardinality distributed tracing and granular anomaly investigation.
+- Install: `npx -y @modelcontextprotocol/server-honeycomb-mcp`
+- Tools: send_span, run_bubbleup_query, get_board_data
+- Canonical URL: https://skills.biz.id/en/mcp/honeycomb-mcp
+
+### Category: Memory & Persistent Context (memory)
+Total Servers: 12
+
+#### Mem0 Memory MCP (`mem0-memory-mcp`)
+- Vendor: Mem0
+- License: Commercial
+- Self-Hostable: No
+- Stars: 26400
+- Description: The memory layer for AI agents, extracting user preferences and facts across long-term sessions.
+- Install: `npx -y @modelcontextprotocol/server-mem0-memory-mcp`
+- Tools: add_memory, search_memories, get_all_memories, delete_memory
+- Canonical URL: https://skills.biz.id/en/mcp/mem0-memory-mcp
+
+#### Supermemory MCP (`supermemory-mcp`)
+- Vendor: Supermemory
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 6400
+- Description: Contextual second brain for AI, storing bookmarks, notes, and conversation context automatically.
+- Install: `npx -y @modelcontextprotocol/server-supermemory-mcp`
+- Tools: store_content, search_context, summarize_memories
+- Canonical URL: https://skills.biz.id/en/mcp/supermemory-mcp
+
+#### Zep Temporal Memory (`zep-temporal-memory`)
+- Vendor: Zep
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4500
+- Description: Fast, scalable memory platform for LLMs with automatic summarization, temporal facts, and graph search.
+- Install: `npx -y @modelcontextprotocol/server-zep-temporal-memory`
+- Tools: add_message, get_session_memory, search_knowledge_graph
+- Canonical URL: https://skills.biz.id/en/mcp/zep-temporal-memory
+
+#### Letta MemGPT MCP (`letta-memgpt-mcp`)
+- Vendor: Letta
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 13500
+- Description: Stateful agents with multi-tiered memory systems enabling infinite context management.
+- Install: `npx -y @modelcontextprotocol/server-letta-memgpt-mcp`
+- Tools: read_archival_memory, write_core_memory, swap_memory_block
+- Canonical URL: https://skills.biz.id/en/mcp/letta-memgpt-mcp
+
+#### Graphlit Memory MCP (`graphlit-memory-mcp`)
+- Vendor: Graphlit
+- License: Commercial
+- Self-Hostable: No
+- Stars: 1800
+- Description: Serverless knowledge ingestion pipeline and automated semantic memory for LLM applications.
+- Install: `npx -y @modelcontextprotocol/server-graphlit-memory-mcp`
+- Tools: ingest_feed, query_knowledge, extract_entities
+- Canonical URL: https://skills.biz.id/en/mcp/graphlit-memory-mcp
+
+#### CozoDB Graph Memory (`cozodb-graph-memory`)
+- Vendor: Cozo Project
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5200
+- Description: Relational-graph-vector database with Datalog query engine, ideal for multi-hop agent reasoning.
+- Install: `npx -y @modelcontextprotocol/server-cozodb-graph-memory`
+- Tools: run_datalog_query, backup_graph, insert_relations
+- Canonical URL: https://skills.biz.id/en/mcp/cozodb-graph-memory
+
+#### Cognee Semantic Memory (`cognee-semantic-memory`)
+- Vendor: Cognee
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 4100
+- Description: Turn unstructured text into connected knowledge graphs and vector databases with schema learning.
+- Install: `npx -y @modelcontextprotocol/server-cognee-semantic-memory`
+- Tools: cognify_text, search_graph, visualize_graph
+- Canonical URL: https://skills.biz.id/en/mcp/cognee-semantic-memory
+
+#### Vector Memory MCP (`vector-memory-mcp`)
+- Vendor: Anthropic Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 2200
+- Description: Simple local vector memory engine leveraging HNSW indexing and cosine similarity.
+- Install: `npx -y @modelcontextprotocol/server-vector-memory-mcp`
+- Tools: upsert_vector, query_nearest, clear_collection
+- Canonical URL: https://skills.biz.id/en/mcp/vector-memory-mcp
+
+#### Obsidian Vault MCP (`obsidian-vault-mcp`)
+- Vendor: Obsidian Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3800
+- Description: Interact with local Obsidian markdown notes, bi-directional backlinks, and canvas maps.
+- Install: `npx -y @modelcontextprotocol/server-obsidian-vault-mcp`
+- Tools: read_note, append_note, search_backlinks, list_tags
+- Canonical URL: https://skills.biz.id/en/mcp/obsidian-vault-mcp
+
+#### Chroma Memory MCP (`chroma-memory-mcp`)
+- Vendor: Chroma
+- License: Commercial
+- Self-Hostable: No
+- Stars: 16100
+- Description: Lightweight embedding database with in-memory persistence and metadata filtering.
+- Install: `npx -y @modelcontextprotocol/server-chroma-memory-mcp`
+- Tools: add_documents, query_collection, delete_collection
+- Canonical URL: https://skills.biz.id/en/mcp/chroma-memory-mcp
+
+#### Notion Knowledge MCP (`notion-knowledge-mcp`)
+- Vendor: Notion
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4800
+- Description: Sync agent memory and knowledge bases directly with corporate Notion workspaces and databases.
+- Install: `npx -y @modelcontextprotocol/server-notion-knowledge-mcp`
+- Tools: search_notion, create_page, query_database
+- Canonical URL: https://skills.biz.id/en/mcp/notion-knowledge-mcp
+
+#### Neo4j Graph Memory (`neo4j-graph-memory`)
+- Vendor: Neo4j
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 14700
+- Description: Enterprise grade property graph database for deep entity-relationship modeling and Cypher queries.
+- Install: `npx -y @modelcontextprotocol/server-neo4j-graph-memory`
+- Tools: execute_cypher, inspect_schema, find_path
+- Canonical URL: https://skills.biz.id/en/mcp/neo4j-graph-memory
+
+### Category: Developer Tools & Code Intelligence (dev-tools)
+Total Servers: 15
+
+#### Tree-sitter Code Parser (`tree-sitter-code-parser`)
+- Vendor: Tree-sitter Team
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 18900
+- Description: Incremental parser generator tool building concrete syntax trees for over 40 programming languages.
+- Install: `npx -y @modelcontextprotocol/server-tree-sitter-code-parser`
+- Tools: parse_file, execute_ast_query, list_definitions, find_references
+- Canonical URL: https://skills.biz.id/en/mcp/tree-sitter-code-parser
+
+#### GitHub MCP Server (`github-mcp-server`)
+- Vendor: Model Context Protocol
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 32000
+- Description: Official GitHub integration: explore repositories, file commits, issues, pull requests, and releases.
+- Install: `npx -y @modelcontextprotocol/server-github-mcp-server`
+- Tools: search_repositories, get_file_contents, create_pull_request, list_issues
+- Canonical URL: https://skills.biz.id/en/mcp/github-mcp-server
+
+#### Git CLI MCP (`git-cli-mcp`)
+- Vendor: Anthropic Community
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 8400
+- Description: Execute local git commands safely: diff, commit, checkout branches, and inspect history.
+- Install: `npx -y @modelcontextprotocol/server-git-cli-mcp`
+- Tools: git_status, git_diff, git_commit, git_log
+- Canonical URL: https://skills.biz.id/en/mcp/git-cli-mcp
+
+#### Biome Formatter MCP (`biome-formatter-mcp`)
+- Vendor: Biomejs
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 15400
+- Description: Ultra-fast toolchain for web projects: linting, formatting, and import sorting in milliseconds.
+- Install: `npx -y @modelcontextprotocol/server-biome-formatter-mcp`
+- Tools: format_code, lint_file, apply_safe_fixes
+- Canonical URL: https://skills.biz.id/en/mcp/biome-formatter-mcp
+
+#### Ripgrep Fast Search MCP (`ripgrep-fast-search-mcp`)
+- Vendor: BurntSushi
+- License: Commercial
+- Self-Hostable: No
+- Stars: 48900
+- Description: Line-oriented search tool that recursively searches current directories for regex patterns.
+- Install: `npx -y @modelcontextprotocol/server-ripgrep-fast-search-mcp`
+- Tools: search_pattern, search_filenames, count_matches
+- Canonical URL: https://skills.biz.id/en/mcp/ripgrep-fast-search-mcp
+
+#### Postman API MCP (`postman-api-mcp`)
+- Vendor: Postman
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5100
+- Description: Query API workspaces, run collections, inspect mock servers, and debug HTTP requests.
+- Install: `npx -y @modelcontextprotocol/server-postman-api-mcp`
+- Tools: run_collection, list_environments, inspect_spec
+- Canonical URL: https://skills.biz.id/en/mcp/postman-api-mcp
+
+#### Sentry Error Tracking (`sentry-error-tracking`)
+- Vendor: Sentry
+- License: Commercial
+- Self-Hostable: No
+- Stars: 37800
+- Description: Application performance monitoring and error tracking with stack trace analysis and release metrics.
+- Install: `npx -y @modelcontextprotocol/server-sentry-error-tracking`
+- Tools: get_issue_details, list_recent_errors, resolve_issue
+- Canonical URL: https://skills.biz.id/en/mcp/sentry-error-tracking
+
+#### SonarQube MCP (`sonarqube-mcp`)
+- Vendor: SonarSource
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 9200
+- Description: Continuous code quality and security inspection tool detecting bugs, vulnerabilities, and code smells.
+- Install: `npx -y @modelcontextprotocol/server-sonarqube-mcp`
+- Tools: get_project_status, list_code_smells, inspect_security_hotspot
+- Canonical URL: https://skills.biz.id/en/mcp/sonarqube-mcp
+
+#### ESLint Engine MCP (`eslint-engine-mcp`)
+- Vendor: OpenJS Foundation
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 25100
+- Description: Configurable JavaScript and TypeScript linter identifying stylistic and semantic inconsistencies.
+- Install: `npx -y @modelcontextprotocol/server-eslint-engine-mcp`
+- Tools: lint_code, suggest_autofix, list_active_rules
+- Canonical URL: https://skills.biz.id/en/mcp/eslint-engine-mcp
+
+#### Ast-grep MCP (`ast-grep-mcp`)
+- Vendor: ast-grep
+- License: Commercial
+- Self-Hostable: No
+- Stars: 7900
+- Description: Fast and easy tool for code searching, linting, and rewriting using abstract syntax tree patterns.
+- Install: `npx -y @modelcontextprotocol/server-ast-grep-mcp`
+- Tools: sg_search, sg_replace, sg_lint
+- Canonical URL: https://skills.biz.id/en/mcp/ast-grep-mcp
+
+#### Dockerfile Linter MCP (`dockerfile-linter-mcp`)
+- Vendor: Hadolint
+- License: Commercial
+- Self-Hostable: No
+- Stars: 9700
+- Description: Haskell Dockerfile linter that enforces best practices in building efficient container images.
+- Install: `npx -y @modelcontextprotocol/server-dockerfile-linter-mcp`
+- Tools: lint_dockerfile, explain_rule
+- Canonical URL: https://skills.biz.id/en/mcp/dockerfile-linter-mcp
+
+#### OpenAPI Spec MCP (`openapi-spec-mcp`)
+- Vendor: SmartBear
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4600
+- Description: Parse, validate, and query OpenAPI 3.x and Swagger documentation files with mock generation.
+- Install: `npx -y @modelcontextprotocol/server-openapi-spec-mcp`
+- Tools: validate_spec, list_endpoints, generate_client_sdk
+- Canonical URL: https://skills.biz.id/en/mcp/openapi-spec-mcp
+
+#### Swagger Hub MCP (`swagger-hub-mcp`)
+- Vendor: SmartBear
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 3100
+- Description: Integrated API design platform syncing corporate API definitions with automated test suites.
+- Install: `npx -y @modelcontextprotocol/server-swagger-hub-mcp`
+- Tools: pull_api_definition, create_version, export_yaml
+- Canonical URL: https://skills.biz.id/en/mcp/swagger-hub-mcp
+
+#### Graphviz Architecture MCP (`graphviz-architecture-mcp`)
+- Vendor: Graphviz
+- License: Commercial
+- Self-Hostable: Yes
+- Stars: 6200
+- Description: Graph visualization software for representing structural information as diagrams of abstract networks.
+- Install: `npx -y @modelcontextprotocol/server-graphviz-architecture-mcp`
+- Tools: render_dot, export_svg, layout_hierarchy
+- Canonical URL: https://skills.biz.id/en/mcp/graphviz-architecture-mcp
+
+#### NPM Registry MCP (`npm-registry-mcp`)
+- Vendor: npm, Inc.
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 5800
+- Description: Query package dependencies, vulnerabilities, download statistics, and published package versions.
+- Install: `npx -y @modelcontextprotocol/server-npm-registry-mcp`
+- Tools: inspect_package, check_security_audit, list_dependencies
+- Canonical URL: https://skills.biz.id/en/mcp/npm-registry-mcp
+
+### Category: Databases & Vector Storage (databases)
+Total Servers: 15
+
+#### Neon Serverless Postgres (`neon-serverless-postgres`)
+- Vendor: Neon
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 16800
+- Description: Serverless PostgreSQL with separation of storage and compute, instant branching, and scaling to zero.
+- Install: `npx -y @modelcontextprotocol/server-neon-serverless-postgres`
+- Tools: run_sql_query, create_branch, list_databases, describe_table
+- Canonical URL: https://skills.biz.id/en/mcp/neon-serverless-postgres
+
+#### Supabase MCP Server (`supabase-mcp-server`)
+- Vendor: Supabase
+- License: Commercial
+- Self-Hostable: No
+- Stars: 74200
+- Description: The open source Firebase alternative. Manage Postgres, Auth, Instant APIs, Realtime, and Storage.
+- Install: `npx -y @modelcontextprotocol/server-supabase-mcp-server`
+- Tools: execute_sql, list_tables, run_migration, inspect_rls
+- Canonical URL: https://skills.biz.id/en/mcp/supabase-mcp-server
+
+#### Qdrant Vector Search (`qdrant-vector-search`)
+- Vendor: Qdrant
+- License: Commercial
+- Self-Hostable: No
+- Stars: 21900
+- Description: Production-ready vector database with extended payload filtering and fast distance metrics.
+- Install: `npx -y @modelcontextprotocol/server-qdrant-vector-search`
+- Tools: search_points, upsert_points, create_collection
+- Canonical URL: https://skills.biz.id/en/mcp/qdrant-vector-search
+
+#### Pinecone Vector MCP (`pinecone-vector-mcp`)
+- Vendor: Pinecone
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4800
+- Description: Managed cloud-native vector database engineered for fast query latency on high-dimensional embeddings.
+- Install: `npx -y @modelcontextprotocol/server-pinecone-vector-mcp`
+- Tools: query_vectors, upsert_records, describe_index_stats
+- Canonical URL: https://skills.biz.id/en/mcp/pinecone-vector-mcp
+
+#### SQLite Database MCP (`sqlite-database-mcp`)
+- Vendor: Model Context Protocol
+- License: Commercial
+- Self-Hostable: No
+- Stars: 9400
+- Description: Official embedded SQL engine for reading and writing local relational database files.
+- Install: `npx -y @modelcontextprotocol/server-sqlite-database-mcp`
+- Tools: read_query, write_query, list_tables, describe_table
+- Canonical URL: https://skills.biz.id/en/mcp/sqlite-database-mcp
+
+#### MongoDB Atlas MCP (`mongodb-atlas-mcp`)
+- Vendor: MongoDB
+- License: Commercial
+- Self-Hostable: No
+- Stars: 25400
+- Description: Developer data platform providing a scalable multi-cloud document database with Atlas Vector Search.
+- Install: `npx -y @modelcontextprotocol/server-mongodb-atlas-mcp`
+- Tools: find_documents, insert_document, run_aggregate
+- Canonical URL: https://skills.biz.id/en/mcp/mongodb-atlas-mcp
+
+#### Weaviate Vector MCP (`weaviate-vector-mcp`)
+- Vendor: Weaviate
+- License: Commercial
+- Self-Hostable: No
+- Stars: 11400
+- Description: Open source vector search engine that stores both objects and vectors with multi-modal capabilities.
+- Install: `npx -y @modelcontextprotocol/server-weaviate-vector-mcp`
+- Tools: hybrid_search, add_batch, explore_concepts
+- Canonical URL: https://skills.biz.id/en/mcp/weaviate-vector-mcp
+
+#### Milvus Vector MCP (`milvus-vector-mcp`)
+- Vendor: Zilliz
+- License: Commercial
+- Self-Hostable: No
+- Stars: 31200
+- Description: Cloud-native, highly-scalable vector database built for trillion-scale vector search pipelines.
+- Install: `npx -y @modelcontextprotocol/server-milvus-vector-mcp`
+- Tools: vector_search, insert_entities, create_index
+- Canonical URL: https://skills.biz.id/en/mcp/milvus-vector-mcp
+
+#### ClickHouse Analytics MCP (`clickhouse-analytics-mcp`)
+- Vendor: ClickHouse
+- License: Commercial
+- Self-Hostable: No
+- Stars: 38700
+- Description: Real-time column-oriented database management system for lightning fast analytical reporting.
+- Install: `npx -y @modelcontextprotocol/server-clickhouse-analytics-mcp`
+- Tools: execute_analytics_query, list_partitions, inspect_system_metrics
+- Canonical URL: https://skills.biz.id/en/mcp/clickhouse-analytics-mcp
+
+#### Redis Cache MCP (`redis-cache-mcp`)
+- Vendor: Redis Labs
+- License: Commercial
+- Self-Hostable: No
+- Stars: 65100
+- Description: In-memory data structure store used as a database, cache, streaming engine, and message broker.
+- Install: `npx -y @modelcontextprotocol/server-redis-cache-mcp`
+- Tools: get_key, set_key, publish_channel, get_hash_all
+- Canonical URL: https://skills.biz.id/en/mcp/redis-cache-mcp
+
+#### PlanetScale MySQL MCP (`planetscale-mysql-mcp`)
+- Vendor: PlanetScale
+- License: Commercial
+- Self-Hostable: No
+- Stars: 12400
+- Description: Serverless MySQL platform powered by Vitess with non-blocking schema migrations.
+- Install: `npx -y @modelcontextprotocol/server-planetscale-mysql-mcp`
+- Tools: run_mysql_query, create_deploy_request, list_branches
+- Canonical URL: https://skills.biz.id/en/mcp/planetscale-mysql-mcp
+
+#### DuckDB Analytic MCP (`duckdb-analytic-mcp`)
+- Vendor: DuckDB
+- License: Commercial
+- Self-Hostable: No
+- Stars: 26500
+- Description: Fast in-process SQL OLAP database management system for processing local Parquet and CSV files.
+- Install: `npx -y @modelcontextprotocol/server-duckdb-analytic-mcp`
+- Tools: query_parquet, run_sql, export_arrow
+- Canonical URL: https://skills.biz.id/en/mcp/duckdb-analytic-mcp
+
+#### CockroachDB MCP (`cockroachdb-mcp`)
+- Vendor: Cockroach Labs
+- License: Commercial
+- Self-Hostable: No
+- Stars: 29800
+- Description: Distributed SQL database engineered for bulletproof scale and global multi-region survivability.
+- Install: `npx -y @modelcontextprotocol/server-cockroachdb-mcp`
+- Tools: execute_distributed_query, inspect_cluster_status
+- Canonical URL: https://skills.biz.id/en/mcp/cockroachdb-mcp
+
+#### SurrealDB MCP (`surrealdb-mcp`)
+- Vendor: SurrealDB
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 27100
+- Description: Multi-model database combining document, graph, and relational features with GraphQL queries.
+- Install: `npx -y @modelcontextprotocol/server-surrealdb-mcp`
+- Tools: surql_query, relate_records, live_stream
+- Canonical URL: https://skills.biz.id/en/mcp/surrealdb-mcp
+
+#### Turso LibSQL MCP (`turso-libsql-mcp`)
+- Vendor: ChiselStrike
+- License: Commercial
+- Self-Hostable: No
+- Stars: 10400
+- Description: Edge-hosted distributed SQLite fork designed for low-latency queries replicated globally.
+- Install: `npx -y @modelcontextprotocol/server-turso-libsql-mcp`
+- Tools: execute_libsql, create_database, sync_replica
+- Canonical URL: https://skills.biz.id/en/mcp/turso-libsql-mcp
+
+### Category: Web Browsing & Autonomous Scraping (browsing)
+Total Servers: 13
+
+#### Playwright Web Browser (`playwright-web-browser`)
+- Vendor: Microsoft
+- License: Open Source
+- Self-Hostable: Yes
+- Stars: 67300
+- Description: Fast, reliable end-to-end automation for Chromium, Firefox, and WebKit with headless execution.
+- Install: `npx -y @modelcontextprotocol/server-playwright-web-browser`
+- Tools: navigate, click_element, fill_input, take_screenshot, evaluate_script
+- Canonical URL: https://skills.biz.id/en/mcp/playwright-web-browser
+
+#### Puppeteer MCP (`puppeteer-mcp`)
+- Vendor: Google Chrome Labs
+- License: Commercial
+- Self-Hostable: No
+- Stars: 89400
+- Description: Node library providing high-level API to control Chrome or Chromium over DevTools Protocol.
+- Install: `npx -y @modelcontextprotocol/server-puppeteer-mcp`
+- Tools: open_page, extract_html, capture_pdf, emulate_device
+- Canonical URL: https://skills.biz.id/en/mcp/puppeteer-mcp
+
+#### Crawl4AI Engine MCP (`crawl4ai-engine-mcp`)
+- Vendor: Unclecode
+- License: Commercial
+- Self-Hostable: No
+- Stars: 23100
+- Description: Open-source LLM-friendly web crawler & scraper designed for extracting structured data directly.
+- Install: `npx -y @modelcontextprotocol/server-crawl4ai-engine-mcp`
+- Tools: crawl_url, extract_markdown, filter_fit_markdown
+- Canonical URL: https://skills.biz.id/en/mcp/crawl4ai-engine-mcp
+
+#### Firecrawl Scraper MCP (`firecrawl-scraper-mcp`)
+- Vendor: Mendable
+- License: Commercial
+- Self-Hostable: No
+- Stars: 18400
+- Description: Turn entire websites into clean LLM-ready markdown or structured data with dynamic JS handling.
+- Install: `npx -y @modelcontextprotocol/server-firecrawl-scraper-mcp`
+- Tools: scrape_url, crawl_site, map_links
+- Canonical URL: https://skills.biz.id/en/mcp/firecrawl-scraper-mcp
+
+#### Brave Search MCP (`brave-search-mcp`)
+- Vendor: Brave Software
+- License: Commercial
+- Self-Hostable: No
+- Stars: 11200
+- Description: Official Brave Search API integration providing independent, privacy-preserving web search index.
+- Install: `npx -y @modelcontextprotocol/server-brave-search-mcp`
+- Tools: brave_web_search, brave_local_search, summarize_results
+- Canonical URL: https://skills.biz.id/en/mcp/brave-search-mcp
+
+#### Fetch HTTP MCP (`fetch-http-mcp`)
+- Vendor: Model Context Protocol
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8700
+- Description: Official MCP reference tool for fetching and parsing web pages into readable Markdown.
+- Install: `npx -y @modelcontextprotocol/server-fetch-http-mcp`
+- Tools: fetch_url, convert_to_markdown
+- Canonical URL: https://skills.biz.id/en/mcp/fetch-http-mcp
+
+#### Tavily AI Search MCP (`tavily-ai-search-mcp`)
+- Vendor: Tavily
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5300
+- Description: Search engine optimized specifically for LLMs and autonomous agents, delivering clean factual snippets.
+- Install: `npx -y @modelcontextprotocol/server-tavily-ai-search-mcp`
+- Tools: tavily_search, tavily_extract, qna_search
+- Canonical URL: https://skills.biz.id/en/mcp/tavily-ai-search-mcp
+
+#### Perplexity Sonar MCP (`perplexity-sonar-mcp`)
+- Vendor: Perplexity AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 7100
+- Description: Real-time web search retrieval with citation-backed conversational answers and source verification.
+- Install: `npx -y @modelcontextprotocol/server-perplexity-sonar-mcp`
+- Tools: search_sonar, get_citations, deep_research
+- Canonical URL: https://skills.biz.id/en/mcp/perplexity-sonar-mcp
+
+#### Exa AI Search MCP (`exa-ai-search-mcp`)
+- Vendor: Exa
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4200
+- Description: Neural search engine that understands concepts instead of just keywords, returning clean HTML content.
+- Install: `npx -y @modelcontextprotocol/server-exa-ai-search-mcp`
+- Tools: neural_search, find_similar_links, get_page_contents
+- Canonical URL: https://skills.biz.id/en/mcp/exa-ai-search-mcp
+
+#### Diffbot Knowledge MCP (`diffbot-knowledge-mcp`)
+- Vendor: Diffbot
+- License: Open Source
+- Self-Hostable: No
+- Stars: 3400
+- Description: Knowledge Graph combining web-wide entity extraction, article parsing, and organizational profiles.
+- Install: `npx -y @modelcontextprotocol/server-diffbot-knowledge-mcp`
+- Tools: extract_article, query_knowledge_graph, analyze_discussion
+- Canonical URL: https://skills.biz.id/en/mcp/diffbot-knowledge-mcp
+
+#### Spider Cloud Scraper (`spider-cloud-scraper`)
+- Vendor: Spider
+- License: Open Source
+- Self-Hostable: No
+- Stars: 2900
+- Description: Fast web scraper that extracts content into markdown or raw html with proxy rotation.
+- Install: `npx -y @modelcontextprotocol/server-spider-cloud-scraper`
+- Tools: crawl_spider, scrape_data, get_download_links
+- Canonical URL: https://skills.biz.id/en/mcp/spider-cloud-scraper
+
+#### Apify Actor MCP (`apify-actor-mcp`)
+- Vendor: Apify
+- License: Commercial
+- Self-Hostable: No
+- Stars: 6400
+- Description: Cloud platform for web scraping and data extraction with over 1,500 ready-made actors.
+- Install: `npx -y @modelcontextprotocol/server-apify-actor-mcp`
+- Tools: run_actor, fetch_dataset_items, get_task_status
+- Canonical URL: https://skills.biz.id/en/mcp/apify-actor-mcp
+
+#### Scrapy Cluster MCP (`scrapy-cluster-mcp`)
+- Vendor: Scrapy Team
+- License: Commercial
+- Self-Hostable: No
+- Stars: 52100
+- Description: Distributed Python web scraping framework for large-scale data crawling across domains.
+- Install: `npx -y @modelcontextprotocol/server-scrapy-cluster-mcp`
+- Tools: dispatch_spider, parse_response, export_item_feed
+- Canonical URL: https://skills.biz.id/en/mcp/scrapy-cluster-mcp
+
+### Category: File Systems & OS Operations (filesystem)
+Total Servers: 11
+
+#### Local Filesystem MCP (`local-filesystem-mcp`)
+- Vendor: Model Context Protocol
+- License: Commercial
+- Self-Hostable: No
+- Stars: 12500
+- Description: Official secure file system operations with granular directory whitelisting and atomic file edits.
+- Install: `npx -y @modelcontextprotocol/server-local-filesystem-mcp`
+- Tools: read_file, write_file, list_directory, move_file, search_files
+- Canonical URL: https://skills.biz.id/en/mcp/local-filesystem-mcp
+
+#### OS Automator MCP (`os-automator-mcp`)
+- Vendor: Anthropic Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4800
+- Description: Cross-platform operating system controller for window management, clipboard, and notifications.
+- Install: `npx -y @modelcontextprotocol/server-os-automator-mcp`
+- Tools: get_clipboard, set_clipboard, show_notification, list_windows
+- Canonical URL: https://skills.biz.id/en/mcp/os-automator-mcp
+
+#### Terminal Shell MCP (`terminal-shell-mcp`)
+- Vendor: Anthropic Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 9100
+- Description: Execute bash or zsh commands in a controlled terminal session with timeout guardrails.
+- Install: `npx -y @modelcontextprotocol/server-terminal-shell-mcp`
+- Tools: execute_command, send_input, kill_process
+- Canonical URL: https://skills.biz.id/en/mcp/terminal-shell-mcp
+
+#### Windows PowerShell MCP (`windows-powershell-mcp`)
+- Vendor: Microsoft Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3600
+- Description: Native Windows automation tool executing PowerShell 7 cmdlets and WMI hardware queries.
+- Install: `npx -y @modelcontextprotocol/server-windows-powershell-mcp`
+- Tools: run_powershell, query_event_log, inspect_registry
+- Canonical URL: https://skills.biz.id/en/mcp/windows-powershell-mcp
+
+#### Google Drive MCP (`google-drive-mcp`)
+- Vendor: Google Workspace
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5400
+- Description: Search, download, and sync Google Docs, Sheets, and cloud folder structures with AI agents.
+- Install: `npx -y @modelcontextprotocol/server-google-drive-mcp`
+- Tools: search_files, download_doc, create_folder, share_permissions
+- Canonical URL: https://skills.biz.id/en/mcp/google-drive-mcp
+
+#### AWS S3 Storage MCP (`aws-s3-storage-mcp`)
+- Vendor: Amazon Web Services
+- License: Commercial
+- Self-Hostable: No
+- Stars: 14200
+- Description: Scalable cloud object storage operations for uploading, downloading, and inspecting S3 buckets.
+- Install: `npx -y @modelcontextprotocol/server-aws-s3-storage-mcp`
+- Tools: upload_object, get_object, list_buckets, generate_presigned_url
+- Canonical URL: https://skills.biz.id/en/mcp/aws-s3-storage-mcp
+
+#### Cloudflare R2 MCP (`cloudflare-r2-mcp`)
+- Vendor: Cloudflare
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3900
+- Description: Zero egress fee S3-compatible object storage with global edge replication for model checkpoints.
+- Install: `npx -y @modelcontextprotocol/server-cloudflare-r2-mcp`
+- Tools: put_object, get_object_metadata, delete_object
+- Canonical URL: https://skills.biz.id/en/mcp/cloudflare-r2-mcp
+
+#### MinIO Object Storage (`minio-object-storage`)
+- Vendor: MinIO
+- License: Open Source
+- Self-Hostable: No
+- Stars: 47200
+- Description: High-performance S3-compatible object storage server built for Kubernetes and edge cloud.
+- Install: `npx -y @modelcontextprotocol/server-minio-object-storage`
+- Tools: mc_cp, mc_ls, mc_admin_info
+- Canonical URL: https://skills.biz.id/en/mcp/minio-object-storage
+
+#### Dropbox Cloud MCP (`dropbox-cloud-mcp`)
+- Vendor: Dropbox
+- License: Commercial
+- Self-Hostable: No
+- Stars: 2100
+- Description: Interact with corporate Dropbox team folders, paper documents, and shared links.
+- Install: `npx -y @modelcontextprotocol/server-dropbox-cloud-mcp`
+- Tools: list_folder, download_file, upload_file
+- Canonical URL: https://skills.biz.id/en/mcp/dropbox-cloud-mcp
+
+#### Box Storage MCP (`box-storage-mcp`)
+- Vendor: Box
+- License: Commercial
+- Self-Hostable: No
+- Stars: 1900
+- Description: Enterprise content management platform integration with granular access control compliance.
+- Install: `npx -y @modelcontextprotocol/server-box-storage-mcp`
+- Tools: get_file_info, search_box, create_collaboration
+- Canonical URL: https://skills.biz.id/en/mcp/box-storage-mcp
+
+#### OneDrive MCP (`onedrive-mcp`)
+- Vendor: Microsoft
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3200
+- Description: Access Microsoft 365 OneDrive personal and business cloud storage seamlessly.
+- Install: `npx -y @modelcontextprotocol/server-onedrive-mcp`
+- Tools: list_children, get_drive_item, upload_stream
+- Canonical URL: https://skills.biz.id/en/mcp/onedrive-mcp
+
+### Category: AI Models & Gateway Routers (ai-gateways)
+Total Servers: 12
+
+#### OpenAI Platform MCP (`openai-platform-mcp`)
+- Vendor: OpenAI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 35000
+- Description: Direct access to GPT-4o, o1, o3-mini models, assistants API, and embedding generation.
+- Install: `npx -y @modelcontextprotocol/server-openai-platform-mcp`
+- Tools: chat_completion, create_embeddings, generate_image, transcribe_audio
+- Canonical URL: https://skills.biz.id/en/mcp/openai-platform-mcp
+
+#### Anthropic Claude MCP (`anthropic-claude-mcp`)
+- Vendor: Anthropic
+- License: Commercial
+- Self-Hostable: No
+- Stars: 29000
+- Description: Claude 3.7 Sonnet, Haiku, and Opus models with native prompt caching and extended thinking.
+- Install: `npx -y @modelcontextprotocol/server-anthropic-claude-mcp`
+- Tools: messages_create, count_tokens, batch_processing
+- Canonical URL: https://skills.biz.id/en/mcp/anthropic-claude-mcp
+
+#### Ollama Local Models (`ollama-local-models`)
+- Vendor: Ollama
+- License: Commercial
+- Self-Hostable: No
+- Stars: 114500
+- Description: Run open source LLMs like Llama 3.3, Mistral, and DeepSeek locally on CPU and consumer GPUs.
+- Install: `npx -y @modelcontextprotocol/server-ollama-local-models`
+- Tools: generate_completion, chat, pull_model, list_running
+- Canonical URL: https://skills.biz.id/en/mcp/ollama-local-models
+
+#### OpenRouter Multi-Model (`openrouter-multi-model`)
+- Vendor: OpenRouter
+- License: Commercial
+- Self-Hostable: No
+- Stars: 9400
+- Description: Unified API gateway to over 200 AI models with fallback routing, price comparison, and rate smoothing.
+- Install: `npx -y @modelcontextprotocol/server-openrouter-multi-model`
+- Tools: query_model, list_available_models, get_generation_stats
+- Canonical URL: https://skills.biz.id/en/mcp/openrouter-multi-model
+
+#### LiteLLM Proxy MCP (`litellm-proxy-mcp`)
+- Vendor: BerriAI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 19800
+- Description: Call 100+ LLMs using OpenAI format with unified key management, spend tracking, and load balancing.
+- Install: `npx -y @modelcontextprotocol/server-litellm-proxy-mcp`
+- Tools: route_completion, get_user_spend, rotate_api_key
+- Canonical URL: https://skills.biz.id/en/mcp/litellm-proxy-mcp
+
+#### vLLM High-Throughput (`vllm-high-throughput`)
+- Vendor: vLLM Project
+- License: Commercial
+- Self-Hostable: No
+- Stars: 37400
+- Description: Ultra-fast LLM serving engine with continuous batching and PagedAttention for production clusters.
+- Install: `npx -y @modelcontextprotocol/server-vllm-high-throughput`
+- Tools: submit_inference, get_engine_metrics, abort_request
+- Canonical URL: https://skills.biz.id/en/mcp/vllm-high-throughput
+
+#### ByNara AI Router (`bynara-ai-router`)
+- Vendor: ByNara Indonesia
+- License: Commercial
+- Self-Hostable: No
+- Stars: 2400
+- Description: High-performance Indonesian AI routing platform connecting Claude, GPT, DeepSeek, and local LLMs.
+- Install: `npx -y @modelcontextprotocol/server-bynara-ai-router`
+- Tools: chat_completion, list_models, get_wallet_balance
+- Canonical URL: https://skills.biz.id/en/mcp/bynara-ai-router
+
+#### Sumopod AI Gateway (`sumopod-ai-gateway`)
+- Vendor: Sumopod
+- License: Commercial
+- Self-Hostable: No
+- Stars: 1800
+- Description: High-speed inference provider supporting deepseek-v4.1-flash and specialized coding models.
+- Install: `npx -y @modelcontextprotocol/server-sumopod-ai-gateway`
+- Tools: completions, test_endpoint_latency
+- Canonical URL: https://skills.biz.id/en/mcp/sumopod-ai-gateway
+
+#### Groq LPU Inference (`groq-lpu-inference`)
+- Vendor: Groq
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8900
+- Description: Ultra-fast inference engine powered by custom LPU hardware delivering up to 800 tokens/sec.
+- Install: `npx -y @modelcontextprotocol/server-groq-lpu-inference`
+- Tools: fast_chat_completion, model_info
+- Canonical URL: https://skills.biz.id/en/mcp/groq-lpu-inference
+
+#### Together AI MCP (`together-ai-mcp`)
+- Vendor: Together AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 6200
+- Description: Cloud inference platform for open models with custom LoRA fine-tuning and fast token throughput.
+- Install: `npx -y @modelcontextprotocol/server-together-ai-mcp`
+- Tools: chat_together, image_generation, list_fine_tunes
+- Canonical URL: https://skills.biz.id/en/mcp/together-ai-mcp
+
+#### Mistral AI MCP (`mistral-ai-mcp`)
+- Vendor: Mistral AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 11200
+- Description: Frontier open-weights models including Mistral Large, Codestral, and Pixtral vision models.
+- Install: `npx -y @modelcontextprotocol/server-mistral-ai-mcp`
+- Tools: chat_mistral, create_embeddings, fim_completion
+- Canonical URL: https://skills.biz.id/en/mcp/mistral-ai-mcp
+
+#### DeepSeek Cloud MCP (`deepseek-cloud-mcp`)
+- Vendor: DeepSeek AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 24500
+- Description: Next-generation reasoning and coding models with DeepSeek R1 and DeepSeek V3 architecture.
+- Install: `npx -y @modelcontextprotocol/server-deepseek-cloud-mcp`
+- Tools: reasoning_completion, code_completion
+- Canonical URL: https://skills.biz.id/en/mcp/deepseek-cloud-mcp
+
+### Category: Communication & Collaboration (collaboration)
+Total Servers: 12
+
+#### Slack Workspace MCP (`slack-workspace-mcp`)
+- Vendor: Slack Technologies
+- License: Commercial
+- Self-Hostable: No
+- Stars: 7600
+- Description: Read channels, send rich BlockKit messages, manage reactions, and notify teams automatically.
+- Install: `npx -y @modelcontextprotocol/server-slack-workspace-mcp`
+- Tools: post_message, list_channels, get_thread_replies, add_reaction
+- Canonical URL: https://skills.biz.id/en/mcp/slack-workspace-mcp
+
+#### Discord Community MCP (`discord-community-mcp`)
+- Vendor: Discord
+- License: Commercial
+- Self-Hostable: No
+- Stars: 6800
+- Description: Send alerts, interact with community members, manage server roles, and respond to mentions.
+- Install: `npx -y @modelcontextprotocol/server-discord-community-mcp`
+- Tools: send_message, get_channel_messages, list_guilds
+- Canonical URL: https://skills.biz.id/en/mcp/discord-community-mcp
+
+#### Notion Docs MCP (`notion-docs-mcp`)
+- Vendor: Notion Labs
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8900
+- Description: Create shared team documentation, update status boards, and query corporate wikis.
+- Install: `npx -y @modelcontextprotocol/server-notion-docs-mcp`
+- Tools: create_page, update_block, query_database, retrieve_comments
+- Canonical URL: https://skills.biz.id/en/mcp/notion-docs-mcp
+
+#### Linear Issues MCP (`linear-issues-mcp`)
+- Vendor: Linear
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5400
+- Description: Streamline project management with fast issue creation, cycle tracking, and roadmaps.
+- Install: `npx -y @modelcontextprotocol/server-linear-issues-mcp`
+- Tools: create_issue, update_issue, list_projects, search_issues
+- Canonical URL: https://skills.biz.id/en/mcp/linear-issues-mcp
+
+#### Jira Atlassian MCP (`jira-atlassian-mcp`)
+- Vendor: Atlassian
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4900
+- Description: Enterprise issue tracking, sprint planning, and backlog grooming with full workflow transitions.
+- Install: `npx -y @modelcontextprotocol/server-jira-atlassian-mcp`
+- Tools: create_jira_issue, transition_issue, get_sprint_backlog
+- Canonical URL: https://skills.biz.id/en/mcp/jira-atlassian-mcp
+
+#### Google Calendar MCP (`google-calendar-mcp`)
+- Vendor: Google Workspace
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4200
+- Description: Schedule meetings, inspect team availability, update invites, and manage work calendars.
+- Install: `npx -y @modelcontextprotocol/server-google-calendar-mcp`
+- Tools: create_event, list_events, check_freebusy, delete_event
+- Canonical URL: https://skills.biz.id/en/mcp/google-calendar-mcp
+
+#### Resend Transactional Email (`resend-transactional-email`)
+- Vendor: Resend
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8100
+- Description: Developer-first email platform for sending transactional notifications, receipts, and newsletters.
+- Install: `npx -y @modelcontextprotocol/server-resend-transactional-email`
+- Tools: send_email, get_email_status, list_domains
+- Canonical URL: https://skills.biz.id/en/mcp/resend-transactional-email
+
+#### Gmail Workspace MCP (`gmail-workspace-mcp`)
+- Vendor: Google Workspace
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5800
+- Description: Search inbox, draft emails, organize labels, and automate support correspondences.
+- Install: `npx -y @modelcontextprotocol/server-gmail-workspace-mcp`
+- Tools: send_draft, search_emails, get_message, apply_label
+- Canonical URL: https://skills.biz.id/en/mcp/gmail-workspace-mcp
+
+#### GitHub Issues MCP (`github-issues-mcp`)
+- Vendor: GitHub
+- License: Commercial
+- Self-Hostable: No
+- Stars: 6200
+- Description: Collaborate on open source and private repositories with automated issue triage and milestone management.
+- Install: `npx -y @modelcontextprotocol/server-github-issues-mcp`
+- Tools: create_issue, comment_on_issue, assign_milestone
+- Canonical URL: https://skills.biz.id/en/mcp/github-issues-mcp
+
+#### Asana Project MCP (`asana-project-mcp`)
+- Vendor: Asana
+- License: Commercial
+- Self-Hostable: No
+- Stars: 2800
+- Description: Work management platform helping teams orchestrate tasks, goals, and project timelines.
+- Install: `npx -y @modelcontextprotocol/server-asana-project-mcp`
+- Tools: create_task, get_project_tasks, update_task_status
+- Canonical URL: https://skills.biz.id/en/mcp/asana-project-mcp
+
+#### Zendesk Support MCP (`zendesk-support-mcp`)
+- Vendor: Zendesk
+- License: Commercial
+- Self-Hostable: No
+- Stars: 2100
+- Description: Customer service platform for resolving support tickets, managing macros, and reading user histories.
+- Install: `npx -y @modelcontextprotocol/server-zendesk-support-mcp`
+- Tools: create_ticket, get_ticket_comments, update_ticket_status
+- Canonical URL: https://skills.biz.id/en/mcp/zendesk-support-mcp
+
+#### ClickUp Tasks MCP (`clickup-tasks-mcp`)
+- Vendor: ClickUp
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3500
+- Description: Productivity platform for tasks, docs, chat, goals, and collaborative whiteboard workflows.
+- Install: `npx -y @modelcontextprotocol/server-clickup-tasks-mcp`
+- Tools: create_clickup_task, get_list_tasks, set_due_date
+- Canonical URL: https://skills.biz.id/en/mcp/clickup-tasks-mcp
+
+### Category: Search & Knowledge Retrieval (search)
+Total Servers: 11
+
+#### Context7 Documentation (`context7-documentation`)
+- Vendor: Context7 AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 4800
+- Description: Verified framework documentation retrieval engine providing real-time up-to-date library references.
+- Install: `npx -y @modelcontextprotocol/server-context7-documentation`
+- Tools: search_documentation, get_library_api, list_supported_packages
+- Canonical URL: https://skills.biz.id/en/mcp/context7-documentation
+
+#### DevDocs Library MCP (`devdocs-library-mcp`)
+- Vendor: DevDocs Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 34100
+- Description: Fast, organized, and unified API documentation search for 100+ open source languages and frameworks.
+- Install: `npx -y @modelcontextprotocol/server-devdocs-library-mcp`
+- Tools: search_docs, get_entry_content, list_docsets
+- Canonical URL: https://skills.biz.id/en/mcp/devdocs-library-mcp
+
+#### ArXiv Research MCP (`arxiv-research-mcp`)
+- Vendor: Cornell University
+- License: Commercial
+- Self-Hostable: No
+- Stars: 6700
+- Description: Query open-access archive for 2+ million scientific research articles across AI, CS, and mathematics.
+- Install: `npx -y @modelcontextprotocol/server-arxiv-research-mcp`
+- Tools: search_papers, download_pdf_abstract, get_author_works
+- Canonical URL: https://skills.biz.id/en/mcp/arxiv-research-mcp
+
+#### Wikipedia Knowledge MCP (`wikipedia-knowledge-mcp`)
+- Vendor: Wikimedia Foundation
+- License: Open Source
+- Self-Hostable: No
+- Stars: 12400
+- Description: Access millions of encyclopedia articles, summaries, infoboxes, and citations in all languages.
+- Install: `npx -y @modelcontextprotocol/server-wikipedia-knowledge-mcp`
+- Tools: search_articles, get_page_summary, get_full_text
+- Canonical URL: https://skills.biz.id/en/mcp/wikipedia-knowledge-mcp
+
+#### DuckDuckGo Search MCP (`duckduckgo-search-mcp`)
+- Vendor: DuckDuckGo Community
+- License: Commercial
+- Self-Hostable: No
+- Stars: 7800
+- Description: Private web search without tracker profiles, returning clean Instant Answers and search results.
+- Install: `npx -y @modelcontextprotocol/server-duckduckgo-search-mcp`
+- Tools: duckduckgo_search, get_instant_answer
+- Canonical URL: https://skills.biz.id/en/mcp/duckduckgo-search-mcp
+
+#### Elasticsearch Cluster (`elasticsearch-cluster`)
+- Vendor: Elastic
+- License: Commercial
+- Self-Hostable: No
+- Stars: 69200
+- Description: Distributed search and analytics engine for structured text, numerical data, and geospatial metrics.
+- Install: `npx -y @modelcontextprotocol/server-elasticsearch-cluster`
+- Tools: execute_search, match_query, aggregate_data
+- Canonical URL: https://skills.biz.id/en/mcp/elasticsearch-cluster
+
+#### Algolia Search MCP (`algolia-search-mcp`)
+- Vendor: Algolia
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8400
+- Description: High-speed hosted search API engine built for e-commerce catalogs and documentation sites.
+- Install: `npx -y @modelcontextprotocol/server-algolia-search-mcp`
+- Tools: search_index, save_objects, delete_by_query
+- Canonical URL: https://skills.biz.id/en/mcp/algolia-search-mcp
+
+#### Meilisearch Engine MCP (`meilisearch-engine-mcp`)
+- Vendor: Meilisearch
+- License: Commercial
+- Self-Hostable: No
+- Stars: 46800
+- Description: Lightning-fast, hyper-relevant, and typo-tolerant search engine designed for developer apps.
+- Install: `npx -y @modelcontextprotocol/server-meilisearch-engine-mcp`
+- Tools: search_documents, add_documents, get_task
+- Canonical URL: https://skills.biz.id/en/mcp/meilisearch-engine-mcp
+
+#### Semantic Scholar MCP (`semantic-scholar-mcp`)
+- Vendor: Allen Institute for AI
+- License: Commercial
+- Self-Hostable: No
+- Stars: 5100
+- Description: AI-powered research tool for scientific literature with citation graph and influence scoring.
+- Install: `npx -y @modelcontextprotocol/server-semantic-scholar-mcp`
+- Tools: search_scholarly_papers, get_paper_citations, find_influential_references
+- Canonical URL: https://skills.biz.id/en/mcp/semantic-scholar-mcp
+
+#### StackOverflow Answers (`stackoverflow-answers`)
+- Vendor: Stack Exchange
+- License: Commercial
+- Self-Hostable: No
+- Stars: 8900
+- Description: Search millions of developer technical questions, accepted answers, code snippets, and tags.
+- Install: `npx -y @modelcontextprotocol/server-stackoverflow-answers`
+- Tools: search_questions, get_answers, get_question_by_id
+- Canonical URL: https://skills.biz.id/en/mcp/stackoverflow-answers
+
+#### PubMed Medical MCP (`pubmed-medical-mcp`)
+- Vendor: NCBI / NIH
+- License: Commercial
+- Self-Hostable: No
+- Stars: 3800
+- Description: Biomedical literature search engine containing over 36 million citations from MEDLINE and life science journals.
+- Install: `npx -y @modelcontextprotocol/server-pubmed-medical-mcp`
+- Tools: search_pubmed, get_article_abstract, fetch_mesh_terms
+- Canonical URL: https://skills.biz.id/en/mcp/pubmed-medical-mcp
+
+## Top 100 Trending Open Source Repositories
+
+### #1 codecrafters-io/build-your-own-x
+- Language: Markdown
+- Stars: 555647 | Forks: 52033
+- Description: Master programming by recreating your favorite technologies from scratch.
+- Clone HTTPS: git clone https://github.com/codecrafters-io/build-your-own-x.git
+- Clone CLI: gh repo clone codecrafters-io/build-your-own-x
+- Canonical URL: https://skills.biz.id/en/trending/codecrafters-io/build-your-own-x
+
+### #1 sindresorhus/awesome
+- Language: Plain Text
+- Stars: 523497 | Forks: 37702
+- Description: 😎 Awesome lists about all kinds of interesting topics [NOTE: Pull requests are temporarily disabled until I have a chance to catch up with the existing ones]
+- Clone HTTPS: git clone https://github.com/sindresorhus/awesome.git
+- Clone CLI: gh repo clone sindresorhus/awesome
+- Canonical URL: https://skills.biz.id/en/trending/sindresorhus/awesome
+
+### #1 public-apis/public-apis
+- Language: Python
+- Stars: 491605 | Forks: 54691
+- Description: A collective list of free APIs
+- Clone HTTPS: git clone https://github.com/public-apis/public-apis.git
+- Clone CLI: gh repo clone public-apis/public-apis
+- Canonical URL: https://skills.biz.id/en/trending/public-apis/public-apis
+
+### #1 freeCodeCamp/freeCodeCamp
+- Language: TypeScript
+- Stars: 457770 | Forks: 49354
+- Description: freeCodeCamp.org's open-source codebase and curriculum. Learn math, programming, and computer science for free.
+- Clone HTTPS: git clone https://github.com/freeCodeCamp/freeCodeCamp.git
+- Clone CLI: gh repo clone freeCodeCamp/freeCodeCamp
+- Canonical URL: https://skills.biz.id/en/trending/freeCodeCamp/freeCodeCamp
+
+### #1 EbookFoundation/free-programming-books
+- Language: Python
+- Stars: 399905 | Forks: 66968
+- Description: :books: Freely available programming books
+- Clone HTTPS: git clone https://github.com/EbookFoundation/free-programming-books.git
+- Clone CLI: gh repo clone EbookFoundation/free-programming-books
+- Canonical URL: https://skills.biz.id/en/trending/EbookFoundation/free-programming-books
+
+### #1 openclaw/openclaw
+- Language: TypeScript
+- Stars: 392853 | Forks: 82571
+- Description: The AI that really does things. Any OS. Any Platform. The lobster way. 🦞 
+- Clone HTTPS: git clone https://github.com/openclaw/openclaw.git
+- Clone CLI: gh repo clone openclaw/openclaw
+- Canonical URL: https://skills.biz.id/en/trending/openclaw/openclaw
+
+### #1 donnemartin/system-design-primer
+- Language: Python
+- Stars: 375301 | Forks: 58950
+- Description: Learn how to design large-scale systems. Prep for the system design interview.  Includes Anki flashcards.
+- Clone HTTPS: git clone https://github.com/donnemartin/system-design-primer.git
+- Clone CLI: gh repo clone donnemartin/system-design-primer
+- Canonical URL: https://skills.biz.id/en/trending/donnemartin/system-design-primer
+
+### #1 morluto/rea
+- Language: TypeScript
+- Stars: 371444 | Forks: 93030
+- Description: Reverse engineer anything with agents, from app behavior down to native binaries.
+- Clone HTTPS: git clone https://github.com/morluto/rea.git
+- Clone CLI: gh repo clone morluto/rea
+- Canonical URL: https://skills.biz.id/en/trending/morluto/rea
+
+### #1 nilbuild/developer-roadmap
+- Language: TypeScript
+- Stars: 370215 | Forks: 45132
+- Description: Interactive roadmaps, guides and other educational content to help developers grow in their careers.
+- Clone HTTPS: git clone https://github.com/nilbuild/developer-roadmap.git
+- Clone CLI: gh repo clone nilbuild/developer-roadmap
+- Canonical URL: https://skills.biz.id/en/trending/nilbuild/developer-roadmap
+
+### #1 jwasham/coding-interview-university
+- Language: Plain Text
+- Stars: 363297 | Forks: 85036
+- Description: A complete computer science study plan to become a software engineer.
+- Clone HTTPS: git clone https://github.com/jwasham/coding-interview-university.git
+- Clone CLI: gh repo clone jwasham/coding-interview-university
+- Canonical URL: https://skills.biz.id/en/trending/jwasham/coding-interview-university
+
+### #1 vinta/awesome-python
+- Language: Python
+- Stars: 329665 | Forks: 28979
+- Description: The definitive list that answers "I want to do X in Python, which tool should I use?"
+- Clone HTTPS: git clone https://github.com/vinta/awesome-python.git
+- Clone CLI: gh repo clone vinta/awesome-python
+- Canonical URL: https://skills.biz.id/en/trending/vinta/awesome-python
+
+### #1 awesome-selfhosted/awesome-selfhosted
+- Language: Plain Text
+- Stars: 329596 | Forks: 15491
+- Description: A list of Free Software network services and web applications which can be hosted on your own servers
+- Clone HTTPS: git clone https://github.com/awesome-selfhosted/awesome-selfhosted.git
+- Clone CLI: gh repo clone awesome-selfhosted/awesome-selfhosted
+- Canonical URL: https://skills.biz.id/en/trending/awesome-selfhosted/awesome-selfhosted
+
+### #1 obra/superpowers
+- Language: Shell
+- Stars: 304095 | Forks: 27090
+- Description: An agentic skills framework & software development methodology that works.
+- Clone HTTPS: git clone https://github.com/obra/superpowers.git
+- Clone CLI: gh repo clone obra/superpowers
+- Canonical URL: https://skills.biz.id/en/trending/obra/superpowers
+
+### #1 mattpocock/skills
+- Language: Shell
+- Stars: 301585 | Forks: 25348
+- Description: Skills for Real Engineers. Straight from my .agents directory.
+- Clone HTTPS: git clone https://github.com/mattpocock/skills.git
+- Clone CLI: gh repo clone mattpocock/skills
+- Canonical URL: https://skills.biz.id/en/trending/mattpocock/skills
+
+### #1 practical-tutorials/project-based-learning
+- Language: Python
+- Stars: 287706 | Forks: 36693
+- Description: Curated list of project-based tutorials
+- Clone HTTPS: git clone https://github.com/practical-tutorials/project-based-learning.git
+- Clone CLI: gh repo clone practical-tutorials/project-based-learning
+- Canonical URL: https://skills.biz.id/en/trending/practical-tutorials/project-based-learning
+
+### #1 affaan-m/ECC
+- Language: JavaScript
+- Stars: 287079 | Forks: 42577
+- Description: The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.
+- Clone HTTPS: git clone https://github.com/affaan-m/ECC.git
+- Clone CLI: gh repo clone affaan-m/ECC
+- Canonical URL: https://skills.biz.id/en/trending/affaan-m/ECC
+
+### #1 996icu/996.ICU
+- Language: Plain Text
+- Stars: 277159 | Forks: 20675
+- Description: Repo for counting stars and contributing. Press F to pay respect to glorious developers.
+- Clone HTTPS: git clone https://github.com/996icu/996.ICU.git
+- Clone CLI: gh repo clone 996icu/996.ICU
+- Canonical URL: https://skills.biz.id/en/trending/996icu/996.ICU
+
+### #1 deepseek-ai/deepseek-harness
+- Language: TypeScript
+- Stars: 259255 | Forks: 31297
+- Description: DeepSeek Harness: Everything is a Plugin.
+- Clone HTTPS: git clone https://github.com/deepseek-ai/deepseek-harness.git
+- Clone CLI: gh repo clone deepseek-ai/deepseek-harness
+- Canonical URL: https://skills.biz.id/en/trending/deepseek-ai/deepseek-harness
+
+### #1 NousResearch/hermes-agent
+- Language: Python
+- Stars: 256462 | Forks: 56048
+- Description: The agent that grows with you
+- Clone HTTPS: git clone https://github.com/NousResearch/hermes-agent.git
+- Clone CLI: gh repo clone NousResearch/hermes-agent
+- Canonical URL: https://skills.biz.id/en/trending/NousResearch/hermes-agent
+
+### #1 torvalds/linux
+- Language: C
+- Stars: 253274 | Forks: 68147
+- Description: Linux kernel source tree
+- Clone HTTPS: git clone https://github.com/torvalds/linux.git
+- Clone CLI: gh repo clone torvalds/linux
+- Canonical URL: https://skills.biz.id/en/trending/torvalds/linux
+
+### #1 trimstray/the-book-of-secret-knowledge
+- Language: Plain Text
+- Stars: 252598 | Forks: 14606
+- Description: A collection of inspiring lists, manuals, cheatsheets, blogs, hacks, one-liners, cli/web tools and more.
+- Clone HTTPS: git clone https://github.com/trimstray/the-book-of-secret-knowledge.git
+- Clone CLI: gh repo clone trimstray/the-book-of-secret-knowledge
+- Canonical URL: https://skills.biz.id/en/trending/trimstray/the-book-of-secret-knowledge
+
+### #1 react/react
+- Language: JavaScript
+- Stars: 251718 | Forks: 51568
+- Description: The library for web and native user interfaces.
+- Clone HTTPS: git clone https://github.com/react/react.git
+- Clone CLI: gh repo clone react/react
+- Canonical URL: https://skills.biz.id/en/trending/react/react
+
+### #1 TheAlgorithms/Python
+- Language: Python
+- Stars: 225485 | Forks: 51208
+- Description: All Algorithms implemented in Python
+- Clone HTTPS: git clone https://github.com/TheAlgorithms/Python.git
+- Clone CLI: gh repo clone TheAlgorithms/Python
+- Canonical URL: https://skills.biz.id/en/trending/TheAlgorithms/Python
+
+### #1 multica-ai/andrej-karpathy-skills
+- Language: Plain Text
+- Stars: 222815 | Forks: 22333
+- Description: A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfalls.
+- Clone HTTPS: git clone https://github.com/multica-ai/andrej-karpathy-skills.git
+- Clone CLI: gh repo clone multica-ai/andrej-karpathy-skills
+- Canonical URL: https://skills.biz.id/en/trending/multica-ai/andrej-karpathy-skills
+
+### #1 anomalyco/opencode
+- Language: TypeScript
+- Stars: 220503 | Forks: 29490
+- Description: The open source coding agent.
+- Clone HTTPS: git clone https://github.com/anomalyco/opencode.git
+- Clone CLI: gh repo clone anomalyco/opencode
+- Canonical URL: https://skills.biz.id/en/trending/anomalyco/opencode
+
+### #1 vuejs/vue
+- Language: TypeScript
+- Stars: 212629 | Forks: 33615
+- Description: This is the repo for Vue 2. For Vue 3, go to https://github.com/vuejs/core
+- Clone HTTPS: git clone https://github.com/vuejs/vue.git
+- Clone CLI: gh repo clone vuejs/vue
+- Canonical URL: https://skills.biz.id/en/trending/vuejs/vue
+
+### #1 ossu/computer-science
+- Language: HTML
+- Stars: 210263 | Forks: 26007
+- Description: 🎓 Path to a free self-taught education in Computer Science!
+- Clone HTTPS: git clone https://github.com/ossu/computer-science.git
+- Clone CLI: gh repo clone ossu/computer-science
+- Canonical URL: https://skills.biz.id/en/trending/ossu/computer-science
+
+### #1 n8n-io/n8n
+- Language: TypeScript
+- Stars: 208393 | Forks: 61213
+- Description: Fair-code workflow automation platform with native AI capabilities. Combine visual building with custom code, self-host or cloud, 400+ integrations.
+- Clone HTTPS: git clone https://github.com/n8n-io/n8n.git
+- Clone CLI: gh repo clone n8n-io/n8n
+- Canonical URL: https://skills.biz.id/en/trending/n8n-io/n8n
+
+### #1 DigitalPlatDev/FreeDomain
+- Language: Markdown
+- Stars: 205494 | Forks: 4560
+- Description: Free domain registration and practical DNS learning resources for everyone.
+- Clone HTTPS: git clone https://github.com/DigitalPlatDev/FreeDomain.git
+- Clone CLI: gh repo clone DigitalPlatDev/FreeDomain
+- Canonical URL: https://skills.biz.id/en/trending/DigitalPlatDev/FreeDomain
+
+### #1 tensorflow/tensorflow
+- Language: C++
+- Stars: 201195 | Forks: 79398
+- Description: An Open Source Machine Learning Framework for Everyone
+- Clone HTTPS: git clone https://github.com/tensorflow/tensorflow.git
+- Clone CLI: gh repo clone tensorflow/tensorflow
+- Canonical URL: https://skills.biz.id/en/trending/tensorflow/tensorflow
+
+### #1 yt-dlp/yt-dlp
+- Language: Python
+- Stars: 200818 | Forks: 17521
+- Description: A feature-rich command-line audio/video downloader
+- Clone HTTPS: git clone https://github.com/yt-dlp/yt-dlp.git
+- Clone CLI: gh repo clone yt-dlp/yt-dlp
+- Canonical URL: https://skills.biz.id/en/trending/yt-dlp/yt-dlp
+
+### #1 trekhleb/javascript-algorithms
+- Language: JavaScript
+- Stars: 196691 | Forks: 30989
+- Description: 📝 Algorithms and data structures implemented in JavaScript with explanations and links to further readings
+- Clone HTTPS: git clone https://github.com/trekhleb/javascript-algorithms.git
+- Clone CLI: gh repo clone trekhleb/javascript-algorithms
+- Canonical URL: https://skills.biz.id/en/trending/trekhleb/javascript-algorithms
+
+### #1 massgravel/Microsoft-Activation-Scripts
+- Language: Batchfile
+- Stars: 195699 | Forks: 18547
+- Description: Open-source Windows and Office activator featuring HWID, Ohook, TSforge, and Online KMS activation methods, along with advanced troubleshooting.
+- Clone HTTPS: git clone https://github.com/massgravel/Microsoft-Activation-Scripts.git
+- Clone CLI: gh repo clone massgravel/Microsoft-Activation-Scripts
+- Canonical URL: https://skills.biz.id/en/trending/massgravel/Microsoft-Activation-Scripts
+
+### #1 ultraworkers/claw-code
+- Language: Rust
+- Stars: 195070 | Forks: 107810
+- Description: An agent-managed museum exhibit, built in Rust with Gajae-Code / LazyCodex — developed and maintained with no human intervention.
+- Clone HTTPS: git clone https://github.com/ultraworkers/claw-code.git
+- Clone CLI: gh repo clone ultraworkers/claw-code
+- Canonical URL: https://skills.biz.id/en/trending/ultraworkers/claw-code
+
+### #1 firecrawl/firecrawl
+- Language: TypeScript
+- Stars: 194564 | Forks: 10269
+- Description: Supercharge your AI agents with data from the web and beyond. Building the library for superintelligence. 🔥
+- Clone HTTPS: git clone https://github.com/firecrawl/firecrawl.git
+- Clone CLI: gh repo clone firecrawl/firecrawl
+- Canonical URL: https://skills.biz.id/en/trending/firecrawl/firecrawl
+
+### #1 microsoft/vscode
+- Language: TypeScript
+- Stars: 194243 | Forks: 45574
+- Description: Visual Studio Code
+- Clone HTTPS: git clone https://github.com/microsoft/vscode.git
+- Clone CLI: gh repo clone microsoft/vscode
+- Canonical URL: https://skills.biz.id/en/trending/microsoft/vscode
+
+### #1 microsoft/markitdown
+- Language: Python
+- Stars: 191787 | Forks: 14298
+- Description: Python tool for converting files and office documents to Markdown.
+- Clone HTTPS: git clone https://github.com/microsoft/markitdown.git
+- Clone CLI: gh repo clone microsoft/markitdown
+- Canonical URL: https://skills.biz.id/en/trending/microsoft/markitdown
+
+### #1 ohmyzsh/ohmyzsh
+- Language: Shell
+- Stars: 190141 | Forks: 29373
+- Description: 🙃   A delightful community-driven (with 2,500+ contributors) framework for managing your zsh configuration. Includes 300+ optional plugins (rails, git, macOS, hub, docker, homebrew, node, php, python, etc), 140+ themes to spice up your morning, and an auto-update tool that makes it easy to keep up with the latest updates from the community.
+- Clone HTTPS: git clone https://github.com/ohmyzsh/ohmyzsh.git
+- Clone CLI: gh repo clone ohmyzsh/ohmyzsh
+- Canonical URL: https://skills.biz.id/en/trending/ohmyzsh/ohmyzsh
+
+### #1 avelino/awesome-go
+- Language: Go
+- Stars: 189938 | Forks: 13652
+- Description: A curated list of awesome Go frameworks, libraries and software
+- Clone HTTPS: git clone https://github.com/avelino/awesome-go.git
+- Clone CLI: gh repo clone avelino/awesome-go
+- Canonical URL: https://skills.biz.id/en/trending/avelino/awesome-go
+
+### #1 Significant-Gravitas/AutoGPT
+- Language: Python
+- Stars: 187718 | Forks: 45903
+- Description: AutoGPT is the vision of accessible AI for everyone, to use and to build on. Our mission is to provide the tools, so that you can focus on what matters.
+- Clone HTTPS: git clone https://github.com/Significant-Gravitas/AutoGPT.git
+- Clone CLI: gh repo clone Significant-Gravitas/AutoGPT
+- Canonical URL: https://skills.biz.id/en/trending/Significant-Gravitas/AutoGPT
+
+### #1 jackfrued/Python-100-Days
+- Language: Jupyter Notebook
+- Stars: 187394 | Forks: 55756
+- Description: Python - 100天从新手到大师
+- Clone HTTPS: git clone https://github.com/jackfrued/Python-100-Days.git
+- Clone CLI: gh repo clone jackfrued/Python-100-Days
+- Canonical URL: https://skills.biz.id/en/trending/jackfrued/Python-100-Days
+
+### #1 CyC2018/CS-Notes
+- Language: Plain Text
+- Stars: 186317 | Forks: 50667
+- Description: :books: 技术面试必备基础知识、Leetcode、计算机操作系统、计算机网络、系统设计
+- Clone HTTPS: git clone https://github.com/CyC2018/CS-Notes.git
+- Clone CLI: gh repo clone CyC2018/CS-Notes
+- Canonical URL: https://skills.biz.id/en/trending/CyC2018/CS-Notes
+
+### #1 getify/You-Dont-Know-JS
+- Language: Plain Text
+- Stars: 184833 | Forks: 33350
+- Description: A book series (2 published editions) on the JS language.
+- Clone HTTPS: git clone https://github.com/getify/You-Dont-Know-JS.git
+- Clone CLI: gh repo clone getify/You-Dont-Know-JS
+- Canonical URL: https://skills.biz.id/en/trending/getify/You-Dont-Know-JS
+
+### #1 ollama/ollama
+- Language: Go
+- Stars: 184448 | Forks: 18496
+- Description: Get up and running with Kimi, GLM, MiniMax, DeepSeek, gpt-oss, Qwen, Gemma and other models.
+- Clone HTTPS: git clone https://github.com/ollama/ollama.git
+- Clone CLI: gh repo clone ollama/ollama
+- Canonical URL: https://skills.biz.id/en/trending/ollama/ollama
+
+### #1 521xueweihan/HelloGitHub
+- Language: Python
+- Stars: 183912 | Forks: 13071
+- Description: :octocat: 分享 GitHub 上有趣、入门级的开源项目。Share interesting, entry-level open source projects on GitHub.
+- Clone HTTPS: git clone https://github.com/521xueweihan/HelloGitHub.git
+- Clone CLI: gh repo clone 521xueweihan/HelloGitHub
+- Canonical URL: https://skills.biz.id/en/trending/521xueweihan/HelloGitHub
+
+### #1 anthropics/skills
+- Language: Python
+- Stars: 183220 | Forks: 21694
+- Description: Public repository for Agent Skills
+- Clone HTTPS: git clone https://github.com/anthropics/skills.git
+- Clone CLI: gh repo clone anthropics/skills
+- Canonical URL: https://skills.biz.id/en/trending/anthropics/skills
+
+### #1 flutter/flutter
+- Language: Dart
+- Stars: 180339 | Forks: 34028
+- Description: Flutter makes it easy and fast to build beautiful apps for mobile and beyond
+- Clone HTTPS: git clone https://github.com/flutter/flutter.git
+- Clone CLI: gh repo clone flutter/flutter
+- Canonical URL: https://skills.biz.id/en/trending/flutter/flutter
+
+### #1 github/gitignore
+- Language: Plain Text
+- Stars: 176039 | Forks: 82083
+- Description: A collection of useful .gitignore templates
+- Clone HTTPS: git clone https://github.com/github/gitignore.git
+- Clone CLI: gh repo clone github/gitignore
+- Canonical URL: https://skills.biz.id/en/trending/github/gitignore
+
+### #1 twbs/bootstrap
+- Language: MDX
+- Stars: 175008 | Forks: 78523
+- Description: The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web.
+- Clone HTTPS: git clone https://github.com/twbs/bootstrap.git
+- Clone CLI: gh repo clone twbs/bootstrap
+- Canonical URL: https://skills.biz.id/en/trending/twbs/bootstrap
+
+### #1 DietrichGebert/ponytail
+- Language: JavaScript
+- Stars: 174559 | Forks: 9507
+- Description: Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.
+- Clone HTTPS: git clone https://github.com/DietrichGebert/ponytail.git
+- Clone CLI: gh repo clone DietrichGebert/ponytail
+- Canonical URL: https://skills.biz.id/en/trending/DietrichGebert/ponytail
+
+### #1 f/prompts.chat
+- Language: HTML
+- Stars: 174188 | Forks: 22256
+- Description: f.k.a. Awesome ChatGPT Prompts. Share, discover, and collect prompts from the community. Free and open source — self-host for your organization with complete privacy.
+- Clone HTTPS: git clone https://github.com/f/prompts.chat.git
+- Clone CLI: gh repo clone f/prompts.chat
+- Canonical URL: https://skills.biz.id/en/trending/f/prompts.chat
+
+### #1 huggingface/transformers
+- Language: Python
+- Stars: 168033 | Forks: 34953
+- Description: 🤗 Transformers: the model-definition framework for state-of-the-art machine learning models in text, vision, audio, and multimodal models, for both inference and training. 
+- Clone HTTPS: git clone https://github.com/huggingface/transformers.git
+- Clone CLI: gh repo clone huggingface/transformers
+- Canonical URL: https://skills.biz.id/en/trending/huggingface/transformers
+
+### #1 AUTOMATIC1111/stable-diffusion-webui
+- Language: Python
+- Stars: 165123 | Forks: 33273
+- Description: Stable Diffusion web UI
+- Clone HTTPS: git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
+- Clone CLI: gh repo clone AUTOMATIC1111/stable-diffusion-webui
+- Canonical URL: https://skills.biz.id/en/trending/AUTOMATIC1111/stable-diffusion-webui
+
+### #1 msitarzewski/agency-agents
+- Language: Shell
+- Stars: 163452 | Forks: 26380
+- Description: A complete AI agency at your fingertips - From frontend wizards to Reddit community ninjas, from whimsy injectors to reality checkers. Each agent is a specialized expert with personality, processes, and proven deliverables.
+- Clone HTTPS: git clone https://github.com/msitarzewski/agency-agents.git
+- Clone CLI: gh repo clone msitarzewski/agency-agents
+- Canonical URL: https://skills.biz.id/en/trending/msitarzewski/agency-agents
+
+### #1 jlevy/the-art-of-command-line
+- Language: Plain Text
+- Stars: 162583 | Forks: 14831
+- Description: Master the command line, in one page
+- Clone HTTPS: git clone https://github.com/jlevy/the-art-of-command-line.git
+- Clone CLI: gh repo clone jlevy/the-art-of-command-line
+- Canonical URL: https://skills.biz.id/en/trending/jlevy/the-art-of-command-line
+
+### #1 langgenius/dify
+- Language: Python
+- Stars: 159357 | Forks: 25176
+- Description: Build Agentic workflows, RAG pipelines, with rich AI model and tool support on one collaborative workspace. Deploy on cloud, VPC, or self-hosted, so teams move from prototype to production without rebuilding the stack.
+- Clone HTTPS: git clone https://github.com/langgenius/dify.git
+- Clone CLI: gh repo clone langgenius/dify
+- Canonical URL: https://skills.biz.id/en/trending/langgenius/dify
+
+### #1 Snailclimb/JavaGuide
+- Language: JavaScript
+- Stars: 159221 | Forks: 46124
+- Description: Java 面试 & 后端通用面试指南，覆盖计算机基础、数据库、分布式、高并发、系统设计与 AI 应用开发
+- Clone HTTPS: git clone https://github.com/Snailclimb/JavaGuide.git
+- Clone CLI: gh repo clone Snailclimb/JavaGuide
+- Canonical URL: https://skills.biz.id/en/trending/Snailclimb/JavaGuide
+
+### #1 open-webui/open-webui
+- Language: Python
+- Stars: 156566 | Forks: 22783
+- Description: User-friendly AI Interface (Supports Ollama, OpenAI API, ...)
+- Clone HTTPS: git clone https://github.com/open-webui/open-webui.git
+- Clone CLI: gh repo clone open-webui/open-webui
+- Canonical URL: https://skills.biz.id/en/trending/open-webui/open-webui
+
+### #1 langflow-ai/langflow
+- Language: Python
+- Stars: 155969 | Forks: 10242
+- Description: Langflow is a powerful tool for building and deploying AI-powered agents and workflows.
+- Clone HTTPS: git clone https://github.com/langflow-ai/langflow.git
+- Clone CLI: gh repo clone langflow-ai/langflow
+- Canonical URL: https://skills.biz.id/en/trending/langflow-ai/langflow
+
+### #1 clash-verge-rev/clash-verge-rev
+- Language: Rust
+- Stars: 153399 | Forks: 11003
+- Description: A modern GUI client based on Tauri, designed to run in Windows, macOS and Linux for tailored proxy experience
+- Clone HTTPS: git clone https://github.com/clash-verge-rev/clash-verge-rev.git
+- Clone CLI: gh repo clone clash-verge-rev/clash-verge-rev
+- Canonical URL: https://skills.biz.id/en/trending/clash-verge-rev/clash-verge-rev
+
+### #1 anthropics/claude-code
+- Language: TypeScript
+- Stars: 153122 | Forks: 26805
+- Description: Claude Code is an agentic coding tool that lives in your terminal, understands your codebase, and helps you code faster by executing routine tasks, explaining complex code, and handling git workflows - all through natural language commands.
+- Clone HTTPS: git clone https://github.com/anthropics/claude-code.git
+- Clone CLI: gh repo clone anthropics/claude-code
+- Canonical URL: https://skills.biz.id/en/trending/anthropics/claude-code
+
+### #1 Genymobile/scrcpy
+- Language: C
+- Stars: 152956 | Forks: 14018
+- Description: Display and control your Android device
+- Clone HTTPS: git clone https://github.com/Genymobile/scrcpy.git
+- Clone CLI: gh repo clone Genymobile/scrcpy
+- Canonical URL: https://skills.biz.id/en/trending/Genymobile/scrcpy
+
+### #1 langchain-ai/langchain
+- Language: Python
+- Stars: 148321 | Forks: 24894
+- Description: The agent engineering platform.
+- Clone HTTPS: git clone https://github.com/langchain-ai/langchain.git
+- Clone CLI: gh repo clone langchain-ai/langchain
+- Canonical URL: https://skills.biz.id/en/trending/langchain-ai/langchain
+
+### #1 airbnb/javascript
+- Language: JavaScript
+- Stars: 148048 | Forks: 26531
+- Description: JavaScript Style Guide
+- Clone HTTPS: git clone https://github.com/airbnb/javascript.git
+- Clone CLI: gh repo clone airbnb/javascript
+- Canonical URL: https://skills.biz.id/en/trending/airbnb/javascript
+
+### #1 farion1231/cc-switch
+- Language: Rust
+- Stars: 148002 | Forks: 9742
+- Description: A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode, OpenClaw, Grok Build & Hermes Agent. Only official website: ccswitch.io
+- Clone HTTPS: git clone https://github.com/farion1231/cc-switch.git
+- Clone CLI: gh repo clone farion1231/cc-switch
+- Canonical URL: https://skills.biz.id/en/trending/farion1231/cc-switch
+
+### #1 x1xhlol/system-prompts-and-models-of-ai-tools
+- Language: Plain Text
+- Stars: 144210 | Forks: 34701
+- Description: FULL Augment Code, Claude Code, Cluely, CodeBuddy, Comet, Cursor, Devin AI, Junie, Kiro, Leap.new, Lovable, Manus, NotionAI, Orchids.app, Perplexity, Poke, Qoder, Replit, Same.dev, Trae, Traycer AI, VSCode Agent, Warp.dev, Windsurf, Xcode, Z.ai Code, Dia & v0. (And other Open Sourced) System Prompts, Internal Tools & AI Models
+- Clone HTTPS: git clone https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools.git
+- Clone CLI: gh repo clone x1xhlol/system-prompts-and-models-of-ai-tools
+- Canonical URL: https://skills.biz.id/en/trending/x1xhlol/system-prompts-and-models-of-ai-tools
+
+### #1 vercel/next.js
+- Language: JavaScript
+- Stars: 143205 | Forks: 34885
+- Description: The React Framework
+- Clone HTTPS: git clone https://github.com/vercel/next.js.git
+- Clone CLI: gh repo clone vercel/next.js
+- Canonical URL: https://skills.biz.id/en/trending/vercel/next.js
+
+### #1 yangshun/tech-interview-handbook
+- Language: TypeScript
+- Stars: 143124 | Forks: 16863
+- Description: Curated coding interview preparation materials for busy software engineers
+- Clone HTTPS: git clone https://github.com/yangshun/tech-interview-handbook.git
+- Clone CLI: gh repo clone yangshun/tech-interview-handbook
+- Canonical URL: https://skills.biz.id/en/trending/yangshun/tech-interview-handbook
+
+### #1 Shubhamsaboo/awesome-llm-apps
+- Language: Python
+- Stars: 142797 | Forks: 20993
+- Description: 100+ AI Agents, Agent Skills and RAG Apps - Free and Open Source.
+- Clone HTTPS: git clone https://github.com/Shubhamsaboo/awesome-llm-apps.git
+- Clone CLI: gh repo clone Shubhamsaboo/awesome-llm-apps
+- Canonical URL: https://skills.biz.id/en/trending/Shubhamsaboo/awesome-llm-apps
+
+### #1 github/spec-kit
+- Language: Python
+- Stars: 142549 | Forks: 12765
+- Description: 💫 Toolkit to help you get started with SDD or any other process!
+- Clone HTTPS: git clone https://github.com/github/spec-kit.git
+- Clone CLI: gh repo clone github/spec-kit
+- Canonical URL: https://skills.biz.id/en/trending/github/spec-kit
+
+### #1 Comfy-Org/ComfyUI
+- Language: Python
+- Stars: 142270 | Forks: 16775
+- Description: The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface. The fastest local inference engine in the world.
+- Clone HTTPS: git clone https://github.com/Comfy-Org/ComfyUI.git
+- Clone CLI: gh repo clone Comfy-Org/ComfyUI
+- Canonical URL: https://skills.biz.id/en/trending/Comfy-Org/ComfyUI
+
+### #1 iptv-org/iptv
+- Language: TypeScript
+- Stars: 142094 | Forks: 8353
+- Description: Collection of publicly available IPTV channels from all over the world
+- Clone HTTPS: git clone https://github.com/iptv-org/iptv.git
+- Clone CLI: gh repo clone iptv-org/iptv
+- Canonical URL: https://skills.biz.id/en/trending/iptv-org/iptv
+
+### #1 ytdl-org/youtube-dl
+- Language: Python
+- Stars: 141376 | Forks: 10660
+- Description: Command-line program to download videos from YouTube.com and other video sites
+- Clone HTTPS: git clone https://github.com/ytdl-org/youtube-dl.git
+- Clone CLI: gh repo clone ytdl-org/youtube-dl
+- Canonical URL: https://skills.biz.id/en/trending/ytdl-org/youtube-dl
+
+### #1 ripienaar/free-for-dev
+- Language: HTML
+- Stars: 139955 | Forks: 14844
+- Description: A list of SaaS, PaaS and IaaS offerings that have free tiers of interest to devops and infradev
+- Clone HTTPS: git clone https://github.com/ripienaar/free-for-dev.git
+- Clone CLI: gh repo clone ripienaar/free-for-dev
+- Canonical URL: https://skills.biz.id/en/trending/ripienaar/free-for-dev
+
+### #1 microsoft/PowerToys
+- Language: C
+- Stars: 139649 | Forks: 8620
+- Description: Microsoft PowerToys is a collection of utilities that supercharge productivity and customization on Windows
+- Clone HTTPS: git clone https://github.com/microsoft/PowerToys.git
+- Clone CLI: gh repo clone microsoft/PowerToys
+- Canonical URL: https://skills.biz.id/en/trending/microsoft/PowerToys
+
+### #1 golang/go
+- Language: Go
+- Stars: 139493 | Forks: 22306
+- Description: The Go programming language
+- Clone HTTPS: git clone https://github.com/golang/go.git
+- Clone CLI: gh repo clone golang/go
+- Canonical URL: https://skills.biz.id/en/trending/golang/go
+
+### #1 nextlevelbuilder/ui-ux-pro-max-skill
+- Language: Python
+- Stars: 139313 | Forks: 14755
+- Description: An AI skill that provides design intelligence for building professional UI/UX across multiple platforms.
+- Clone HTTPS: git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git
+- Clone CLI: gh repo clone nextlevelbuilder/ui-ux-pro-max-skill
+- Canonical URL: https://skills.biz.id/en/trending/nextlevelbuilder/ui-ux-pro-max-skill
+
+### #1 garrytan/gstack
+- Language: TypeScript
+- Stars: 137365 | Forks: 20362
+- Description: Use Garry Tan's exact Claude Code setup: 23 opinionated tools that serve as CEO, Designer, Eng Manager, Release Manager, Doc Engineer, and QA
+- Clone HTTPS: git clone https://github.com/garrytan/gstack.git
+- Clone CLI: gh repo clone garrytan/gstack
+- Canonical URL: https://skills.biz.id/en/trending/garrytan/gstack
+
+### #1 labuladong/fucking-algorithm
+- Language: Markdown
+- Stars: 135954 | Forks: 23527
+- Description: Crack LeetCode, not only how, but also why. 
+- Clone HTTPS: git clone https://github.com/labuladong/fucking-algorithm.git
+- Clone CLI: gh repo clone labuladong/fucking-algorithm
+- Canonical URL: https://skills.biz.id/en/trending/labuladong/fucking-algorithm
+
+### #1 harry0703/MoneyPrinterTurbo
+- Language: Python
+- Stars: 134480 | Forks: 21276
+- Description: 利用 AI 大模型和自动化工作流，根据主题或关键词一键生成高清短视频。Generate HD short videos from a topic or keyword with an automated AI workflow.
+- Clone HTTPS: git clone https://github.com/harry0703/MoneyPrinterTurbo.git
+- Clone CLI: gh repo clone harry0703/MoneyPrinterTurbo
+- Canonical URL: https://skills.biz.id/en/trending/harry0703/MoneyPrinterTurbo
+
+### #1 excalidraw/excalidraw
+- Language: TypeScript
+- Stars: 134432 | Forks: 15803
+- Description: Virtual whiteboard for sketching hand-drawn like diagrams
+- Clone HTTPS: git clone https://github.com/excalidraw/excalidraw.git
+- Clone CLI: gh repo clone excalidraw/excalidraw
+- Canonical URL: https://skills.biz.id/en/trending/excalidraw/excalidraw
+
+### #1 Graphify-Labs/graphify
+- Language: Python
+- Stars: 133693 | Forks: 12772
+- Description: Turn any codebase, with its docs, SQL schemas, configs, and PDFs, into a queryable knowledge graph. A /graphify skill for Claude Code, Cursor, Codex, and Gemini CLI: local deterministic AST parsing, every edge explained, no vector store.
+- Clone HTTPS: git clone https://github.com/Graphify-Labs/graphify.git
+- Clone CLI: gh repo clone Graphify-Labs/graphify
+- Canonical URL: https://skills.biz.id/en/trending/Graphify-Labs/graphify
+
+### #1 ggml-org/llama.cpp
+- Language: C++
+- Stars: 132126 | Forks: 24732
+- Description: LLM inference in C/C++
+- Clone HTTPS: git clone https://github.com/ggml-org/llama.cpp.git
+- Clone CLI: gh repo clone ggml-org/llama.cpp
+- Canonical URL: https://skills.biz.id/en/trending/ggml-org/llama.cpp
+
+### #1 krahets/hello-algo
+- Language: Java
+- Stars: 130933 | Forks: 15472
+- Description: 《Hello 算法》：动画图解、一键运行的数据结构与算法教程。支持简中、繁中、English、日本語，提供 Python, Java, C++, C, C#, JS, Go, Swift, Rust, Ruby, Kotlin, TS, Dart 等代码实现
+- Clone HTTPS: git clone https://github.com/krahets/hello-algo.git
+- Clone CLI: gh repo clone krahets/hello-algo
+- Canonical URL: https://skills.biz.id/en/trending/krahets/hello-algo
+
+### #1 openai/codex
+- Language: Rust
+- Stars: 130606 | Forks: 20593
+- Description: Lightweight coding agent that runs in your terminal
+- Clone HTTPS: git clone https://github.com/openai/codex.git
+- Clone CLI: gh repo clone openai/codex
+- Canonical URL: https://skills.biz.id/en/trending/openai/codex
+
+### #1 Chalarangelo/30-seconds-of-code
+- Language: JavaScript
+- Stars: 129302 | Forks: 12481
+- Description: Coding articles to level up your development skills
+- Clone HTTPS: git clone https://github.com/Chalarangelo/30-seconds-of-code.git
+- Clone CLI: gh repo clone Chalarangelo/30-seconds-of-code
+- Canonical URL: https://skills.biz.id/en/trending/Chalarangelo/30-seconds-of-code
+
+### #1 kubernetes/kubernetes
+- Language: Go
+- Stars: 128576 | Forks: 47106
+- Description: Production-Grade Container Scheduling and Management
+- Clone HTTPS: git clone https://github.com/kubernetes/kubernetes.git
+- Clone CLI: gh repo clone kubernetes/kubernetes
+- Canonical URL: https://skills.biz.id/en/trending/kubernetes/kubernetes
+
+### #1 react/react-native
+- Language: C++
+- Stars: 126769 | Forks: 25355
+- Description: A framework for building native applications using React
+- Clone HTTPS: git clone https://github.com/react/react-native.git
+- Clone CLI: gh repo clone react/react-native
+- Canonical URL: https://skills.biz.id/en/trending/react/react-native
+
+### #1 rustdesk/rustdesk
+- Language: Rust
+- Stars: 126710 | Forks: 19947
+- Description: An open-source remote desktop application designed for self-hosting, as an alternative to TeamViewer.
+- Clone HTTPS: git clone https://github.com/rustdesk/rustdesk.git
+- Clone CLI: gh repo clone rustdesk/rustdesk
+- Canonical URL: https://skills.biz.id/en/trending/rustdesk/rustdesk
+
+### #1 shadcn-ui/ui
+- Language: TypeScript
+- Stars: 126322 | Forks: 13297
+- Description: Composable, accessible components with thoughtful defaults. Build your own component library with code you can customize, extend, and make your own.
+- Clone HTTPS: git clone https://github.com/shadcn-ui/ui.git
+- Clone CLI: gh repo clone shadcn-ui/ui
+- Canonical URL: https://skills.biz.id/en/trending/shadcn-ui/ui
+
+### #1 electron/electron
+- Language: C++
+- Stars: 123505 | Forks: 17669
+- Description: :electron: Build cross-platform desktop apps with JavaScript, HTML, and CSS
+- Clone HTTPS: git clone https://github.com/electron/electron.git
+- Clone CLI: gh repo clone electron/electron
+- Canonical URL: https://skills.biz.id/en/trending/electron/electron
+
+### #1 Hack-with-Github/Awesome-Hacking
+- Language: Plain Text
+- Stars: 123422 | Forks: 10865
+- Description: A collection of various awesome lists for hackers, pentesters and security researchers
+- Clone HTTPS: git clone https://github.com/Hack-with-Github/Awesome-Hacking.git
+- Clone CLI: gh repo clone Hack-with-Github/Awesome-Hacking
+- Canonical URL: https://skills.biz.id/en/trending/Hack-with-Github/Awesome-Hacking
+
+### #1 VoltAgent/awesome-design-md
+- Language: Plain Text
+- Stars: 123117 | Forks: 13662
+- Description: A collection of DESIGN.md files analysis by popular brand design systems. Drop one into your project and let coding agents generate a matching UI.
+- Clone HTTPS: git clone https://github.com/VoltAgent/awesome-design-md.git
+- Clone CLI: gh repo clone VoltAgent/awesome-design-md
+- Canonical URL: https://skills.biz.id/en/trending/VoltAgent/awesome-design-md
+
+### #1 nodejs/node
+- Language: JavaScript
+- Stars: 122684 | Forks: 39940
+- Description: Node.js JavaScript runtime ✨🐢🚀✨
+- Clone HTTPS: git clone https://github.com/nodejs/node.git
+- Clone CLI: gh repo clone nodejs/node
+- Canonical URL: https://skills.biz.id/en/trending/nodejs/node
+
+### #1 microsoft/generative-ai-for-beginners
+- Language: Jupyter Notebook
+- Stars: 121994 | Forks: 64554
+- Description: 21 Lessons, Get Started Building with Generative AI 
+- Clone HTTPS: git clone https://github.com/microsoft/generative-ai-for-beginners.git
+- Clone CLI: gh repo clone microsoft/generative-ai-for-beginners
+- Canonical URL: https://skills.biz.id/en/trending/microsoft/generative-ai-for-beginners
+
+### #1 rust-lang/rust
+- Language: Rust
+- Stars: 120702 | Forks: 18739
+- Description: Empowering everyone to build reliable and efficient software.
+- Clone HTTPS: git clone https://github.com/rust-lang/rust.git
+- Clone CLI: gh repo clone rust-lang/rust
+- Canonical URL: https://skills.biz.id/en/trending/rust-lang/rust
+
+### #1 justjavac/free-programming-books-zh_CN
+- Language: Plain Text
+- Stars: 119331 | Forks: 28252
+- Description: :books: 免费的计算机编程类中文书籍，欢迎投稿
+- Clone HTTPS: git clone https://github.com/justjavac/free-programming-books-zh_CN.git
+- Clone CLI: gh repo clone justjavac/free-programming-books-zh_CN
+- Canonical URL: https://skills.biz.id/en/trending/justjavac/free-programming-books-zh_CN
+
+### #1 browser-use/browser-use
+- Language: Python
+- Stars: 118960 | Forks: 13214
+- Description: Open-source Python library for AI browser agents, plus Browser Use Cloud: stealth browsers and a hosted agent API.
+- Clone HTTPS: git clone https://github.com/browser-use/browser-use.git
+- Clone CLI: gh repo clone browser-use/browser-use
+- Canonical URL: https://skills.biz.id/en/trending/browser-use/browser-use
+
+### #1 godotengine/godot
+- Language: C++
+- Stars: 118954 | Forks: 27174
+- Description: Godot Engine – Multi-platform 2D and 3D game engine
+- Clone HTTPS: git clone https://github.com/godotengine/godot.git
+- Clone CLI: gh repo clone godotengine/godot
+- Canonical URL: https://skills.biz.id/en/trending/godotengine/godot
+
+### #1 2dust/v2rayN
+- Language: C#
+- Stars: 118935 | Forks: 16147
+- Description: A GUI client for Windows, Linux and macOS, support Xray and sing-box and others
+- Clone HTTPS: git clone https://github.com/2dust/v2rayN.git
+- Clone CLI: gh repo clone 2dust/v2rayN
+- Canonical URL: https://skills.biz.id/en/trending/2dust/v2rayN
