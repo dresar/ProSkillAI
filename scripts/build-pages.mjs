@@ -47,6 +47,7 @@ await esbuild.build({
   outfile: workerOutput,
   bundle: true,
   minify: true,
+  treeShaking: true,
   format: "esm",
   platform: "node",
   target: "es2022",

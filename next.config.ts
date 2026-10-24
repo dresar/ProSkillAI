@@ -40,6 +40,9 @@ const noStoreHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: {
+    optimizePackageImports: ["lucide-react", "motion", "shiki"],
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
