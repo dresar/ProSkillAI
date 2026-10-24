@@ -38,6 +38,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.13",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
@@ -50,14 +51,16 @@
     "postcss": "^8.5.31",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.152.0"
   },
   "packageManager": "pnpm@11.21.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@swc/core",
-      "esbuild"
+      "esbuild",
+      "workerd"
     ]
   }
 }
