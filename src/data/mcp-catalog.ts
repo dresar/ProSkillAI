@@ -33,6 +33,7 @@ export interface McpServerItem {
   websiteUrl: string;
   githubUrl: string;
   verified: boolean;
+  imageUrl?: string;
 }
 
 export const MCP_CATEGORIES: McpCategory[] = [

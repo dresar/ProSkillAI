@@ -26,6 +26,7 @@ import type { McpServerItem, McpCategoryKey } from "@/data/mcp-catalog";
 import { MCP_CATEGORIES, MCP_CATALOG_STATS } from "@/data/mcp-catalog";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { ShareButton } from "@/components/share";
+import { getMcpCoverImage, DEFAULT_MCP_COVER } from "@/lib/images";
 
 interface McpClientProps {
   servers: McpServerItem[];
@@ -389,12 +390,18 @@ export function McpClient({ servers, locale }: McpClientProps) {
                       className="block relative aspect-video w-full rounded-lg overflow-hidden border border-border/70 bg-muted/30 group/cover hover:opacity-95 transition-opacity"
                     >
                       <Image
-                        src={`/images/mcp/${server.category || "default"}.svg`}
-                        alt={server.categoryLabel}
+                        src={getMcpCoverImage(server.imageUrl)}
+                        alt={server.name}
                         fill
                         unoptimized
                         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="object-cover group-hover/cover:scale-102 transition-transform duration-300"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (target.src !== DEFAULT_MCP_COVER) {
+                            target.src = DEFAULT_MCP_COVER;
+                          }
+                        }}
                       />
                     </Link>
 

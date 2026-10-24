@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import { MCP_SERVERS_CATALOG, type McpServerItem } from "@/data/mcp-catalog";
 import { formatCompactNumber } from "@/lib/github-trending";
 import { ShareButton } from "@/components/share";
+import { getMcpCoverImage } from "@/lib/images";
 import { McpInstallTabs } from "./mcp-install-tabs";
 import {
   ArrowLeft,
@@ -55,7 +56,7 @@ export async function generateMetadata({
       ? `Connect ${server.name} to Claude Desktop, Cursor, and autonomous agent frameworks.`
       : `Hubungkan ${server.name} ke Claude Desktop, Cursor, dan framework agen AI.`);
 
-  const ogImage = `${SITE_URL}/images/mcp/${server.category}.svg`;
+  const ogImage = `${SITE_URL}/images/default-skill.png`;
   const canonicalUrl = `${SITE_URL}/${locale}/mcp/${server.slug}`;
 
   return {
@@ -208,14 +209,14 @@ export default async function McpDetailPage({ params }: McpDetailPageProps) {
           </div>
         </div>
 
-        <div className="relative aspect-video max-h-64 sm:max-h-72 w-full rounded-2xl overflow-hidden border border-border/80 bg-muted/40 shadow-xs flex items-center justify-center p-4">
+        <div className="relative aspect-video max-h-64 sm:max-h-72 w-full rounded-2xl overflow-hidden border border-border/80 bg-muted/40 shadow-xs flex items-center justify-center">
           <Image
-            src={ogImage}
-            alt={server.categoryLabel}
+            src={getMcpCoverImage(server.imageUrl)}
+            alt={server.name}
             fill
             priority
             unoptimized
-            className="object-contain p-4"
+            className="object-cover"
           />
         </div>
 
