@@ -28,7 +28,7 @@ import {
 
 interface PublicHeaderProps {
   locale: string;
-  user: PublicUser | null;
+  user?: PublicUser | null;
 }
 
 export function PublicHeader({ locale, user }: PublicHeaderProps) {
@@ -36,6 +36,31 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
   const pathname = usePathname();
   const isEn = locale === "en";
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState<PublicUser | null>(user || null);
+
+  React.useEffect(() => {
+    if (user) {
+      setCurrentUser(user);
+      return;
+    }
+    let active = true;
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active && data?.authenticated) {
+          setCurrentUser({
+            id: data.id || "user",
+            name: data.name || data.username || "User",
+            email: data.email || "",
+            role: data.role || "user",
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const isSkills = pathname === `/${locale}/skills` || (pathname.startsWith(`/${locale}/skills/`) && !pathname.includes("/submit"));
   const isPrompts = pathname === `/${locale}/prompts` || (pathname.startsWith(`/${locale}/prompts/`) && !pathname.includes("/submit"));
@@ -105,7 +130,7 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
       active: isDesignTrends,
       icon: Palette,
     },
-    ...(user
+    ...(currentUser
       ? [
           {
             href: `/${locale}/favorites`,
@@ -117,8 +142,8 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
       : []),
   ];
 
-  const initials = user?.name
-    ? user.name
+  const initials = currentUser?.name
+    ? currentUser.name
         .split(" ")
         .map((n) => n[0])
         .slice(0, 2)
@@ -196,7 +221,7 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
             <ThemeToggle label="Toggle theme" locale={locale} />
 
             <div className="hidden sm:block">
-              <PublicUserNav user={user} locale={locale} />
+              <PublicUserNav user={currentUser} locale={locale} />
             </div>
 
             <button
@@ -279,7 +304,7 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
             </div>
 
             <div className="pt-4 border-t border-border/70 space-y-2">
-              {user ? (
+              {currentUser ? (
                 <div className="space-y-2">
                   <div className="p-2.5 rounded-lg border border-border bg-muted/30">
                     <div className="flex items-center gap-2">
@@ -287,23 +312,23 @@ export function PublicHeader({ locale, user }: PublicHeaderProps) {
                         {initials}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold text-foreground truncate">{user.name}</p>
-                        <p className="text-[10px] text-muted-foreground font-mono truncate">{user.email}</p>
+                        <p className="text-xs font-semibold text-foreground truncate">{currentUser.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono truncate">{currentUser.email}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 mt-2">
                       <span className="text-[9px] font-mono uppercase px-1.5 py-0.2 rounded bg-muted text-foreground border border-border/80">
-                        {user.role}
+                        {currentUser.role}
                       </span>
-                      {typeof user.aiCredits === "number" && (
+                      {typeof currentUser.aiCredits === "number" && (
                         <span className="text-[9px] font-mono text-blue-500">
-                          {user.aiCredits} credits
+                          {currentUser.aiCredits} credits
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {(user.role === "admin" || user.role === "editor") && (
+                  {(currentUser.role === "admin" || currentUser.role === "editor") && (
                     <Link
                       href="/admin"
                       onClick={() => setMobileOpen(false)}

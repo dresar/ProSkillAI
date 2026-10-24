@@ -6,14 +6,13 @@ import { Star, ExternalLink } from "lucide-react";
 import { motion } from "motion/react";
 import type { Prompt, Category } from "@/db/schema";
 import { formatCount, getCategoryColor } from "@/lib/format";
-import { FavoriteButton } from "@/components/favorite-button";
-import { ShareButton } from "@/components/share";
 import { getPromptCoverImage, DEFAULT_PROMPT_COVER } from "@/lib/images";
 
 interface PromptCardProps {
   prompt: Prompt;
   category?: Category | null;
   locale: string;
+  onSelect?: (prompt: Prompt, category?: Category | null) => void;
 }
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -28,7 +27,7 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-export function PromptCard({ prompt, category, locale }: PromptCardProps) {
+export function PromptCard({ prompt, category, locale, onSelect }: PromptCardProps) {
   const isEn = locale === "en";
   const title = isEn ? prompt.titleEn : prompt.titleId;
   const description = isEn ? prompt.descriptionEn : prompt.descriptionId;
@@ -49,16 +48,24 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
   const demoUrl = (prompt as { demoUrl?: string | null }).demoUrl || null;
   const hasDemo = Boolean(prompt.demoOutput || prompt.demoOutputEn || demoUrl);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onSelect && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+      e.preventDefault();
+      onSelect(prompt, category);
+    }
+  };
+
   return (
     <Link
       href={`/${locale}/prompts/${prompt.slug}`}
+      onClick={handleClick}
       className="group block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground rounded-xl"
     >
       <motion.div
         whileHover={{ y: -3 }}
         whileTap={{ scale: 0.985 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface overflow-hidden hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-colors duration-200 shadow-xs relative"
+        className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface overflow-hidden hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-colors duration-200 shadow-xs relative cursor-pointer"
       >
         <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border">
           <Image
@@ -75,37 +82,6 @@ export function PromptCard({ prompt, category, locale }: PromptCardProps) {
               }
             }}
           />
-          <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
-            <ShareButton
-              item={{
-                type: "prompt",
-                slug: prompt.slug,
-                title,
-                description,
-                url: `/${locale}/prompts/${prompt.slug}`,
-                category: categoryName,
-                author: authorName,
-                stats: [
-                  { label: "Copies", value: starCount },
-                  ...(variables.length > 0 ? [{ label: "Vars", value: variables.length }] : []),
-                ],
-              }}
-              locale={locale}
-              className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background text-muted-foreground hover:text-foreground transition-all shadow-2xs"
-            />
-            <FavoriteButton
-              item={{
-                id: prompt.id,
-                type: "prompt",
-                slug: prompt.slug,
-                title,
-                summary: description,
-                category: categoryName,
-                cover,
-              }}
-              className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background transition-all shadow-2xs"
-            />
-          </div>
         </div>
 
         <div className="p-3 sm:p-3.5 flex flex-col justify-between flex-1 space-y-2.5">

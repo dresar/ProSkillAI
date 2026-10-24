@@ -3,7 +3,6 @@ import { setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { getCurrentUser } from "@/lib/auth";
 import { PublicHeader } from "@/components/public-header";
 import { PublicFooter } from "@/components/public-footer";
 import { HtmlLangSetter } from "@/components/html-lang-setter";
@@ -31,15 +30,6 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   const messages = await getMessages();
-  const user = await getCurrentUser();
-  const sessionUser = user
-    ? {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      }
-    : null;
 
   const siteBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://skills.biz.id";
 
@@ -92,13 +82,13 @@ export default async function LocaleLayout({
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
         </div>
 
-        <PublicHeader locale={locale} user={sessionUser} />
+        <PublicHeader locale={locale} />
 
         <main id="main-content" className="flex-1 flex flex-col relative z-10 w-full">
           {children}
         </main>
 
-        <PublicFooter locale={locale} user={sessionUser} />
+        <PublicFooter locale={locale} />
       </div>
     </NextIntlClientProvider>
   );

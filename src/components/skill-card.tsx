@@ -7,13 +7,12 @@ import { motion } from "motion/react";
 import type { Skill, Category } from "@/db/schema";
 import { getSkillCoverImage } from "@/lib/images";
 import { formatCount, getCategoryColor } from "@/lib/format";
-import { FavoriteButton } from "@/components/favorite-button";
-import { ShareButton } from "@/components/share";
 
 interface SkillCardProps {
   skill: Skill;
   category?: Category | null;
   locale: string;
+  onSelect?: (skill: Skill, category?: Category | null) => void;
 }
 
 function GitHubIcon({ className }: { className?: string }) {
@@ -28,7 +27,7 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-export function SkillCard({ skill, category, locale }: SkillCardProps) {
+export function SkillCard({ skill, category, locale, onSelect }: SkillCardProps) {
   const isEn = locale === "en";
   const title = isEn ? skill.titleEn : skill.titleId;
   const summary = isEn ? skill.summaryEn : skill.summaryId;
@@ -55,16 +54,24 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
     ? `https://github.com/${authorName.replace(/\s+/g, "")}`
     : "https://github.com/dresar/ProSkillAI";
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onSelect && !e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+      e.preventDefault();
+      onSelect(skill, category);
+    }
+  };
+
   return (
     <Link
       href={`/${locale}/skills/${skill.slug}`}
+      onClick={handleClick}
       className="group block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground rounded-xl"
     >
       <motion.div
         whileHover={{ y: -3 }}
         whileTap={{ scale: 0.985 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface overflow-hidden hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-colors duration-200 shadow-xs"
+        className="flex flex-col justify-between h-full rounded-xl border border-border bg-surface overflow-hidden hover:border-foreground/40 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/25 transition-colors duration-200 shadow-xs cursor-pointer"
       >
         {cover && (
           <div className="relative aspect-video w-full overflow-hidden bg-muted border-b border-border">
@@ -76,36 +83,6 @@ export function SkillCard({ skill, category, locale }: SkillCardProps) {
               sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
               className="object-cover group-hover:scale-103 transition-transform duration-300"
             />
-            <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
-              <ShareButton
-                item={{
-                  type: "skill",
-                  slug: skill.slug,
-                  title,
-                  description: summary,
-                  url: `/${locale}/skills/${skill.slug}`,
-                  category: categoryName,
-                  author: authorName,
-                  stats: [
-                    { label: "Stars", value: starCount },
-                  ],
-                }}
-                locale={locale}
-                className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background text-muted-foreground hover:text-foreground transition-all shadow-2xs"
-              />
-              <FavoriteButton
-                item={{
-                  id: skill.id,
-                  type: "skill",
-                  slug: skill.slug,
-                  title,
-                  summary,
-                  category: categoryName,
-                  cover,
-                }}
-                className="w-7 h-7 rounded-[6px] bg-background/80 backdrop-blur-xs border border-border/80 flex items-center justify-center hover:bg-background transition-all shadow-2xs"
-              />
-            </div>
           </div>
         )}
 

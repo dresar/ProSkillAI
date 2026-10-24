@@ -11,6 +11,8 @@ interface PageProps {
   }>;
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const isEn = locale === "en";
@@ -68,7 +70,6 @@ export default async function HomePage({ params }: PageProps) {
         prompts={publishedPrompts}
         categories={allCategories}
         locale={locale}
-        maxSkills={20}
       />
 
       <BetaSections />

@@ -2,9 +2,25 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, X, Star, Sparkles, Layers, ArrowRight, ChevronDown, Filter } from "lucide-react";
+import {
+  Search,
+  X,
+  Star,
+  Sparkles,
+  Layers,
+  ArrowRight,
+  ChevronDown,
+  Filter,
+  Terminal,
+  Check,
+  Copy,
+  ExternalLink,
+  BookOpen,
+  FileCode,
+} from "lucide-react";
 import { SkillCard } from "./skill-card";
 import { PromptCard } from "./prompt-card";
+import { MarkdownRenderer } from "./markdown-renderer";
 import type { Skill, Prompt, Category } from "@/db/schema";
 import { formatCount } from "@/lib/format";
 
@@ -31,6 +47,12 @@ export function OnePageCatalog({
   const [showRecommendations, setShowRecommendations] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState<number>(-1);
 
+  const [selectedSkillItem, setSelectedSkillItem] = React.useState<{ skill: Skill; category: Category | null } | null>(null);
+  const [selectedPromptItem, setSelectedPromptItem] = React.useState<{ prompt: Prompt; category: Category | null } | null>(null);
+  const [detailTab, setDetailTab] = React.useState<"overview" | "markdown">("overview");
+  const [copiedCommand, setCopiedCommand] = React.useState(false);
+  const [copiedPrompt, setCopiedPrompt] = React.useState(false);
+
   const searchContainerRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -47,6 +69,41 @@ export function OnePageCatalog({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  React.useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (selectedSkillItem) setSelectedSkillItem(null);
+        if (selectedPromptItem) setSelectedPromptItem(null);
+      }
+    };
+    if (selectedSkillItem || selectedPromptItem) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleEsc);
+    }
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [selectedSkillItem, selectedPromptItem]);
+
+  const copyText = (text: string, type: "command" | "prompt") => {
+    navigator.clipboard.writeText(text);
+    if (type === "command") {
+      setCopiedCommand(true);
+      setTimeout(() => setCopiedCommand(false), 2000);
+    } else {
+      setCopiedPrompt(true);
+      setTimeout(() => setCopiedPrompt(false), 2000);
+    }
+  };
+
+  const getSkillInstallCommand = (s: Skill) => {
+    const fm = (s.frontmatter as { installCommand?: string } | null) || null;
+    if (fm?.installCommand) return fm.installCommand;
+    const author = s.authorName || (s.sourceType === "github" ? "github" : "proskillai");
+    return `npx skills add ${author.toLowerCase().replace(/\s+/g, "-")}/${s.slug}`;
+  };
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -187,7 +244,14 @@ export function OnePageCatalog({
       e.preventDefault();
       const item = recommendations[selectedIndex];
       if (item) {
-        window.location.href = item.href;
+        setShowRecommendations(false);
+        if (item.type === "skill") {
+          const found = skills.find((s) => s.skill.id === item.id);
+          if (found) setSelectedSkillItem(found);
+        } else {
+          const found = prompts.find((p) => p.prompt.id === item.id);
+          if (found) setSelectedPromptItem(found);
+        }
       }
     } else if (e.key === "Escape") {
       setShowRecommendations(false);
@@ -289,8 +353,22 @@ export function OnePageCatalog({
                   <Link
                     key={`${item.type}-${item.id}`}
                     href={item.href}
-                    onClick={() => setShowRecommendations(false)}
-                    className={`flex items-start justify-between gap-3 p-2 rounded-lg transition-colors ${
+                    onClick={(e) => {
+                      if (!e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        setShowRecommendations(false);
+                        if (item.type === "skill") {
+                          const found = skills.find((s) => s.skill.id === item.id);
+                          if (found) setSelectedSkillItem(found);
+                        } else {
+                          const found = prompts.find((p) => p.prompt.id === item.id);
+                          if (found) setSelectedPromptItem(found);
+                        }
+                      } else {
+                        setShowRecommendations(false);
+                      }
+                    }}
+                    className={`flex items-start justify-between gap-3 p-2 rounded-lg transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-foreground text-background"
                         : "hover:bg-muted text-foreground"
@@ -468,6 +546,7 @@ export function OnePageCatalog({
                     skill={skill}
                     category={category}
                     locale={locale}
+                    onSelect={(sk, cat) => setSelectedSkillItem({ skill: sk, category: cat || null })}
                   />
                 ))}
               </div>
@@ -530,11 +609,225 @@ export function OnePageCatalog({
                   prompt={prompt}
                   category={category}
                   locale={locale}
+                  onSelect={(pr, cat) => setSelectedPromptItem({ prompt: pr, category: cat || null })}
                 />
               ))}
             </div>
           )}
         </section>
+      )}
+
+      {selectedSkillItem && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150 cursor-pointer"
+            onClick={() => setSelectedSkillItem(null)}
+            aria-hidden="true"
+          />
+          <aside
+            className="relative z-50 w-full max-w-2xl h-full bg-surface border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label={isEn ? selectedSkillItem.skill.titleEn : selectedSkillItem.skill.titleId}
+          >
+            <div className="p-4 sm:p-5 border-b border-border flex items-start justify-between gap-3 bg-muted/20">
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-[4px] bg-foreground text-background font-semibold">
+                    {selectedSkillItem.category
+                      ? isEn
+                        ? selectedSkillItem.category.nameEn
+                        : selectedSkillItem.category.nameId
+                      : "Skill"}
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">
+                    @{selectedSkillItem.skill.authorName || "ProSkillAI"}
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground truncate">
+                  {isEn ? selectedSkillItem.skill.titleEn : selectedSkillItem.skill.titleId}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedSkillItem(null)}
+                className="w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all cursor-pointer shadow-2xs shrink-0 active:scale-95"
+                title={isEn ? "Close (Esc)" : "Tutup (Esc)"}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+              <div className="p-3.5 rounded-lg border border-border bg-background space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5 font-medium text-foreground">
+                    <Terminal className="w-3.5 h-3.5" />
+                    <span>{isEn ? "Install Command" : "Perintah Pasang Cepat"}</span>
+                  </span>
+                  <span className="font-mono text-[10px]">1-Click CLI</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 p-2 rounded-[6px] bg-muted/40 border border-border/80 font-mono text-xs">
+                  <span className="truncate select-all text-foreground">
+                    {getSkillInstallCommand(selectedSkillItem.skill)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyText(getSkillInstallCommand(selectedSkillItem.skill), "command")}
+                    className="h-7 px-2.5 rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-all shrink-0 flex items-center gap-1 shadow-2xs cursor-pointer active:scale-95"
+                  >
+                    {copiedCommand ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedCommand ? (isEn ? "Copied" : "Tersalin") : (isEn ? "Copy" : "Salin")}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 border-b border-border/80 pb-2">
+                <button
+                  type="button"
+                  onClick={() => setDetailTab("overview")}
+                  className={`h-7.5 px-3 text-xs font-semibold rounded-[5px] transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    detailTab === "overview"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Overview" : "Ringkasan"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDetailTab("markdown")}
+                  className={`h-7.5 px-3 text-xs font-semibold rounded-[5px] transition-colors cursor-pointer flex items-center gap-1.5 ${
+                    detailTab === "markdown"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <FileCode className="w-3.5 h-3.5" />
+                  <span>{isEn ? "SKILL.md (Code)" : "SKILL.md (Kode)"}</span>
+                </button>
+              </div>
+
+              {detailTab === "overview" ? (
+                <div className="space-y-4">
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    {isEn ? selectedSkillItem.skill.summaryEn : selectedSkillItem.skill.summaryId}
+                  </p>
+
+                  <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                    <span className="text-xs text-muted-foreground font-mono">
+                      Stars: {selectedSkillItem.skill.copyCount || 0}
+                    </span>
+                    <Link
+                      href={`/${locale}/skills/${selectedSkillItem.skill.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground underline hover:opacity-80"
+                    >
+                      <span>{isEn ? "Full page details" : "Lihat halaman lengkap"}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-border bg-surface p-4 text-xs">
+                  <MarkdownRenderer
+                    content={
+                      (isEn
+                        ? selectedSkillItem.skill.contentEn
+                        : selectedSkillItem.skill.contentId) || ""
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {selectedPromptItem && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150 cursor-pointer"
+            onClick={() => setSelectedPromptItem(null)}
+            aria-hidden="true"
+          />
+          <aside
+            className="relative z-50 w-full max-w-2xl h-full bg-surface border-l border-border shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label={isEn ? selectedPromptItem.prompt.titleEn : selectedPromptItem.prompt.titleId}
+          >
+            <div className="p-4 sm:p-5 border-b border-border flex items-start justify-between gap-3 bg-muted/20">
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-[4px] bg-foreground text-background font-semibold">
+                    {selectedPromptItem.category
+                      ? isEn
+                        ? selectedPromptItem.category.nameEn
+                        : selectedPromptItem.category.nameId
+                      : "Prompt"}
+                  </span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground truncate">
+                  {isEn ? selectedPromptItem.prompt.titleEn : selectedPromptItem.prompt.titleId}
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPromptItem(null)}
+                className="w-8 h-8 rounded-[6px] border border-border bg-surface hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-all cursor-pointer shadow-2xs shrink-0 active:scale-95"
+                title={isEn ? "Close (Esc)" : "Tutup (Esc)"}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                {isEn ? selectedPromptItem.prompt.descriptionEn : selectedPromptItem.prompt.descriptionId}
+              </p>
+
+              <div className="p-3.5 rounded-lg border border-border bg-background space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1.5 font-medium text-foreground">
+                    <Terminal className="w-3.5 h-3.5" />
+                    <span>{isEn ? "Prompt Text" : "Teks Prompt"}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      copyText(
+                        (isEn
+                          ? selectedPromptItem.prompt.contentEn
+                          : selectedPromptItem.prompt.contentId) || "",
+                        "prompt"
+                      )
+                    }
+                    className="h-7 px-2.5 rounded-[5px] bg-foreground text-background text-xs font-semibold hover:opacity-90 transition-all shrink-0 flex items-center gap-1 shadow-2xs cursor-pointer active:scale-95"
+                  >
+                    {copiedPrompt ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedPrompt ? (isEn ? "Copied" : "Tersalin") : (isEn ? "Copy Prompt" : "Salin Prompt")}</span>
+                  </button>
+                </div>
+                <pre className="p-3 rounded-[6px] bg-muted/40 border border-border/80 font-mono text-xs whitespace-pre-wrap break-words text-foreground max-h-80 overflow-y-auto">
+                  {(isEn
+                    ? selectedPromptItem.prompt.contentEn
+                    : selectedPromptItem.prompt.contentId) || ""}
+                </pre>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between border-t border-border/60">
+                <Link
+                  href={`/${locale}/prompts/${selectedPromptItem.prompt.slug}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground underline hover:opacity-80"
+                >
+                  <span>{isEn ? "Full prompt details" : "Lihat halaman lengkap"}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </div>
       )}
     </div>
   );
