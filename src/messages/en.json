@@ -28,6 +28,11 @@
     "betaTitle": "Upcoming Releases",
     "betaSubtitle": "Additional modules are under active development and will be rolled out gradually."
   },
+  "marquee": {
+    "badge": "Live Stream",
+    "title": "Explore Skills",
+    "subtitle": "Curated visual showcase of AI agent skills in a dynamic 1:1 running grid."
+  },
   "catalog": {
     "search": "Search",
     "filter": "Filter Category",

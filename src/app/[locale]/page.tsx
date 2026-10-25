@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getPublishedSkills, getLatestPrompts, getAllCategories } from "@/db/queries";
 import { AgenticHero } from "@/components/agentic-hero";
+import { SkillMarqueeGrid } from "@/components/skill-marquee-grid";
 import { OnePageCatalog } from "@/components/one-page-catalog";
 import { BetaSections } from "@/components/beta-sections";
 
@@ -63,6 +64,11 @@ export default async function HomePage({ params }: PageProps) {
         locale={locale}
         totalSkills={publishedSkills.length}
         totalCategories={allCategories.length}
+      />
+
+      <SkillMarqueeGrid
+        skills={publishedSkills}
+        locale={locale}
       />
 
       <OnePageCatalog
