@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { getPublishedSkills, getLatestPrompts, getAllCategories } from "@/db/queries";
 import { AgenticHero } from "@/components/agentic-hero";
 import { SkillMarqueeGrid } from "@/components/skill-marquee-grid";
-import { OnePageCatalog } from "@/components/one-page-catalog";
+import { HomePromptsSection } from "@/components/home-prompts-section";
 import { BetaSections } from "@/components/beta-sections";
 
 interface PageProps {
@@ -54,7 +54,7 @@ export default async function HomePage({ params }: PageProps) {
 
   const [publishedSkills, publishedPrompts, allCategories] = await Promise.all([
     getPublishedSkills({}),
-    getLatestPrompts(24),
+    getLatestPrompts(8),
     getAllCategories("all"),
   ]);
 
@@ -71,10 +71,8 @@ export default async function HomePage({ params }: PageProps) {
         locale={locale}
       />
 
-      <OnePageCatalog
-        skills={publishedSkills}
+      <HomePromptsSection
         prompts={publishedPrompts}
-        categories={allCategories}
         locale={locale}
       />
 
