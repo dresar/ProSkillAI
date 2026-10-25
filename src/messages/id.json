@@ -28,11 +28,6 @@
     "betaTitle": "Rencana Rilis Mendatang",
     "betaSubtitle": "Modul tambahan sedang dalam tahap pengembangan dan akan hadir secara bertahap."
   },
-  "marquee": {
-    "badge": "Grid Terbuka",
-    "title": "Jelajahi Skill",
-    "subtitle": "Koleksi visual skill agent AI dalam baris grid berjalan 1:1."
-  },
   "catalog": {
     "search": "Cari",
     "filter": "Filter Kategori",
