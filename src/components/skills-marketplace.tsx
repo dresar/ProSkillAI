@@ -163,7 +163,7 @@ export function SkillsMarketplace({ skills, categories, locale }: SkillsMarketpl
       </div>
 
       <div className="flex flex-col md:flex-row items-start gap-6">
-        <aside className="w-full md:w-56 lg:w-60 shrink-0 space-y-3">
+        <aside className="w-full md:w-52 lg:w-56 shrink-0 space-y-3 md:sticky md:top-20 md:self-start md:max-h-[calc(100vh-6rem)] md:overflow-y-auto pr-1">
           <div className="flex items-center justify-between pb-1">
             <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
               {isEn ? "CATEGORIES" : "KATEGORI"}

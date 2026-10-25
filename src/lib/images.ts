@@ -51,3 +51,42 @@ export function getPromptCoverImage(value: unknown, fallback?: string | null): s
 export function getMcpCoverImage(value?: unknown, fallback?: string | null): string {
   return getCoverImage(value, fallback, DEFAULT_MCP_COVER) ?? DEFAULT_MCP_COVER;
 }
+
+export function getSkillAuthorAvatar(skill: {
+  authorName?: string | null;
+  authorUrl?: string | null;
+  repoUrl?: string | null;
+  previewImageUrl?: string | null;
+  images?: unknown;
+}): string {
+  if (skill.previewImageUrl && !skill.previewImageUrl.includes("default-skill.png")) {
+    return skill.previewImageUrl;
+  }
+
+  if (Array.isArray(skill.images) && skill.images.length > 0 && typeof skill.images[0] === "string" && !skill.images[0].includes("default-skill.png")) {
+    return skill.images[0];
+  }
+
+  if (skill.repoUrl) {
+    const match = skill.repoUrl.match(/github\.com\/([^/]+)/i);
+    if (match && match[1] && !["login", "signup", "settings"].includes(match[1].toLowerCase())) {
+      return `https://github.com/${match[1]}.png`;
+    }
+  }
+
+  if (skill.authorUrl) {
+    const match = skill.authorUrl.match(/github\.com\/([^/]+)/i);
+    if (match && match[1]) {
+      return `https://github.com/${match[1]}.png`;
+    }
+  }
+
+  if (skill.authorName) {
+    const clean = skill.authorName.replace(/^@/, "").trim().split(/\s+/)[0];
+    if (clean && clean.toLowerCase() !== "proskillai") {
+      return `https://github.com/${clean}.png`;
+    }
+  }
+
+  return "https://github.com/dresar.png";
+}
