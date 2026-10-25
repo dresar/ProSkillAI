@@ -8,6 +8,7 @@ import { motion } from "motion/react";
 import type { Skill, Category } from "@/db/schema";
 import { getSkillAuthorAvatar } from "@/lib/images";
 import { formatCount } from "@/lib/format";
+import { ShareButton } from "@/components/share/share-button";
 
 interface SkillCardProps {
   skill: Skill;
@@ -22,6 +23,7 @@ export function SkillCard({ skill, category, locale, onSelect }: SkillCardProps)
   const summary = isEn ? skill.summaryEn : skill.summaryId;
 
   const authorName = skill.authorName || (skill.sourceType === "github" ? "GitHub" : "ProSkillAI");
+  const categoryName = category ? (isEn ? category.nameEn : category.nameId) : "Skill";
   const fm = (skill.frontmatter as { stars?: number } | null) || null;
 
   const rawStars = fm?.stars || skill.copyCount || 0;
@@ -87,9 +89,24 @@ export function SkillCard({ skill, category, locale, onSelect }: SkillCardProps)
         </div>
 
         <div className="pt-2.5 border-t border-border/50 flex items-center justify-between text-xs">
-          <span className="text-[10px] font-semibold text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-[4px] font-mono leading-none">
-            Free
-          </span>
+          <ShareButton
+            item={{
+              type: "skill",
+              title,
+              description: summary,
+              url: `/${locale}/skills/${skill.slug}`,
+              category: categoryName,
+              author: authorName,
+              slug: skill.slug,
+              badge: "Verified Skill",
+              stats: [{ label: "Stars", value: starCount }],
+              cover: avatarUrl,
+            }}
+            locale={locale}
+            showLabel={true}
+            label={isEn ? "Share" : "Bagikan"}
+            className="h-6.5 px-2.5 rounded-[5px] border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground text-[11px] font-medium"
+          />
 
           <div className="flex items-center gap-1.5 text-xs font-mono text-amber-400 font-medium">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 shrink-0" aria-hidden="true" />
