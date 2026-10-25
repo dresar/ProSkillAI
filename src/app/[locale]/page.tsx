@@ -4,6 +4,9 @@ import { getPublishedSkills, getLatestPrompts, getAllCategories } from "@/db/que
 import { AgenticHero } from "@/components/agentic-hero";
 import { SkillMarqueeGrid } from "@/components/skill-marquee-grid";
 import { HomePromptsSection } from "@/components/home-prompts-section";
+import { HomeFeaturesMatrix } from "@/components/home-features-matrix";
+import { HomeFaqSection } from "@/components/home-faq-section";
+import { HomeSeoSchema } from "@/components/home-seo-schema";
 import { BetaSections } from "@/components/beta-sections";
 
 interface PageProps {
@@ -60,6 +63,8 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <div className="w-full px-4 sm:px-6 py-8 sm:py-12 space-y-12 sm:space-y-16">
+      <HomeSeoSchema locale={locale} />
+
       <AgenticHero
         locale={locale}
         totalSkills={publishedSkills.length}
@@ -73,6 +78,14 @@ export default async function HomePage({ params }: PageProps) {
 
       <HomePromptsSection
         prompts={publishedPrompts}
+        locale={locale}
+      />
+
+      <HomeFeaturesMatrix
+        locale={locale}
+      />
+
+      <HomeFaqSection
         locale={locale}
       />
 
