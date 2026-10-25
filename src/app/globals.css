@@ -569,10 +569,6 @@ code, pre, kbd {
   animation: marquee-left 50s linear infinite reverse;
 }
 
-.marquee-track-3 {
-  animation: marquee-left 60s linear infinite;
-}
-
 .marquee-grid-wrapper[data-paused="true"] .marquee-track {
   animation-play-state: paused !important;
 }

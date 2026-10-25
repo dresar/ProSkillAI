@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Star, Play, Pause } from "lucide-react";
+import { Star, Play, Pause, ArrowRight } from "lucide-react";
 import type { Skill, Category } from "@/db/schema";
 import { formatCount } from "@/lib/format";
 import { getSkillCoverImage } from "@/lib/images";
@@ -49,8 +49,6 @@ function SkillCell({
     ? isEn
       ? category.nameEn
       : category.nameId
-    : isEn
-    ? "Skill"
     : "Skill";
 
   const fm = (skill.frontmatter as { stars?: number } | null) || null;
@@ -99,35 +97,40 @@ export function SkillMarqueeGrid({ skills, locale }: SkillMarqueeGridProps) {
   const [isPaused, setIsPaused] = React.useState(false);
   const isEn = locale === "en";
 
-  const row0Raw: SkillItemWithCategory[] = [];
-  const row1Raw: SkillItemWithCategory[] = [];
-  const row2Raw: SkillItemWithCategory[] = [];
+  const previewSkills = React.useMemo(() => (skills || []).slice(0, 20), [skills]);
 
-  skills.forEach((item, index) => {
-    if (index % 3 === 0) row0Raw.push(item);
-    else if (index % 3 === 1) row1Raw.push(item);
-    else row2Raw.push(item);
-  });
+  const { row0, row1 } = React.useMemo(() => {
+    const r0: SkillItemWithCategory[] = [];
+    const r1: SkillItemWithCategory[] = [];
 
-  const row0 = padRowItems(row0Raw.length > 0 ? row0Raw : skills, 8);
-  const row1 = padRowItems(row1Raw.length > 0 ? row1Raw : skills, 8);
-  const row2 = padRowItems(row2Raw.length > 0 ? row2Raw : skills, 8);
+    previewSkills.forEach((item, index) => {
+      if (index % 2 === 0) {
+        r0.push(item);
+      } else {
+        r1.push(item);
+      }
+    });
+
+    return {
+      row0: padRowItems(r0.length > 0 ? r0 : previewSkills, 8),
+      row1: padRowItems(r1.length > 0 ? r1 : previewSkills, 8),
+    };
+  }, [previewSkills]);
+
+  if (!skills || skills.length === 0) return null;
 
   const rows = [
     { items: row0, trackClass: "marquee-track-1" },
     { items: row1, trackClass: "marquee-track-2" },
-    { items: row2, trackClass: "marquee-track-3" },
   ];
-
-  if (!skills || skills.length === 0) return null;
 
   return (
     <section aria-label="Skill Marquee Stream" className="w-full relative">
-      <div className="flex items-center justify-end mb-2">
+      <div className="flex items-center justify-between mb-2.5">
         <button
           type="button"
           onClick={() => setIsPaused((prev) => !prev)}
-          className="inline-flex items-center gap-1.5 h-7.5 px-3 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-semibold tracking-tight shadow-2xs transition-all active:scale-95 cursor-pointer"
+          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-semibold tracking-tight shadow-2xs transition-all active:scale-95 cursor-pointer"
           aria-label={isPaused ? (isEn ? "Play marquee" : "Jalankan animasi") : (isEn ? "Pause marquee" : "Hentikan animasi")}
         >
           {isPaused ? (
@@ -142,6 +145,14 @@ export function SkillMarqueeGrid({ skills, locale }: SkillMarqueeGridProps) {
             </>
           )}
         </button>
+
+        <Link
+          href={`/${locale}/skills`}
+          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-semibold tracking-tight shadow-2xs transition-all hover:border-foreground/20 active:scale-95 cursor-pointer group"
+        >
+          <span>{isEn ? "View all skills" : "Selengkapnya"}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+        </Link>
       </div>
 
       <div
@@ -174,6 +185,16 @@ export function SkillMarqueeGrid({ skills, locale }: SkillMarqueeGridProps) {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="mt-3 flex items-center justify-center">
+        <Link
+          href={`/${locale}/skills`}
+          className="inline-flex items-center gap-2 h-8.5 px-4 rounded-[6px] border border-border bg-surface hover:bg-muted text-foreground text-xs font-semibold tracking-tight shadow-2xs transition-all hover:border-foreground/30 active:scale-95 cursor-pointer group"
+        >
+          <span>{isEn ? "Explore all skills" : "Lihat selengkapnya di katalog skill"}</span>
+          <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-transform" />
+        </Link>
       </div>
     </section>
   );
